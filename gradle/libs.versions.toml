@@ -4,6 +4,7 @@ kotlin = "2.0.0"
 androidx-composeBom = "2024.05.00"
 androidx-lifecycleRuntimeKtx = "2.8.1"
 androidx-activityCompose = "1.9.0"
+androidx-appcompat = "1.7.0"
 androidx-espressoCore = "3.5.1"
 androidx-coreKtx = "1.13.1"
 androidx-junit = "1.1.5"
@@ -21,6 +22,7 @@ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", versi
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
+androidx-compat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 
 # Runtime: Android Compose
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
