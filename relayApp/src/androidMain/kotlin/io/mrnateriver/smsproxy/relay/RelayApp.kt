@@ -22,7 +22,7 @@ fun RelayApp() {
         Column(
             Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center
         ) {
             Text(text = "Permission: ${receiveSmsPermissionResult.name}")
         }

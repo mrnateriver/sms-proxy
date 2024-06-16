@@ -9,6 +9,7 @@ import android.util.Log
 
 class SmsBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        Log.i("SmsBroadcastReceiver.onReceive", intent.toString())
         if (intent.action == SMS_RECEIVED_ACTION) {
             // TODO: save the sms to local storage synchronously
             // TODO: spawn background job that would send the SMS to the server
@@ -19,12 +20,13 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
 
             for (message in smsMessages) {
                 val phoneNumber = message.displayOriginatingAddress
+                message.protocolIdentifier
                 smsMessageBuilder.append("From: $phoneNumber\n")
                 smsMessageBuilder.append(message.displayMessageBody)
                 smsMessageBuilder.append("\n")
             }
 
-            Log.i("SMSReceiver", smsMessageBuilder.toString())
+            Log.i("SmsBroadcastReceiver.onReceive", smsMessageBuilder.toString())
         }
     }
 }
