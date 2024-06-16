@@ -1,3 +1,4 @@
+package io.mrnateriver.smsproxy.shared
 
 enum class SmsRelayStatus {
     PENDING,
