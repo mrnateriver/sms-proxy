@@ -1,6 +1,5 @@
 package io.mrnateriver.smsproxy
 
-import Greeting
 import SERVER_PORT
 import io.ktor.server.application.*
 import io.ktor.server.engine.*

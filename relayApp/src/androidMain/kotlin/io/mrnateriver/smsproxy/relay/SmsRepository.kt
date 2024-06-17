@@ -11,6 +11,10 @@ class SmsRepository : SmsRepositoryContract {
         TODO("Not yet implemented")
     }
 
+    override fun updateStatus(id: UUID, status: SmsRelayStatus) {
+        TODO("Not yet implemented")
+    }
+
     override fun getAll(vararg statuses: SmsRelayStatus): List<SmsEntry> {
         TODO("Not yet implemented")
     }
