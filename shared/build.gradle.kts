@@ -14,14 +14,14 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     jvm()
-    
+
     sourceSets {
         androidMain.dependencies {
         }
         commonMain.dependencies {
-            implementation(libs.kotlinx.datetime)
+            api(libs.kotlinx.datetime)
         }
     }
 }
