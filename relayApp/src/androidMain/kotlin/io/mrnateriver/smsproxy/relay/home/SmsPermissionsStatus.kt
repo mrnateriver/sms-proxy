@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay
+package io.mrnateriver.smsproxy.relay.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import io.mrnateriver.smsproxy.relay.permissions.PermissionState
 import io.mrnateriver.smsproxy.shared.AppSpacings
 
 /**
@@ -30,7 +31,7 @@ fun SmsPermissionsStatus(
     permissionState: PermissionState = PermissionState.GRANTED
 ) {
     // TODO
-    Column(modifier,  verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.large,

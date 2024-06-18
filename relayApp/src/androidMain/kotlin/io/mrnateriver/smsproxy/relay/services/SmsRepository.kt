@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay
+package io.mrnateriver.smsproxy.relay.services
 
 import io.mrnateriver.smsproxy.shared.SmsData
 import io.mrnateriver.smsproxy.shared.SmsEntry

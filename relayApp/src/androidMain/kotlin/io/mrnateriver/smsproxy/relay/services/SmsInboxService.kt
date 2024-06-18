@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay
+package io.mrnateriver.smsproxy.relay.services
 
 import android.provider.Telephony
 

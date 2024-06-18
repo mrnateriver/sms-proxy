@@ -28,6 +28,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.mrnateriver.smsproxy.relay.home.SmsLastRecord
+import io.mrnateriver.smsproxy.relay.home.SmsPermissionsStatus
+import io.mrnateriver.smsproxy.relay.home.SmsStats
+import io.mrnateriver.smsproxy.relay.permissions.rememberSmsPermissions
 import io.mrnateriver.smsproxy.shared.AppMaterialTheme
 import io.mrnateriver.smsproxy.shared.AppSpacings
 
@@ -35,7 +39,7 @@ import io.mrnateriver.smsproxy.shared.AppSpacings
 @Preview
 @Composable
 fun RelayApp() {
-    val receiveSmsPermissionResult = rememberSmsPermissionState()
+    val receiveSmsPermissionResult = rememberSmsPermissions()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
