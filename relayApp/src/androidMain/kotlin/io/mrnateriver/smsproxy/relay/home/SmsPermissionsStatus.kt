@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import io.mrnateriver.smsproxy.relay.permissions.PermissionState
 import io.mrnateriver.smsproxy.shared.AppSpacings
 
@@ -28,25 +26,26 @@ import io.mrnateriver.smsproxy.shared.AppSpacings
 @Composable
 fun SmsPermissionsStatus(
     modifier: Modifier = Modifier,
-    permissionState: PermissionState = PermissionState.GRANTED
+    permissionState: PermissionState = PermissionState.UNKNOWN
 ) {
-    // TODO
+    // TODO: remove column once proper state is implemented
     Column(modifier, verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)) {
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.secondaryContainer,
-        ) {
-            Row(
-                modifier = Modifier.padding(AppSpacings.medium),
-                horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium),
-                verticalAlignment = Alignment.CenterVertically
+        if (true || permissionState == PermissionState.UNKNOWN) {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.primaryContainer,
             ) {
-                PermissionStateIcon(permissionState = permissionState)
+                Row(
+                    modifier = Modifier.padding(AppSpacings.medium),
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
 
-                // TODO: text
-                Text(text = "Permission: ${permissionState.name}")
-
+                    // TODO: text
+                    Text(text = "Requesting permissions...", style = MaterialTheme.typography.titleSmall)
+                }
             }
         }
 
@@ -65,30 +64,4 @@ fun SmsPermissionsStatus(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun PermissionStateIcon(
-    permissionState: PermissionState = PermissionState.GRANTED
-) {
-    if (permissionState == PermissionState.UNKNOWN) {
-        return CircularProgressIndicator()
-    }
-
-    val icon = when (permissionState) {
-        PermissionState.GRANTED -> Icons.Filled.Done
-        else -> Icons.Filled.Clear
-    }
-
-    val tint = when (permissionState) {
-        PermissionState.GRANTED -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.error
-    }
-
-    Icon(
-        imageVector = icon,
-        tint = tint,
-        contentDescription = "" // TODO: add content description
-    )
 }

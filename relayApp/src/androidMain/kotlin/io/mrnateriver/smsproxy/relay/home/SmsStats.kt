@@ -2,11 +2,11 @@ package io.mrnateriver.smsproxy.relay.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,28 +22,30 @@ import io.mrnateriver.smsproxy.shared.AppSpacings
 @Composable
 fun SmsStats(modifier: Modifier = Modifier) {
     // TODO: data
-    LazyVerticalGrid(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(AppSpacings.medium),
-        horizontalArrangement = Arrangement.spacedBy(
-            AppSpacings.medium
-        ),
-        columns = GridCells.Fixed(2)
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)
     ) {
-        item {
-            StatsCard(title = "Received", value = "123")
+        Text(
+            modifier = Modifier.padding(start = AppSpacings.medium),
+            text = "Statistics", // i18n
+            style = MaterialTheme.typography.headlineMedium,
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium)
+        ) {
+            StatsCard(modifier = Modifier.weight(1f), title = "Received", value = "123")
+            StatsCard(modifier = Modifier.weight(1f), title = "Relayed", value = "456")
         }
 
-        item {
-            StatsCard(title = "Relayed", value = "456")
-        }
-
-        item {
-            StatsCard(title = "Errors", value = "42", textColor = MaterialTheme.colorScheme.error)
-        }
-
-        item {
-            StatsCard(title = "Failures", value = "0", textColor = MaterialTheme.colorScheme.error)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium)
+        ) {
+            StatsCard(modifier = Modifier.weight(1f), title = "Errors", value = "42", textColor = MaterialTheme.colorScheme.error)
+            StatsCard(modifier = Modifier.weight(1f), title = "Failures", value = "0", textColor = MaterialTheme.colorScheme.error)
         }
     }
 }
@@ -59,8 +61,8 @@ private fun StatsCard(
 ) {
     Surface(
         shape = MaterialTheme.shapes.large,
-        modifier = modifier.aspectRatio(1.0f),
-        color = MaterialTheme.colorScheme.tertiaryContainer
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
     ) {
         Column(
             modifier = Modifier.padding(AppSpacings.medium),
@@ -73,7 +75,6 @@ private fun StatsCard(
                 fontWeight = FontWeight.ExtraBold,
                 color = textColor
             )
-            Spacer(Modifier.weight(1f))
             Text(text = title, style = MaterialTheme.typography.titleMedium, color = textColor)
             Text(
                 text = lastEvent,
