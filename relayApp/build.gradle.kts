@@ -14,7 +14,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
         }
@@ -68,6 +68,7 @@ android {
         implementation(libs.androidx.ui.graphics)
         implementation(libs.androidx.ui.tooling.preview)
         implementation(libs.androidx.material3)
+        implementation(libs.google.accompanist)
 
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)
