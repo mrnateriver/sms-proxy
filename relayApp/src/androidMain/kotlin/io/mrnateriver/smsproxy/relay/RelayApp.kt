@@ -2,17 +2,23 @@ package io.mrnateriver.smsproxy.relay
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,14 +34,17 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import io.mrnateriver.smsproxy.relay.home.SmsLastRecord
 import io.mrnateriver.smsproxy.relay.home.SmsPermissionsStatus
 import io.mrnateriver.smsproxy.relay.home.SmsStats
 import io.mrnateriver.smsproxy.relay.permissions.rememberSmsPermissions
 import io.mrnateriver.smsproxy.shared.AppMaterialTheme
 import io.mrnateriver.smsproxy.shared.AppSpacings
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -46,59 +55,75 @@ fun RelayApp() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-//    ModalNavigationDrawer(
-//        drawerState = drawerState,
-//        drawerContent = {
-//            ModalDrawerSheet { /* Drawer content */ }
-//        },
-//    ) {
-//        Scaffold(
-//            floatingActionButton = {
-//                ExtendedFloatingActionButton(
-//                    text = { Text("Show drawer") },
-//                    icon = { Icon(Icons.Filled.Add, contentDescription = "") },
-//                    onClick = {
-//                        scope.launch {
-//                            drawerState.apply {
-//                                if (isClosed) open() else close()
-//                            }
-//                        }
-//                    }
-//                )
-//            }
-//        ) { contentPadding ->
-//            // Screen content
-//        }
-//    }
+    val density = LocalDensity.current
+    val fraction =
+        (drawerState.currentOffset / density.density) / DrawerDefaults.MaximumDrawerWidth.value
+    val scaleState = 1 - 0.05f * (1f + fraction)
 
     AppMaterialTheme {
-        ModalNavigationDrawer(drawerContent = {
-            ModalDrawerSheet {
-                Text("Drawer title", modifier = Modifier.padding(16.dp))
-                HorizontalDivider()
-                NavigationDrawerItem(label = { Text(text = "Drawer Item") },
-                    selected = false,
-                    onClick = { /*TODO*/ })
-                // ...other drawer items
-            }
-        }) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet(modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)) {
+                    Text(
+                        "SMS Relay",
+                        modifier = Modifier.padding(AppSpacings.large),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    NavigationDrawerItem(
+                        modifier = Modifier.padding(horizontal = AppSpacings.small),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Settings,
+                                contentDescription = ""
+                            )
+                        },
+                        label = { Text("Settings") },
+                        selected = false,
+                        onClick = {
+                            // TODO: navigate to settings
+                        }
+                    )
+                    NavigationDrawerItem(
+                        modifier = Modifier.padding(horizontal = AppSpacings.small),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = ""
+                            )
+                        },
+                        label = { Text("About") },
+                        selected = false,
+                        onClick = {
+                            // TODO: navigate to settings
+                        }
+                    )
+                }
+            }) {
             Scaffold(
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
                 containerColor = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.fillMaxSize(),
                 topBar = {
-                    TopAppBar(
-                        colors = TopAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            scrolledContainerColor = MaterialTheme.colorScheme.primary,
-                            actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        navigationIcon = {
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(imageVector = Icons.Outlined.Menu, contentDescription = "")
+                    TopAppBar(colors = TopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        scrolledContainerColor = MaterialTheme.colorScheme.primary,
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    ), navigationIcon = {
+                        IconButton(onClick = {
+                            scope.launch {
+                                drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
                             }
-                        }, title = { Text(text = "SMS Proxy Relay") })
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Menu,
+                                contentDescription = "" // TODO: desc
+                            )
+                        }
+                    }, title = { Text(text = "SMS Relay") })
                 },
             ) {
                 Surface(
@@ -108,14 +133,21 @@ fun RelayApp() {
                     color = MaterialTheme.colorScheme.background,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it),
+                        .padding(it)
+                        .graphicsLayer {
+                            scaleX = scaleState
+                            scaleY = scaleState
+                            // Adjust the pivot to zoom from the center
+                            transformOrigin = TransformOrigin(0.5f, 1f)
+                        },
                 ) {
                     // TODO: lazy column because cards might not fit on the screen
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
-                            .padding(AppSpacings.medium),
+                            .padding(AppSpacings.medium)
+                            .windowInsetsPadding(WindowInsets.navigationBars),
                         verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)
                     ) {
                         SmsPermissionsStatus(
