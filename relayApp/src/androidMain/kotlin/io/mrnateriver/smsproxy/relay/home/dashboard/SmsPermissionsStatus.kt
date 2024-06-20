@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.home
+package io.mrnateriver.smsproxy.relay.home.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,12 +39,15 @@ fun SmsPermissionsStatus(
                 Row(
                     modifier = Modifier.padding(AppSpacings.medium),
                     horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
 
                     // TODO: text
-                    Text(text = "Requesting permissions...", style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        text = "Requesting permissions...",
+                        style = MaterialTheme.typography.titleSmall,
+                    )
                 }
             }
         }
@@ -53,11 +56,11 @@ fun SmsPermissionsStatus(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.errorContainer
+            color = MaterialTheme.colorScheme.errorContainer,
         ) {
             Column(
                 modifier = Modifier.padding(AppSpacings.medium),
-                verticalArrangement = Arrangement.spacedBy(AppSpacings.small)
+                verticalArrangement = Arrangement.spacedBy(AppSpacings.small),
             ) {
                 Text(text = "Permission denied", style = MaterialTheme.typography.titleMedium)
                 Text(text = "Please grant the necessary permissions for the app to function.")

@@ -1,10 +1,8 @@
-package io.mrnateriver.smsproxy.relay.home
+package io.mrnateriver.smsproxy.relay.home.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +32,7 @@ fun SmsStats(modifier: Modifier = Modifier) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium)
+            horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium),
         ) {
             StatsCard(modifier = Modifier.weight(1f), title = "Received", value = "123")
             StatsCard(modifier = Modifier.weight(1f), title = "Relayed", value = "456")
@@ -42,10 +40,20 @@ fun SmsStats(modifier: Modifier = Modifier) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium)
+            horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium),
         ) {
-            StatsCard(modifier = Modifier.weight(1f), title = "Errors", value = "42", textColor = MaterialTheme.colorScheme.error)
-            StatsCard(modifier = Modifier.weight(1f), title = "Failures", value = "0", textColor = MaterialTheme.colorScheme.error)
+            StatsCard(
+                modifier = Modifier.weight(1f),
+                title = "Errors",
+                value = "42",
+                textColor = MaterialTheme.colorScheme.error,
+            )
+            StatsCard(
+                modifier = Modifier.weight(1f),
+                title = "Failures",
+                value = "0",
+                textColor = MaterialTheme.colorScheme.error,
+            )
         }
     }
 }
@@ -57,7 +65,7 @@ private fun StatsCard(
     title: String = "Sent",
     value: String = "123",
     lastEvent: String = "Last event: 1 minute ago",
-    textColor: Color = MaterialTheme.colorScheme.onSurface
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Surface(
         shape = MaterialTheme.shapes.large,
@@ -73,13 +81,13 @@ private fun StatsCard(
                 text = value,
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.ExtraBold,
-                color = textColor
+                color = textColor,
             )
             Text(text = title, style = MaterialTheme.typography.titleMedium, color = textColor)
             Text(
                 text = lastEvent,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.tertiary
+                color = MaterialTheme.colorScheme.tertiary,
             )
         }
     }

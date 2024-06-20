@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.home
+package io.mrnateriver.smsproxy.relay.home.dashboard
 
 import android.text.format.DateFormat
 import androidx.compose.foundation.layout.Arrangement
@@ -27,31 +27,29 @@ import java.time.format.FormatStyle
 @Preview
 @Composable
 fun SmsLastRecord(modifier: Modifier = Modifier) {
-    val dateFormat = DateFormat.getMediumDateFormat(LocalContext.current)
     val dateFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
-
 
     val records = remember {
         listOf(
             SmsData(
                 sender = "+12223334455",
                 message = "Hello World",
-                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
             ),
             SmsData(
                 sender = "Hello",
                 message = "General Kenobi",
-                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
             ),
             SmsData(
                 sender = "+993742732",
                 message = "Test",
-                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
             ),
             SmsData(
                 sender = "World",
                 message = "How's it going",
-                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
             ),
         )
     }
@@ -65,7 +63,7 @@ fun SmsLastRecord(modifier: Modifier = Modifier) {
             SmsRecord(
                 from = record.sender,
                 message = record.message,
-                timestamp = dateFormatter.format(record.receivedAt.toJavaLocalDateTime())
+                timestamp = dateFormatter.format(record.receivedAt.toJavaLocalDateTime()),
             )
         }
     }
@@ -77,32 +75,32 @@ private fun SmsRecord(
     modifier: Modifier = Modifier,
     from: String = "+12223334455",
     message: String = "Hello World",
-    timestamp: String = "24.06.2024 15:36:23 UTC+2"
+    timestamp: String = "24.06.2024 15:36:23 UTC+2",
 ) {
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Column(
             modifier = Modifier
                 .padding(AppSpacings.medium)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(AppSpacings.small)
+            verticalArrangement = Arrangement.spacedBy(AppSpacings.small),
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
                     text = from,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = timestamp,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
