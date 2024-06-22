@@ -22,7 +22,9 @@ fun AppDrawerEntry(
     onClick: () -> Unit = {},
 ) {
     NavigationDrawerItem(
-        modifier = Modifier.padding(horizontal = AppSpacings.small),
+        modifier = Modifier
+            .padding(horizontal = AppSpacings.small)
+            .padding(bottom = AppSpacings.tiny),
         icon = { Icon(imageVector = icon, contentDescription = null) },
         label = { Text(label) },
         selected = selected,

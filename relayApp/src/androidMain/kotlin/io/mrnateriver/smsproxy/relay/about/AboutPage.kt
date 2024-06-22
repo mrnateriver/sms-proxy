@@ -9,8 +9,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
+import io.mrnateriver.smsproxy.relay.AppContentSurface
 
-private val AboutPageRoute = "about"
+private const val AboutPageRoute = "about"
 
 fun NavGraphBuilder.aboutPage() {
     composable(AboutPageRoute) {
@@ -27,5 +28,7 @@ fun isAboutPageRoute(dest: NavDestination?): Boolean = dest?.route == AboutPageR
 @Preview
 @Composable
 fun AboutPage() {
-    Text(text = "About Page") // TODO: everything
+    AppContentSurface {
+        Text(text = "About Page") // TODO: everything
+    }
 }

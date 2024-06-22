@@ -1,5 +1,9 @@
 package io.mrnateriver.smsproxy.relay
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +37,28 @@ fun App() {
                 )
             },
             content = {
-                NavHost(navController = navController, startDestination = HomePageRoute) {
+                NavHost(
+                    navController = navController,
+                    startDestination = HomePageRoute,
+                    exitTransition = {
+                        slideOutOfContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                            animationSpec = tween(durationMillis = 500),
+                        ) + scaleOut(
+                            targetScale = 0.8f,
+                            animationSpec = tween(durationMillis = 200),
+                        )
+                    },
+                    enterTransition = {
+                        slideIntoContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(durationMillis = 800),
+                        ) + scaleIn(
+                            initialScale = 0.8f,
+                            animationSpec = tween(durationMillis = 1500),
+                        )
+                    },
+                ) {
                     homePage()
                     aboutPage()
                     settingsPage()

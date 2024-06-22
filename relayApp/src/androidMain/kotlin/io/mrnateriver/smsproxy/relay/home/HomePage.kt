@@ -15,6 +15,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import io.mrnateriver.smsproxy.relay.AppContentSurface
 import io.mrnateriver.smsproxy.relay.permissions.PermissionState
 import io.mrnateriver.smsproxy.relay.permissions.rememberSmsPermissions
 import io.mrnateriver.smsproxy.shared.SmsData
@@ -22,7 +23,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-val HomePageRoute = "/"
+const val HomePageRoute = "/"
 
 fun NavGraphBuilder.homePage() {
     composable(HomePageRoute) {
@@ -91,13 +92,15 @@ fun HomePage(
     smsStatsData: SmsStatsData = SmsStatsData(),
     smsRecords: List<SmsData> = listOf(),
 ) {
-    Dashboard(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .windowInsetsPadding(WindowInsets.navigationBars),
-        smsPermissionsState = smsPermissionsState,
-        smsStatsData = smsStatsData,
-        smsRecords = smsRecords,
-    )
+    AppContentSurface {
+        Dashboard(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .windowInsetsPadding(WindowInsets.navigationBars),
+            smsPermissionsState = smsPermissionsState,
+            smsStatsData = smsStatsData,
+            smsRecords = smsRecords,
+        )
+    }
 }

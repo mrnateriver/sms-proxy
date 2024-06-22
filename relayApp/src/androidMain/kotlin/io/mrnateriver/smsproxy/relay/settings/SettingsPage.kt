@@ -9,8 +9,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
+import io.mrnateriver.smsproxy.relay.AppContentSurface
 
-private val SettingsPageRoute = "settings"
+private const val SettingsPageRoute = "settings"
 
 fun NavGraphBuilder.settingsPage() {
     composable(SettingsPageRoute) {
@@ -27,5 +28,7 @@ fun isSettingsPageRoute(dest: NavDestination?): Boolean = dest?.route == Setting
 @Preview
 @Composable
 fun SettingsPage() {
-    Text(text = "Settings Page") // TODO: everything
+    AppContentSurface {
+        Text(text = "Settings Page") // TODO: everything
+    }
 }

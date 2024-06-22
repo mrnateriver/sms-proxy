@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination
 import io.mrnateriver.smsproxy.relay.drawer.AppDrawer
@@ -48,13 +51,16 @@ fun AppLayout(
                 )
             },
         ) {
-            AppContentSurface(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(it),
-                fraction = fraction,
-                content = content,
-            )
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    scaleX = 1 - 0.05f * fraction
+                    scaleY = 1 - 0.05f * fraction
+                    transformOrigin = TransformOrigin(0.5f, 1f)
+                }
+                .padding(it)) {
+                content()
+            }
         }
     }
 }
