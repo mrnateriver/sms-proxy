@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.home.dashboard
+package io.mrnateriver.smsproxy.relay.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,17 +17,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.shared.AppSpacings
 
+@Stable
+data class SmsStatsData(
+    val received: Int = 0,
+    val relayed: Int = 0,
+    val errors: Int = 0,
+    val failures: Int = 0,
+)
+
 @Preview
 @Composable
-fun SmsStats(modifier: Modifier = Modifier) {
-    // TODO: data
+fun SmsStats(modifier: Modifier = Modifier, data: SmsStatsData = SmsStatsData(123, 456, 42, 0)) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)
     ) {
         Text(
             modifier = Modifier.padding(start = AppSpacings.medium),
-            text = "Statistics", // i18n
+            text = "Statistics", // TODO: i18n
             style = MaterialTheme.typography.headlineMedium,
         )
 
@@ -34,8 +42,16 @@ fun SmsStats(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium),
         ) {
-            StatsCard(modifier = Modifier.weight(1f), title = "Received", value = "123")
-            StatsCard(modifier = Modifier.weight(1f), title = "Relayed", value = "456")
+            StatsCard(
+                modifier = Modifier.weight(1f),
+                title = "Received", // TODO: i18n
+                value = data.received.toString()
+            )
+            StatsCard(
+                modifier = Modifier.weight(1f),
+                title = "Relayed",  // TODO: i18n
+                value = data.relayed.toString()
+            )
         }
 
         Row(
@@ -44,14 +60,14 @@ fun SmsStats(modifier: Modifier = Modifier) {
         ) {
             StatsCard(
                 modifier = Modifier.weight(1f),
-                title = "Errors",
-                value = "42",
+                title = "Errors", // TODO: i18n
+                value = data.errors.toString(),
                 textColor = MaterialTheme.colorScheme.error,
             )
             StatsCard(
                 modifier = Modifier.weight(1f),
-                title = "Failures",
-                value = "0",
+                title = "Failures", // TODO: i18n
+                value = data.failures.toString(),
                 textColor = MaterialTheme.colorScheme.error,
             )
         }
@@ -83,7 +99,11 @@ private fun StatsCard(
                 fontWeight = FontWeight.ExtraBold,
                 color = textColor,
             )
-            Text(text = title, style = MaterialTheme.typography.titleMedium, color = textColor)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = textColor,
+            )
             Text(
                 text = lastEvent,
                 style = MaterialTheme.typography.bodySmall,

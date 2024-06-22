@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.home.dashboard
+package io.mrnateriver.smsproxy.relay
 
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.MaterialTheme
@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable
-fun DashboardSurface(
+fun AppContentSurface(
     modifier: Modifier = Modifier,
     fraction: Float = 0f,
     content: @Composable () -> Unit = {},

@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.home.drawer
+package io.mrnateriver.smsproxy.relay.drawer
 
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerValue
@@ -14,8 +14,9 @@ import kotlinx.coroutines.launch
 
 @Preview
 @Composable
-fun DrawerWithAnimation(
+fun AppDrawer(
     modifier: Modifier = Modifier,
+    drawerContent: @Composable (toggleDrawer: () -> Unit) -> Unit = {},
     content: (@Composable (progress: Float, toggleDrawer: () -> Unit) -> Unit) = { _, _ -> },
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -31,15 +32,15 @@ fun DrawerWithAnimation(
         }
     }
 
-    val density = LocalDensity.current
-    val fraction =
-        1f + (drawerState.currentOffset / density.density) / DrawerDefaults.MaximumDrawerWidth.value
-
     ModalNavigationDrawer(
         modifier = modifier,
         drawerState = drawerState,
-        drawerContent = { DrawerSheet() },
+        drawerContent = { AppDrawerSheet(content = { drawerContent(toggleDrawerState) }) },
     ) {
+        val density = LocalDensity.current
+        val fraction =
+            1f + (drawerState.currentOffset / density.density) / DrawerDefaults.MaximumDrawerWidth.value
+
         content(
             if (fraction.isNaN()) 0f else fraction,
             toggleDrawerState,

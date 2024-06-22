@@ -1,6 +1,5 @@
-package io.mrnateriver.smsproxy.relay.home.dashboard
+package io.mrnateriver.smsproxy.relay.home
 
-import android.text.format.DateFormat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.shared.AppSpacings
 import io.mrnateriver.smsproxy.shared.SmsData
@@ -23,40 +21,15 @@ import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-
 @Preview
 @Composable
-fun SmsLastRecord(modifier: Modifier = Modifier) {
-    val dateFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+fun SmsLastRecords(modifier: Modifier = Modifier, records: List<SmsData> = previewSmsRecords) {
+    val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
 
-    val records = remember {
-        listOf(
-            SmsData(
-                sender = "+12223334455",
-                message = "Hello World",
-                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-            ),
-            SmsData(
-                sender = "Hello",
-                message = "General Kenobi",
-                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-            ),
-            SmsData(
-                sender = "+993742732",
-                message = "Test",
-                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-            ),
-            SmsData(
-                sender = "World",
-                message = "How's it going",
-                receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-            ),
-        )
-    }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)) {
         Text(
             modifier = Modifier.padding(start = AppSpacings.medium),
-            text = "Last messages", // i18n
+            text = "Last messages", // TODO: i18n
             style = MaterialTheme.typography.headlineMedium,
         )
         records.forEach { record ->
@@ -108,3 +81,26 @@ private fun SmsRecord(
         }
     }
 }
+
+private val previewSmsRecords = listOf(
+    SmsData(
+        sender = "+12223334455",
+        message = "Hello World",
+        receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    ),
+    SmsData(
+        sender = "Hello",
+        message = "General Kenobi",
+        receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    ),
+    SmsData(
+        sender = "+993742732",
+        message = "Test",
+        receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    ),
+    SmsData(
+        sender = "World",
+        message = "How's it going",
+        receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    ),
+)
