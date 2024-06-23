@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay.about
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -26,8 +28,9 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import androidx.navigation.navigation
-import coil.compose.AsyncImage
 import io.mrnateriver.smsproxy.relay.AppContentSurface
+import io.mrnateriver.smsproxy.relay.BuildConfig
+import io.mrnateriver.smsproxy.relay.R
 
 private const val AboutPageRoot = "about"
 private const val AboutPageInfo = "info"
@@ -60,9 +63,9 @@ fun AboutPage(navigateToLicensesPage: () -> Unit = {}) {
                 text = "https://mrnateriver.io",
                 title = "Author",
                 image = {
-                    AsyncImage(
-                        model = "https://avatars.githubusercontent.com/u/22825372?v=4",
-                        contentDescription = "",
+                    Image(
+                        painter = painterResource(id = R.drawable.gh_avatar),
+                        contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .clip(CircleShape)
@@ -70,7 +73,7 @@ fun AboutPage(navigateToLicensesPage: () -> Unit = {}) {
                     )
                 },
                 onClick = {
-                    uriHandler.openUri("https://mrnateriver.io")
+                    uriHandler.openUri(BuildConfig.AUTHOR_WEB_PAGE_URL)
                 }
             )
             HorizontalDivider()
