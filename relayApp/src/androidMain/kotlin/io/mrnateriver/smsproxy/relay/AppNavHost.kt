@@ -25,6 +25,8 @@ fun AppNavHost(modifier: Modifier = Modifier, navController: NavHostController) 
         startDestination = HomePageRoute,
         exitTransition = { navExitTransitionBuilder() },
         enterTransition = { navEnterTransitionBuilder() },
+        popEnterTransition = { navPopEnterTransitionBuilder() },
+        popExitTransition = { navPopExitTransitionBuilder() },
     ) {
         homePage()
         aboutPage(navController)
@@ -45,6 +47,26 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.navExitTransitionB
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.navEnterTransitionBuilder(): EnterTransition =
     slideIntoContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Left,
+        animationSpec = tween(durationMillis = 500),
+    ) + scaleIn(
+        initialScale = 0.9f,
+        transformOrigin = TransformOrigin(0.5f, 1f),
+        animationSpec = tween(durationMillis = 800),
+    )
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.navPopExitTransitionBuilder(): ExitTransition =
+    slideOutOfContainer(
+        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+        animationSpec = tween(durationMillis = 300),
+    ) + scaleOut(
+        targetScale = 0.9f,
+        transformOrigin = TransformOrigin(0.5f, 1f),
+        animationSpec = tween(durationMillis = 200),
+    )
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.navPopEnterTransitionBuilder(): EnterTransition =
+    slideIntoContainer(
+        towards = AnimatedContentTransitionScope.SlideDirection.Right,
         animationSpec = tween(durationMillis = 500),
     ) + scaleIn(
         initialScale = 0.9f,
