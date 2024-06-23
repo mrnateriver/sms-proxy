@@ -19,9 +19,8 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
         }
-        commonMain.dependencies {
-            implementation(projects.shared)
-        }
+//        commonMain.dependencies {
+//        }
     }
 }
 
@@ -39,6 +38,23 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField(
+            "String",
+            "AUTHOR_WEB_PAGE_URL",
+            "\"${System.getenv("AUTHOR_WEB_PAGE_URL") ?: "https://mrnateriver.io"}\""
+        )
+        buildConfigField(
+            "String",
+            "API_BASE_URL",
+            "\"${System.getenv("API_BASE_URL") ?: "https://localhost:3000"}\""
+        )
+        // TODO: show a human-readable error message in UI if the API key is not set
+        buildConfigField(
+            "String",
+            "API_KEY",
+            "\"${System.getenv("API_KEY") ?: ""}\""
+        )
     }
     packaging {
         resources {
@@ -56,9 +72,12 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     dependencies {
         val composeBom = platform(libs.androidx.compose.bom)
+
+        implementation(projects.shared)
 
         implementation(libs.androidx.compat)
         implementation(libs.androidx.core.ktx)
@@ -71,7 +90,6 @@ android {
         implementation(libs.androidx.material3)
         implementation(libs.androidx.navigation.compose)
         implementation(libs.google.accompanist)
-        implementation(libs.coil.compose)
         implementation(libs.about.libraries)
 
         testImplementation(libs.junit)
