@@ -1,8 +1,6 @@
 package io.mrnateriver.smsproxy.relay.drawer
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
@@ -16,7 +14,7 @@ import io.mrnateriver.smsproxy.shared.AppSpacings
 @Composable
 fun AppDrawerEntry(
     modifier: Modifier = Modifier,
-    icon: ImageVector = Icons.Outlined.Info,
+    icon: ImageVector? = null,
     label: String = "About",
     selected: Boolean = false,
     onClick: () -> Unit = {},
@@ -25,7 +23,9 @@ fun AppDrawerEntry(
         modifier = Modifier
             .padding(horizontal = AppSpacings.small)
             .padding(bottom = AppSpacings.tiny),
-        icon = { Icon(imageVector = icon, contentDescription = null) },
+        icon = if (icon != null) {
+            { Icon(imageVector = icon, contentDescription = null) }
+        } else null,
         label = { Text(label) },
         selected = selected,
         onClick = onClick,

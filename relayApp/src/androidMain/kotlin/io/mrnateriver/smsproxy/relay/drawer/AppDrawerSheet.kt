@@ -4,19 +4,12 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import io.mrnateriver.smsproxy.relay.about.isAboutPageRoute
-import io.mrnateriver.smsproxy.relay.about.navigateToAboutPage
-import io.mrnateriver.smsproxy.relay.settings.isSettingsPageRoute
-import io.mrnateriver.smsproxy.relay.settings.navigateToSettingsPage
 import io.mrnateriver.smsproxy.shared.AppSpacings
 
 @Preview
@@ -31,7 +24,7 @@ fun AppDrawerSheet(
             modifier = Modifier.padding(AppSpacings.large),
             style = MaterialTheme.typography.headlineSmall,
         )
-        
+
         content()
     }
 }

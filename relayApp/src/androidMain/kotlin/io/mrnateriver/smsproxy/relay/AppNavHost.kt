@@ -27,7 +27,7 @@ fun AppNavHost(modifier: Modifier = Modifier, navController: NavHostController) 
         enterTransition = { navEnterTransitionBuilder() },
     ) {
         homePage()
-        aboutPage()
+        aboutPage(navController)
         settingsPage()
     }
 }

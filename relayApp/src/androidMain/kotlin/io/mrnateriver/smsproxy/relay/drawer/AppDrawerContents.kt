@@ -10,7 +10,7 @@ fun AppDrawerContents(
     activePage: AppPages? = null,
     onNavigateClick: (route: AppPages) -> Unit = {},
 ) {
-    for (page in AppPages.entries) {
+    for (page in listOf(AppPages.SETTINGS, AppPages.ABOUT)) {
         AppDrawerEntry(
             icon = page.icon,
             label = page.title,
