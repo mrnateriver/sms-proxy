@@ -1,8 +1,8 @@
-package io.mrnateriver.smsproxy.relay.drawer
+package io.mrnateriver.smsproxy.relay.layout.drawer
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import io.mrnateriver.smsproxy.relay.AppPages
+import io.mrnateriver.smsproxy.relay.layout.AppPages
 
 @Preview
 @Composable

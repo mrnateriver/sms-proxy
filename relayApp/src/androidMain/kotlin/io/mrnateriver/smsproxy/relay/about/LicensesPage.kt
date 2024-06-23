@@ -9,7 +9,7 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
-import io.mrnateriver.smsproxy.relay.AppContentSurface
+import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
 
 private const val LicensesPageRoute = "licenses"
 

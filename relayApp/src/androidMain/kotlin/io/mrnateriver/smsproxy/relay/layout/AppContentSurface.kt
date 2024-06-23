@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay
+package io.mrnateriver.smsproxy.relay.layout
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.ZeroCornerSize

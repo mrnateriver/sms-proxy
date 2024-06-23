@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.drawer
+package io.mrnateriver.smsproxy.relay.layout.drawer
 
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerValue

@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay
+package io.mrnateriver.smsproxy.relay.layout
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info

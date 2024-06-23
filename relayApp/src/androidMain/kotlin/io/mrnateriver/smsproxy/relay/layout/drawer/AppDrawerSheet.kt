@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.drawer
+package io.mrnateriver.smsproxy.relay.layout.drawer
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding

@@ -9,7 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
-import io.mrnateriver.smsproxy.relay.AppContentSurface
+import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
 
 private const val SettingsPageRoute = "settings"
 

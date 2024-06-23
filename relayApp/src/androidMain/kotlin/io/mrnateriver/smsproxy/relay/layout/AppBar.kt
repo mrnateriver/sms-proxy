@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay
+package io.mrnateriver.smsproxy.relay.layout
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -13,7 +13,9 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import io.mrnateriver.smsproxy.relay.R
 
 @Preview
 @Composable
@@ -40,7 +42,9 @@ fun AppBar(
                 onMenuButtonClick = onMenuButtonClick,
             )
         },
-        title = { Text(text = title ?: "SMS Relay") }, // TODO: i18n (take app title from manifest)
+        title = {
+            Text(text = title ?: stringResource(id = R.string.app_name)) // TODO: i18n
+        },
     )
 }
 
