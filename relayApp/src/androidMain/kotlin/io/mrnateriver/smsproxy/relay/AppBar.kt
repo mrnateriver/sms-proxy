@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 fun AppBar(
     modifier: Modifier = Modifier,
+    title: String? = null,
     isHomePage: Boolean = true,
     onMenuButtonClick: () -> Unit = {},
 ) {
@@ -39,7 +40,7 @@ fun AppBar(
                 onMenuButtonClick = onMenuButtonClick,
             )
         },
-        title = { Text(text = "SMS Relay") }, // TODO: i18n (take app title from manifest)
+        title = { Text(text = title ?: "SMS Relay") }, // TODO: i18n (take app title from manifest)
     )
 }
 
