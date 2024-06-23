@@ -1,12 +1,16 @@
 package io.mrnateriver.smsproxy.relay
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -40,24 +44,8 @@ fun App() {
                 NavHost(
                     navController = navController,
                     startDestination = HomePageRoute,
-                    exitTransition = {
-                        slideOutOfContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                            animationSpec = tween(durationMillis = 500),
-                        ) + scaleOut(
-                            targetScale = 0.8f,
-                            animationSpec = tween(durationMillis = 200),
-                        )
-                    },
-                    enterTransition = {
-                        slideIntoContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                            animationSpec = tween(durationMillis = 800),
-                        ) + scaleIn(
-                            initialScale = 0.8f,
-                            animationSpec = tween(durationMillis = 1500),
-                        )
-                    },
+                    exitTransition = { navExitTransitionBuilder() },
+                    enterTransition = { navEnterTransitionBuilder() },
                 ) {
                     homePage()
                     aboutPage()
@@ -67,3 +55,23 @@ fun App() {
         )
     }
 }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.navExitTransitionBuilder(): ExitTransition =
+    slideOutOfContainer(
+        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+        animationSpec = tween(durationMillis = 300),
+    ) + scaleOut(
+        targetScale = 0.9f,
+        transformOrigin = TransformOrigin(0.5f, 1f),
+        animationSpec = tween(durationMillis = 200),
+    )
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.navEnterTransitionBuilder(): EnterTransition =
+    slideIntoContainer(
+        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+        animationSpec = tween(durationMillis = 500),
+    ) + scaleIn(
+        initialScale = 0.9f,
+        transformOrigin = TransformOrigin(0.5f, 1f),
+        animationSpec = tween(durationMillis = 800),
+    )
