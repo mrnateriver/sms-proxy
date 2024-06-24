@@ -61,7 +61,6 @@ private fun PermissionStatusCard(
     error: Boolean = false,
     content: @Composable () -> Unit = {},
 ) {
-
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,

@@ -91,6 +91,7 @@ android {
         implementation(libs.androidx.navigation.compose)
         implementation(libs.google.accompanist)
         implementation(libs.about.libraries)
+        implementation(libs.compose.preferences)
 
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)

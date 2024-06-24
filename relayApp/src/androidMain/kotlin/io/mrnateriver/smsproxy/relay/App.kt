@@ -18,25 +18,27 @@ import io.mrnateriver.smsproxy.shared.AppMaterialTheme
 @Composable
 fun App() {
     AppMaterialTheme {
-        val navController = rememberNavController()
+        AppPreferencesProvider {
+            val navController = rememberNavController()
 
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
 
-        val activePage = AppPages.fromNavDestination(currentDestination)
+            val activePage = AppPages.fromNavDestination(currentDestination)
 
-        AppLayout(
-            title = activePage?.title,
-            isHomePage = isHomePageRoute(currentDestination),
-            onNavigateUpClicked = { navController.navigateUp() },
-            drawerContent = { toggleDrawer ->
-                AppDrawerContents(
-                    activePage = activePage,
-                    onNavigateClick = navigate(toggleDrawer, navController),
-                )
-            },
-            content = { AppNavHost(navController = navController) },
-        )
+            AppLayout(
+                title = activePage?.title,
+                isHomePage = isHomePageRoute(currentDestination),
+                onNavigateUpClicked = { navController.navigateUp() },
+                drawerContent = { toggleDrawer ->
+                    AppDrawerContents(
+                        activePage = activePage,
+                        onNavigateClick = navigate(toggleDrawer, navController),
+                    )
+                },
+                content = { AppNavHost(navController = navController) },
+            )
+        }
     }
 }
 

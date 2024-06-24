@@ -14,6 +14,7 @@ import io.mrnateriver.smsproxy.shared.SmsData
 @Composable
 fun Dashboard(
     modifier: Modifier = Modifier,
+    onGoToSettingsClick: () -> Unit = {},
     smsPermissionsState: PermissionState = PermissionState.UNKNOWN,
     smsStatsData: SmsStatsData = SmsStatsData(),
     smsRecords: List<SmsData> = listOf(),
@@ -23,6 +24,7 @@ fun Dashboard(
         verticalArrangement = Arrangement.spacedBy(AppSpacings.medium),
     ) {
         SmsPermissionsStatus(permissionState = smsPermissionsState)
+        ServerSettingsStatus(onGoToSettingsClick = onGoToSettingsClick)
         SmsStats(data = smsStatsData)
         SmsLastRecords(records = smsRecords)
     }

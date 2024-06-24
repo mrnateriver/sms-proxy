@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
 import io.mrnateriver.smsproxy.relay.permissions.PermissionState
 import io.mrnateriver.smsproxy.relay.permissions.rememberSmsPermissions
+import io.mrnateriver.smsproxy.relay.settings.navigateToSettingsPage
 import io.mrnateriver.smsproxy.shared.SmsData
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -25,7 +26,7 @@ import kotlinx.datetime.toLocalDateTime
 
 const val HomePageRoute = "/"
 
-fun NavGraphBuilder.homePage() {
+fun NavGraphBuilder.homePage(navController: NavController) {
     composable(HomePageRoute) {
         // TODO: move to an initialization service or something
         val receiveSmsPermissionResult = rememberSmsPermissions()
@@ -74,6 +75,7 @@ fun NavGraphBuilder.homePage() {
             smsPermissionsState = receiveSmsPermissionResult,
             smsStatsData = smsStatsData,
             smsRecords = smsRecords,
+            onGoToSettingsClick = { navController.navigateToSettingsPage() },
         )
     }
 }
@@ -88,6 +90,7 @@ fun isHomePageRoute(dest: NavDestination?): Boolean = dest?.route == HomePageRou
 @Composable
 fun HomePage(
     modifier: Modifier = Modifier,
+    onGoToSettingsClick: () -> Unit = {},
     smsPermissionsState: PermissionState = PermissionState.UNKNOWN,
     smsStatsData: SmsStatsData = SmsStatsData(),
     smsRecords: List<SmsData> = listOf(),
@@ -101,6 +104,7 @@ fun HomePage(
             smsPermissionsState = smsPermissionsState,
             smsStatsData = smsStatsData,
             smsRecords = smsRecords,
+            onGoToSettingsClick = onGoToSettingsClick,
         )
     }
 }

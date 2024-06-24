@@ -28,7 +28,7 @@ fun AppNavHost(modifier: Modifier = Modifier, navController: NavHostController) 
         popEnterTransition = { navPopEnterTransitionBuilder() },
         popExitTransition = { navPopExitTransitionBuilder() },
     ) {
-        homePage()
+        homePage(navController)
         aboutPage(navController)
         settingsPage()
     }

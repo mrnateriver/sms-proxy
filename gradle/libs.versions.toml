@@ -12,6 +12,7 @@ androidx-junit = "1.1.5"
 androidx-navigationCompose = "2.7.7"
 google-accompanist = "0.35.1-alpha"
 about-libraries = "11.2.1"
+compose-preferences = "1.0.0"
 junit = "4.13.2"
 android-compileSdk = "34"
 android-minSdk = "26"
@@ -21,16 +22,13 @@ logback = "1.5.6"
 kotlinx-datetime = "0.6.0"
 
 [libraries]
-# Runtime: Android Core
+# Runtime: Android
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
 androidx-compat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "androidx-core" }
-about-libraries = { group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "about-libraries" }
-
-# Runtime: Android Compose
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -40,6 +38,8 @@ androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigationCompose" }
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "google-accompanist" }
+about-libraries = { group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "about-libraries" }
+compose-preferences = { group = "me.zhanghai.compose.preference", name = "library", version.ref = "compose-preferences" }
 
 # Testing
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espressoCore" }
