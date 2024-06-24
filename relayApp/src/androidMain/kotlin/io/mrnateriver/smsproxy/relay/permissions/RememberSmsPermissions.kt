@@ -3,6 +3,7 @@ package io.mrnateriver.smsproxy.relay.permissions
 import android.Manifest
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,22 +23,23 @@ enum class PermissionState {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun rememberSmsPermissions(): PermissionState {
-    var result by remember { mutableStateOf(PermissionState.UNKNOWN) }
+    var gotUserResponse by remember { mutableStateOf(false) }
     val state = rememberMultiplePermissionsState(
         permissions = listOf(
             PERMISSION_RECEIVE_SMS,
-            PERMISSION_READ_SMS
+            PERMISSION_READ_SMS,
         )
-    ) { userSelection ->
-        result = when {
-            userSelection.values.all { it } -> PermissionState.GRANTED
-            else -> PermissionState.DENIED
-        }
-    }
+    ) { gotUserResponse = true }
 
     LaunchedEffect(Unit) {
         state.launchMultiplePermissionRequest()
     }
 
-    return result
+    return derivedStateOf {
+        when {
+            !gotUserResponse -> PermissionState.UNKNOWN
+            state.allPermissionsGranted -> PermissionState.GRANTED
+            else -> PermissionState.DENIED
+        }
+    }.value
 }
