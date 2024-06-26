@@ -9,10 +9,19 @@ import androidx.activity.enableEdgeToEdge
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
             App()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        enableEdgeToEdge()
+    }
+
+    private fun enableEdgeToEdge() {
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
     }
 }
