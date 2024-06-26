@@ -14,6 +14,7 @@ import io.mrnateriver.smsproxy.shared.AppSpacings
 
 @Composable
 fun ServerSettingsStatus(modifier: Modifier = Modifier, onGoToSettingsClick: () -> Unit = {}) {
+    // TODO: refactor into a reusable card along with ServerSettingsWarningCard
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
