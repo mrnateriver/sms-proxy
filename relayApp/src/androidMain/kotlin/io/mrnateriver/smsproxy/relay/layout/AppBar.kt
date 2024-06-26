@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay.layout
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Menu
@@ -12,10 +13,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
+
+@Composable
+fun rememberRootBackgroundColor(): Color {
+    return if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceContainerLowest else MaterialTheme.colorScheme.primary
+}
 
 @Preview
 @Composable
@@ -26,12 +33,15 @@ fun AppBar(
     isHomePage: Boolean = true,
     onMenuButtonClick: () -> Unit = {},
 ) {
+    val contentColor = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimary
+    val containerColor = rememberRootBackgroundColor()
+
     val colors = TopAppBarColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        scrolledContainerColor = MaterialTheme.colorScheme.primary,
-        actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-        titleContentColor = MaterialTheme.colorScheme.onPrimary,
-        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+        containerColor = containerColor,
+        scrolledContainerColor = containerColor,
+        actionIconContentColor = contentColor,
+        titleContentColor = contentColor,
+        navigationIconContentColor = contentColor,
     )
 
     TopAppBar(

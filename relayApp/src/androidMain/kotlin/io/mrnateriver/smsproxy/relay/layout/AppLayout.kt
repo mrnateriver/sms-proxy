@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay.layout
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,9 +36,10 @@ fun AppLayout(
             }
         }
 
+        val containerColor = rememberRootBackgroundColor()
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = containerColor,
             topBar = {
                 AppBar(
                     title = title,
