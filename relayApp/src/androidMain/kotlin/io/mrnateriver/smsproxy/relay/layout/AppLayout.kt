@@ -1,17 +1,20 @@
 package io.mrnateriver.smsproxy.relay.layout
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
+import io.mrnateriver.smsproxy.relay.layout.appbar.AppBar
+import io.mrnateriver.smsproxy.relay.layout.appbar.rememberRootBackgroundColor
 import io.mrnateriver.smsproxy.relay.layout.drawer.AppDrawer
 
 @Preview
@@ -43,8 +46,8 @@ fun AppLayout(
             topBar = {
                 AppBar(
                     title = title,
-                    isHomePage = isHomePage,
-                    onMenuButtonClick = buttonClick,
+                    navigationIconImageVector = if (isHomePage) Icons.Outlined.Menu else Icons.AutoMirrored.Outlined.ArrowBack,
+                    onNavigationButtonClick = buttonClick,
                 )
             },
         ) {

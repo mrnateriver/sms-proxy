@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraphBuilder
@@ -17,9 +16,9 @@ import io.mrnateriver.smsproxy.shared.AppSpacings
 
 private const val SettingsPageRoute = "settings"
 
-fun NavGraphBuilder.settingsPage() {
+fun NavGraphBuilder.settingsPage(navController: NavController) {
     composable(SettingsPageRoute) {
-        SettingsPage()
+        SettingsPage(navController)
     }
 }
 
@@ -30,9 +29,10 @@ fun NavController.navigateToSettingsPage(builder: (NavOptionsBuilder.() -> Unit)
 fun isSettingsPageRoute(dest: NavDestination?): Boolean = dest?.route == SettingsPageRoute
 
 
-@Preview
 @Composable
-fun SettingsPage() {
+fun SettingsPage(navController: NavController) {
+    SettingsPageAppBarActions(navController)
+
     AppContentSurface {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             // TODO: check if settings are set

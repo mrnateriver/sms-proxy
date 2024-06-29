@@ -1,6 +1,7 @@
 [versions]
 agp = "8.5.0"
 kotlin = "2.0.0"
+android-desugarJdkLibs = "2.0.4"
 androidx-composeBom = "2024.06.00"
 androidx-lifecycleRuntimeKtx = "2.8.2"
 androidx-activityCompose = "1.9.0"
@@ -37,6 +38,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigationCompose" }
+android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugarJdkLibs" }
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "google-accompanist" }
 about-libraries = { group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "about-libraries" }
 compose-preferences = { group = "me.zhanghai.compose.preference", name = "library", version.ref = "compose-preferences" }

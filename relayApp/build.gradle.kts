@@ -67,6 +67,8 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -75,6 +77,8 @@ android {
         buildConfig = true
     }
     dependencies {
+        coreLibraryDesugaring(libs.android.desugar.jdk.libs)
+
         val composeBom = platform(libs.androidx.compose.bom)
 
         implementation(projects.shared)
