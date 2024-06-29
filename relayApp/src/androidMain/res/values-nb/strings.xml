@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">SMS Videresending</string>
+    <string name="settings_page_app_bar_action_save_tooltip">Lagre innstillinger</string>
+    <string name="settings_page_app_bar_action_save_label">Lagre innstillinger</string>
+    <string name="about_page_entry_author_title">Forfatter</string>
+    <string name="about_page_entry_licenses_title">Åpen kildekode-lisenser</string>
+    <string name="about_page_entry_licenses_text">Lisenser for tredjepartsprogramvare</string>
+    <string name="about_page_entry_version_title">Versjon</string>
+    <string name="home_page_server_settings_card_title">Konfigurer server</string>
+    <string name="home_page_server_settings_card_text">Før denne applikasjonen kan fungere, må du konfigurere tilkoblingsinnstillingene til proxyserveren.</string>
+    <string name="home_page_server_settings_card_button_label">Gå til innstillinger</string>
+    <string name="app_bar_navigation_button_label_drawer">Åpne skuff</string>
+    <string name="app_bar_navigation_button_label_back">Naviger opp</string>
+    <string name="settings_page_entry_server_address_title">Serveradresse</string>
+    <string name="settings_page_entry_server_address_error_empty">Serveradressen kan ikke være tom</string>
+    <string name="settings_page_entry_server_address_error_invalid_format">Ugyldig FQDN eller IPv4-adresse</string>
+    <string name="settings_page_entry_server_address_error_port_range">Ugyldig portnummerområde</string>
+    <string name="settings_page_entry_server_address_error_port_format">Ugyldig portnummer</string>
+    <string name="settings_page_entry_server_address_error_invalid_ipv4">Ugyldig IPv4-adresse</string>
+    <string name="settings_page_entry_recent_messages_title">Vis siste meldinger</string>
+    <string name="settings_page_entry_recent_messages_summary">Vis nylige meldinger på hjemmeskjermen</string>
+    <string name="settings_page_entry_receiver_key_title">Mottaker-nøkkel</string>
+    <string name="settings_page_entry_receiver_key_error_format">Ugyldig mottakernøkkel</string>
+    <string name="settings_page_address_and_key_warning_message">Serveradresse og mottakernøkkel må være satt for å videresende meldinger.</string>
+    <string name="dashboard_stats_title">Statistikk</string>
+    <string name="dashboard_stats_card_title_received">Mottatt</string>
+    <string name="dashboard_stats_card_title_relayed">Videresendt</string>
+    <string name="dashboard_stats_card_title_errors">Feil</string>
+    <string name="dashboard_stats_card_title_failures">Avbryte</string>
+    <string name="dashboard_last_messages_title">Siste meldinger</string>
+    <string name="dashboard_permissions_status_text_pending">Venter på tillatelser…</string>
+    <string name="dashboard_permissions_status_denied_title">Tillatelse nektet</string>
+    <string name="dashboard_permissions_status_denied_text">Vennligst gi de nødvendige tillatelsene for at appen skal fungere.</string>
+    <string name="page_title_settings">Innstillinger</string>
+    <string name="page_title_about">Om</string>
+    <string name="page_title_licenses">Lisenser</string>
+</resources>

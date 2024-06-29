@@ -68,6 +68,10 @@ fun NavGraphBuilder.homePage(navController: NavController) {
                 relayed = 456,
                 errors = 0,
                 failures = 0,
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                null,
             )
         }
 

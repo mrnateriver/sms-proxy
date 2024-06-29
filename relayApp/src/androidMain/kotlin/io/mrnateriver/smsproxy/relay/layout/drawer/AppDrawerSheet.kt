@@ -9,7 +9,9 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.AppSpacings
 
 @Preview
@@ -20,7 +22,7 @@ fun AppDrawerSheet(
 ) {
     ModalDrawerSheet(modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)) {
         Text(
-            "SMS Relay", // TODO: i18n (also take the app's name from manifest or something)
+            stringResource(R.string.app_name),
             modifier = Modifier.padding(AppSpacings.large),
             style = MaterialTheme.typography.headlineSmall,
         )

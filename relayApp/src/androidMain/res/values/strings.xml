@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">SMS Relay</string>
+    <string name="settings_page_app_bar_action_save_tooltip">Save Settings</string>
+    <string name="settings_page_app_bar_action_save_label">Save Settings</string>
+    <string name="about_page_entry_author_title">Author</string>
+    <string name="about_page_entry_licenses_title">Open Source Licenses</string>
+    <string name="about_page_entry_licenses_text">Third-party software licenses</string>
+    <string name="about_page_entry_version_title">Version</string>
+    <string name="home_page_server_settings_card_title">Configure Server</string>
+    <string name="home_page_server_settings_card_text">Before this application can function, you need to configure the connection settings to the proxy server.</string>
+    <string name="home_page_server_settings_card_button_label">Go to Settings</string>
+    <string name="app_bar_navigation_button_label_drawer">Open Drawer</string>
+    <string name="app_bar_navigation_button_label_back">Navigate Up</string>
+    <string name="settings_page_entry_server_address_title">Server Address</string>
+    <string name="settings_page_entry_server_address_error_empty">Server address must not be empty</string>
+    <string name="settings_page_entry_server_address_error_invalid_format">Invalid FQDN or IPv4 address</string>
+    <string name="settings_page_entry_server_address_error_port_range">Invalid port number range</string>
+    <string name="settings_page_entry_server_address_error_port_format">Invalid port number</string>
+    <string name="settings_page_entry_server_address_error_invalid_ipv4">Invalid IPv4 address</string>
+    <string name="settings_page_entry_recent_messages_title">Show Last Messages</string>
+    <string name="settings_page_entry_recent_messages_summary">Show recent messages on the home screen</string>
+    <string name="settings_page_entry_receiver_key_title">Receiver Key</string>
+    <string name="settings_page_entry_receiver_key_error_format">Invalid receiver key</string>
+    <string name="settings_page_address_and_key_warning_message">Server address and receiver key must be set for proxying messages.</string>
+    <string name="dashboard_stats_title">Statistics</string>
+    <string name="dashboard_stats_card_title_received">Received</string>
+    <string name="dashboard_stats_card_title_relayed">Relayed</string>
+    <string name="dashboard_stats_card_title_errors">Errors</string>
+    <string name="dashboard_stats_card_title_failures">Failures</string>
+    <string name="dashboard_last_messages_title">Last Messages</string>
+    <string name="dashboard_permissions_status_text_pending">Waiting for permissions…</string>
+    <string name="dashboard_permissions_status_denied_title">Permission Denied</string>
+    <string name="dashboard_permissions_status_denied_text">Please grant the necessary permissions for the app to function.</string>
+    <string name="page_title_settings">Settings</string>
+    <string name="page_title_about">About</string>
+    <string name="page_title_licenses">Licenses</string>
 </resources>

@@ -2,6 +2,7 @@ package io.mrnateriver.smsproxy.relay
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -27,7 +28,7 @@ fun App() {
             val activePage = AppPages.fromNavDestination(currentDestination)
 
             AppLayout(
-                title = activePage?.title,
+                title = stringResource(activePage?.titleResId ?: R.string.app_name),
                 isHomePage = isHomePageRoute(currentDestination),
                 onNavigateUpClicked = { navController.navigateUp() },
                 drawerContent = { toggleDrawer ->

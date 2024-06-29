@@ -32,6 +32,7 @@ fun rememberRootBackgroundColor(): Color {
 fun AppBar(
     modifier: Modifier = Modifier,
     title: String? = null,
+    navigationIconContentDescription: String? = null,
     navigationIconImageVector: ImageVector = Icons.Outlined.Menu,
     onNavigationButtonClick: () -> Unit = {},
 ) {
@@ -56,11 +57,11 @@ fun AppBar(
             IconButton(onClick = onNavigationButtonClick) {
                 Icon(
                     imageVector = navigationIconImageVector,
-                    contentDescription = "", // TODO: desc + i18n
+                    contentDescription = navigationIconContentDescription,
                 )
             }
         },
-        title = { Text(text = title ?: stringResource(id = R.string.app_name)) },
+        title = { Text(text = title ?: stringResource(R.string.app_name)) },
         actions = actions,
     )
 }

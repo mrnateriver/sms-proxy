@@ -1,6 +1,7 @@
 package io.mrnateriver.smsproxy.relay.layout.drawer
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.layout.AppPages
 
@@ -13,7 +14,7 @@ fun AppDrawerContents(
     for (page in listOf(AppPages.SETTINGS, AppPages.ABOUT)) {
         AppDrawerEntry(
             icon = page.icon,
-            label = page.title,
+            label = stringResource(page.titleResId),
             selected = page == activePage,
             onClick = { onNavigateClick(page) },
         )

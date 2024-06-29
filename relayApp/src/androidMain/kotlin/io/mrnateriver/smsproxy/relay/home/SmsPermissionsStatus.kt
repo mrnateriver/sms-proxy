@@ -13,8 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.permissions.PermissionState
 import io.mrnateriver.smsproxy.shared.AppSpacings
 
@@ -34,7 +36,7 @@ fun SmsPermissionsStatus(
                 CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
 
                 Text(
-                    text = "Requesting permissions...", // TODO: proper text + i18n
+                    text = stringResource(R.string.dashboard_permissions_status_text_pending),
                     style = MaterialTheme.typography.titleSmall,
                 )
             }
@@ -45,10 +47,11 @@ fun SmsPermissionsStatus(
                 modifier = Modifier.padding(AppSpacings.medium),
                 verticalArrangement = Arrangement.spacedBy(AppSpacings.small),
             ) {
-                // TODO: i18n
-                Text(text = "Permission denied", style = MaterialTheme.typography.titleMedium)
-                // TODO: proper text + i18n
-                Text(text = "Please grant the necessary permissions for the app to function.")
+                Text(
+                    text = stringResource(R.string.dashboard_permissions_status_denied_title),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(text = stringResource(R.string.dashboard_permissions_status_denied_text))
             }
         }
     }

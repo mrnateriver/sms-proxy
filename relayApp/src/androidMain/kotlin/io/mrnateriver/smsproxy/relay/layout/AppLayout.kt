@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.layout.appbar.AppBar
 import io.mrnateriver.smsproxy.relay.layout.appbar.rememberRootBackgroundColor
 import io.mrnateriver.smsproxy.relay.layout.drawer.AppDrawer
@@ -48,6 +50,9 @@ fun AppLayout(
                     title = title,
                     navigationIconImageVector = if (isHomePage) Icons.Outlined.Menu else Icons.AutoMirrored.Outlined.ArrowBack,
                     onNavigationButtonClick = buttonClick,
+                    navigationIconContentDescription =
+                    if (isHomePage) stringResource(R.string.app_bar_navigation_button_label_drawer)
+                    else stringResource(R.string.app_bar_navigation_button_label_back),
                 )
             },
         ) {

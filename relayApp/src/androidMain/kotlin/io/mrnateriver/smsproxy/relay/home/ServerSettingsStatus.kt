@@ -10,6 +10,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.AppSpacings
 
 @Composable
@@ -25,13 +27,13 @@ fun ServerSettingsStatus(modifier: Modifier = Modifier, onGoToSettingsClick: () 
             modifier = Modifier.padding(AppSpacings.medium),
             verticalArrangement = Arrangement.spacedBy(AppSpacings.medium),
         ) {
-            // TODO: i18n
-            Text(text = "Configure Server", style = MaterialTheme.typography.titleMedium)
-            // TODO: proper text + i18n
-            Text(text = "Configure the server settings to connect to the SMS Proxy server.")
+            Text(
+                text = stringResource(R.string.home_page_server_settings_card_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(text = stringResource(R.string.home_page_server_settings_card_text))
             Button(onClick = onGoToSettingsClick) {
-                // TODO: i18n
-                Text(text = "Go to Settings")
+                Text(text = stringResource(R.string.home_page_server_settings_card_button_label))
             }
         }
     }

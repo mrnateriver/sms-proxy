@@ -10,6 +10,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.mrnateriver.smsproxy.relay.BuildConfig
@@ -23,7 +24,7 @@ fun AboutAuthorItem(modifier: Modifier = Modifier) {
 
     AboutListItem(
         text = authorWebPageUrl,
-        title = "Author", // TODO: i18n
+        title = stringResource(R.string.about_page_entry_author_title),
         image = {
             Image(
                 painter = painterResource(id = R.drawable.gh_avatar),

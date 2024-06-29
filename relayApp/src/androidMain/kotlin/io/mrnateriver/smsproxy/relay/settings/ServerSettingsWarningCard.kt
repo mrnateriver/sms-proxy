@@ -12,6 +12,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.AppSpacings
 
 @Composable
@@ -28,8 +30,7 @@ fun ServerSettingsWarningCard(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium),
         ) {
             Icon(imageVector = Icons.Outlined.Info, contentDescription = null)
-            // TODO: proper text + i18n
-            Text(text = "Server address and receiver key must be set for proxying messages.")
+            Text(text = stringResource(R.string.settings_page_address_and_key_warning_message))
         }
     }
 }

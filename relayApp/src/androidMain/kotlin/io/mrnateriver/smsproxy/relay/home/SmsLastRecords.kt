@@ -11,7 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.AppSpacings
 import io.mrnateriver.smsproxy.shared.SmsData
 import kotlinx.datetime.Clock
@@ -29,7 +31,7 @@ fun SmsLastRecords(modifier: Modifier = Modifier, records: List<SmsData> = previ
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)) {
         Text(
             modifier = Modifier.padding(start = AppSpacings.medium),
-            text = "Last messages", // TODO: i18n
+            text = stringResource(R.string.dashboard_last_messages_title),
             style = MaterialTheme.typography.headlineMedium,
         )
         records.forEach { record ->

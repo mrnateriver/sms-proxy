@@ -10,12 +10,22 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.AppSpacings
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Stable
 data class SmsStatsData(
@@ -23,18 +33,41 @@ data class SmsStatsData(
     val relayed: Int = 0,
     val errors: Int = 0,
     val failures: Int = 0,
+    val lastReceivedAt: LocalDateTime? = null,
+    val lastRelayedAt: LocalDateTime? = null,
+    val lastErrorAt: LocalDateTime? = null,
+    val lastFailureAt: LocalDateTime? = null,
 )
 
 @Preview
 @Composable
-fun SmsStats(modifier: Modifier = Modifier, data: SmsStatsData = SmsStatsData(123, 456, 42, 0)) {
+fun SmsStats(
+    modifier: Modifier = Modifier,
+    // TODO: move this to a preview definition
+    data: SmsStatsData = SmsStatsData(
+        123,
+        456,
+        42,
+        0,
+        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        null
+    ),
+) {
+    val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
+
+    fun formatDate(date: LocalDateTime?): String {
+        return date?.let { dateFormatter.format(it.toJavaLocalDateTime()) } ?: ""
+    }
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)
     ) {
         Text(
             modifier = Modifier.padding(start = AppSpacings.medium),
-            text = "Statistics", // TODO: i18n
+            text = stringResource(R.string.dashboard_stats_title),
             style = MaterialTheme.typography.headlineMedium,
         )
 
@@ -44,13 +77,15 @@ fun SmsStats(modifier: Modifier = Modifier, data: SmsStatsData = SmsStatsData(12
         ) {
             StatsCard(
                 modifier = Modifier.weight(1f),
-                title = "Received", // TODO: i18n
-                value = data.received.toString()
+                title = stringResource(R.string.dashboard_stats_card_title_received),
+                value = data.received.toString(),
+                lastEvent = formatDate(data.lastReceivedAt),
             )
             StatsCard(
                 modifier = Modifier.weight(1f),
-                title = "Relayed",  // TODO: i18n
-                value = data.relayed.toString()
+                title = stringResource(R.string.dashboard_stats_card_title_relayed),
+                value = data.relayed.toString(),
+                lastEvent = formatDate(data.lastRelayedAt),
             )
         }
 
@@ -60,14 +95,16 @@ fun SmsStats(modifier: Modifier = Modifier, data: SmsStatsData = SmsStatsData(12
         ) {
             StatsCard(
                 modifier = Modifier.weight(1f),
-                title = "Errors", // TODO: i18n
+                title = stringResource(R.string.dashboard_stats_card_title_errors),
                 value = data.errors.toString(),
+                lastEvent = formatDate(data.lastErrorAt),
                 textColor = MaterialTheme.colorScheme.error,
             )
             StatsCard(
                 modifier = Modifier.weight(1f),
-                title = "Failures", // TODO: i18n
+                title = stringResource(R.string.dashboard_stats_card_title_failures),
                 value = data.failures.toString(),
+                lastEvent = formatDate(data.lastFailureAt),
                 textColor = MaterialTheme.colorScheme.error,
             )
         }
