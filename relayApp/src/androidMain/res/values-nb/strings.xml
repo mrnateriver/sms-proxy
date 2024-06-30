@@ -34,4 +34,6 @@
     <string name="page_title_settings">Innstillinger</string>
     <string name="page_title_about">Om</string>
     <string name="page_title_licenses">Lisenser</string>
+    <string name="home_page_invalid_api_key_card_title">Ugyldig API-nøkkel</string>
+    <string name="home_page_invalid_api_key_card_text">Applikasjonen ble bygget med en tom eller ugyldig API-nøkkel. API-nøkkel er nødvendig for å videresende meldinger.</string>
 </resources>

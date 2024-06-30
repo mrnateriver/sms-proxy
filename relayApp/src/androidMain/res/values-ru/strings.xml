@@ -35,4 +35,6 @@
     <string name="page_title_settings">Настройки</string>
     <string name="page_title_about">О приложении</string>
     <string name="page_title_licenses">Лицензии</string>
+    <string name="home_page_invalid_api_key_card_title">Некорректный ключ API</string>
+    <string name="home_page_invalid_api_key_card_text">Приложение собрано с пустым или некорректным ключом API. Ключ необходим для ретрансляции сообщений.</string>
 </resources>

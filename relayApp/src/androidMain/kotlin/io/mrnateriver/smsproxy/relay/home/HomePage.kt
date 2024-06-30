@@ -75,7 +75,11 @@ fun NavGraphBuilder.homePage(navController: NavController) {
             )
         }
 
+        // TODO: check buildconfig
+        val showApiKeyError = true
+
         HomePage(
+            showApiKeyError = showApiKeyError,
             smsPermissionsState = receiveSmsPermissionResult,
             smsStatsData = smsStatsData,
             smsRecords = smsRecords,
@@ -95,6 +99,7 @@ fun isHomePageRoute(dest: NavDestination?): Boolean = dest?.route == HomePageRou
 fun HomePage(
     modifier: Modifier = Modifier,
     onGoToSettingsClick: () -> Unit = {},
+    showApiKeyError: Boolean = true,
     smsPermissionsState: PermissionState = PermissionState.UNKNOWN,
     smsStatsData: SmsStatsData = SmsStatsData(),
     smsRecords: List<SmsData> = listOf(),
@@ -105,6 +110,7 @@ fun HomePage(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.navigationBars),
+            showApiKeyError = showApiKeyError,
             smsPermissionsState = smsPermissionsState,
             smsStatsData = smsStatsData,
             smsRecords = smsRecords,

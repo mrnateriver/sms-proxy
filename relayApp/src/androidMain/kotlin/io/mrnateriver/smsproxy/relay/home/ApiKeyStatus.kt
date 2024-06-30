@@ -1,0 +1,37 @@
+package io.mrnateriver.smsproxy.relay.home
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import io.mrnateriver.smsproxy.relay.R
+import io.mrnateriver.smsproxy.shared.AppSpacings
+
+@Composable
+fun ApiKeyStatus(modifier: Modifier = Modifier) {
+    // TODO: refactor into an "ErrorCard" or something
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.errorContainer,
+    ) {
+        Column(
+            modifier = Modifier.padding(AppSpacings.medium),
+            verticalArrangement = Arrangement.spacedBy(AppSpacings.small),
+        ) {
+            Text(
+                text = stringResource(R.string.home_page_invalid_api_key_card_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(R.string.home_page_invalid_api_key_card_text),
+            )
+        }
+    }
+}

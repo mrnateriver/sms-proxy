@@ -42,6 +42,7 @@ fun SmsPermissionsStatus(
             }
         }
     } else if (permissionState == PermissionState.DENIED) {
+        // TODO: refactor into an "ErrorCard" or something
         PermissionStatusCard(error = true) {
             Column(
                 modifier = Modifier.padding(AppSpacings.medium),

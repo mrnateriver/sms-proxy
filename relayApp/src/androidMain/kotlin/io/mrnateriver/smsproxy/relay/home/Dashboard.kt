@@ -15,6 +15,7 @@ import io.mrnateriver.smsproxy.shared.SmsData
 fun Dashboard(
     modifier: Modifier = Modifier,
     onGoToSettingsClick: () -> Unit = {},
+    showApiKeyError: Boolean = true,
     smsPermissionsState: PermissionState = PermissionState.UNKNOWN,
     smsStatsData: SmsStatsData = SmsStatsData(),
     smsRecords: List<SmsData> = listOf(),
@@ -23,6 +24,9 @@ fun Dashboard(
         modifier = modifier.padding(AppSpacings.medium),
         verticalArrangement = Arrangement.spacedBy(AppSpacings.medium),
     ) {
+        if (showApiKeyError) {
+            ApiKeyStatus()
+        }
         SmsPermissionsStatus(permissionState = smsPermissionsState)
         ServerSettingsStatus(onGoToSettingsClick = onGoToSettingsClick)
         SmsStats(data = smsStatsData)
