@@ -2,10 +2,13 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
+    id("kotlin-kapt")
+
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.aboutLibraries)
+    alias(libs.plugins.hilt)
 }
 
 kotlin {
@@ -19,8 +22,6 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
         }
-//        commonMain.dependencies {
-//        }
     }
 }
 
@@ -105,4 +106,13 @@ android {
         debugImplementation(libs.androidx.ui.tooling)
         debugImplementation(libs.androidx.ui.test.manifest)
     }
+}
+
+kapt {
+    correctErrorTypes = true
+}
+
+dependencies {
+    implementation(libs.android.hilt)
+    "kapt"(libs.android.hilt.compiler)
 }

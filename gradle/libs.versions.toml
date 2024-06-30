@@ -21,6 +21,7 @@ android-targetSdk = "34"
 ktor = "2.3.11"
 logback = "1.5.6"
 kotlinx-datetime = "0.6.0"
+hilt = "2.44"
 
 [libraries]
 # Runtime: Android
@@ -42,6 +43,8 @@ android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", vers
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "google-accompanist" }
 about-libraries = { group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "about-libraries" }
 compose-preferences = { group = "me.zhanghai.compose.preference", name = "library", version.ref = "compose-preferences" }
+android-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+android-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 
 # Testing
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espressoCore" }
@@ -72,3 +75,4 @@ kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "about-libraries" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
