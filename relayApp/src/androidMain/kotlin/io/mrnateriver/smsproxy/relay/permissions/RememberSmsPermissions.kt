@@ -35,11 +35,15 @@ fun rememberSmsPermissions(): PermissionState {
         state.launchMultiplePermissionRequest()
     }
 
-    return derivedStateOf {
-        when {
-            !gotUserResponse -> PermissionState.UNKNOWN
-            state.allPermissionsGranted -> PermissionState.GRANTED
-            else -> PermissionState.DENIED
+    val result by remember {
+        derivedStateOf {
+            when {
+                !gotUserResponse -> PermissionState.UNKNOWN
+                state.allPermissionsGranted -> PermissionState.GRANTED
+                else -> PermissionState.DENIED
+            }
         }
-    }.value
+    }
+
+    return result
 }
