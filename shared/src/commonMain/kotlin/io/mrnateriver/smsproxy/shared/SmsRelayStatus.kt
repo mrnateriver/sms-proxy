@@ -5,4 +5,5 @@ enum class SmsRelayStatus {
     IN_PROGRESS,
     SUCCESS,
     ERROR,
+    FAILED;
 }

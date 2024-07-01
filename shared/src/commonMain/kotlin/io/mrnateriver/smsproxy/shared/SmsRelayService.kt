@@ -1,5 +1,5 @@
 package io.mrnateriver.smsproxy.shared
 
 interface SmsRelayService {
-    fun relay(entry: SmsEntry)
+    suspend fun relay(entry: SmsEntry)
 }

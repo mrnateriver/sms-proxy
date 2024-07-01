@@ -7,23 +7,23 @@ import java.util.UUID
 import io.mrnateriver.smsproxy.shared.SmsRepository as SmsRepositoryContract
 
 class SmsRepository : SmsRepositoryContract {
-    override fun save(entry: SmsData): SmsEntry {
+    override suspend fun insert(entry: SmsData): SmsEntry {
         TODO("Not yet implemented")
     }
 
-    override fun updateStatus(id: UUID, status: SmsRelayStatus) {
+    override suspend fun updateStatus(id: UUID, status: SmsRelayStatus) {
         TODO("Not yet implemented")
     }
 
-    override fun getAll(vararg statuses: SmsRelayStatus): List<SmsEntry> {
+    override suspend fun getAll(vararg statuses: SmsRelayStatus): List<SmsEntry> {
         TODO("Not yet implemented")
     }
 
-    override fun getById(id: UUID): SmsEntry? {
+    override suspend fun getById(id: UUID): SmsEntry? {
         TODO("Not yet implemented")
     }
 
-    override fun getCount(): Int {
+    override suspend fun getCount(): Int {
         TODO("Not yet implemented")
     }
 }

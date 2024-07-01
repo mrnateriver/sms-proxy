@@ -1,37 +1,65 @@
 package io.mrnateriver.smsproxy.shared
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.withContext
+import java.util.logging.Level
+
 // TODO: tests
+
+data class SmsProcessingConfig(
+    val maxRetries: UShort,
+)
 
 class SmsProcessingService(
     private val repository: SmsRepository,
     private val relay: SmsRelayService,
-    private val observability: ObservabilityService
+    private val observability: ObservabilityService,
+    private val config: SmsProcessingConfig = SmsProcessingConfig(3u),
 ) {
-    // TODO: logging with observability service
-    // TODO: instrumentation (OTEL)
+    suspend fun process(sms: SmsData): SmsEntry {
+        return observability.runSpan("SmsProcessingService.process") {
+            val entry = repository.insert(sms)
+            processEntry(entry)
 
-    fun process(sms: SmsData): SmsEntry {
-        val entry = repository.save(sms)
-        processEntry(entry)
-        return entry
-    }
-
-    fun handleUnprocessedMessages() {
-        for (sms in repository.getAll(SmsRelayStatus.ERROR, SmsRelayStatus.PENDING)) {
-            processEntry(sms)
+            entry
         }
     }
 
-    private fun processEntry(entry: SmsEntry) {
-        // TODO: coroutines and stuff
-        // TODO: logging
-        try {
-            repository.updateStatus(entry.guid, SmsRelayStatus.IN_PROGRESS)
-            relay.relay(entry)
-            repository.updateStatus(entry.guid, SmsRelayStatus.SUCCESS)
-        } catch (e: Exception) {
-            repository.updateStatus(entry.guid, SmsRelayStatus.ERROR)
+    suspend fun handleUnprocessedMessages(): Unit = coroutineScope {
+        observability.runSpan("SmsProcessingService.handleUnprocessedMessages") {
+            val entries = repository.getAll(SmsRelayStatus.ERROR, SmsRelayStatus.PENDING)
+            observability.log(Level.INFO, "processing ${entries.size} entries")
+
+            val sms = entries.map { async { processEntry(it) } }
+            sms.joinAll()
+
+            // TODO: return processing stats - success, errors and failures
         }
     }
 
+    private suspend fun processEntry(entry: SmsEntry) = withContext(Dispatchers.IO) {
+        observability.runSpan("SmsProcessingService.processEntry") {
+            try {
+                val retries = entry.sendRetries
+                if (retries >= config.maxRetries) {
+                    repository.updateStatus(entry.guid, SmsRelayStatus.FAILED)
+                    return@runSpan
+                }
+
+                // TODO: logging
+                // TODO: update number of retries **with the same call**
+
+                repository.updateStatus(entry.guid, SmsRelayStatus.IN_PROGRESS)
+
+                relay.relay(entry)
+
+                repository.updateStatus(entry.guid, SmsRelayStatus.SUCCESS)
+            } catch (e: Exception) {
+                repository.updateStatus(entry.guid, SmsRelayStatus.ERROR)
+            }
+        }
+    }
 }
