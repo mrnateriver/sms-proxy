@@ -11,7 +11,11 @@ class SmsRepository : SmsRepositoryContract {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateStatus(id: UUID, status: SmsRelayStatus) {
+    override suspend fun startProgress(id: UUID): SmsEntry {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateStatus(id: UUID, status: SmsRelayStatus, reason: String?): SmsEntry {
         TODO("Not yet implemented")
     }
 
