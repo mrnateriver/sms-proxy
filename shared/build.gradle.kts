@@ -23,6 +23,16 @@ kotlin {
         commonMain.dependencies {
             api(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines)
+
+            // We need Compose for the androidMain source set, but we can't apply the compose compiler plugin
+            // only to a specific source set; as a result, we need to include the runtime for effectively all
+            // source sets
+            compileOnly(libs.androidx.ui.runtime)
+        }
+        commonTest.dependencies {
+            implementation(libs.junit)
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlin.test.junit)
         }
     }
 }
@@ -39,7 +49,6 @@ android {
     }
     dependencies {
         implementation(platform(libs.androidx.compose.bom))
-        implementation(libs.androidx.core)
         implementation(libs.androidx.material3)
         implementation(libs.androidx.ui.text.google.fonts)
     }

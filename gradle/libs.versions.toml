@@ -3,13 +3,14 @@ agp = "8.5.0"
 kotlin = "2.0.0"
 android-desugarJdkLibs = "2.0.4"
 androidx-composeBom = "2024.06.00"
-androidx-lifecycleRuntimeKtx = "2.8.2"
+androidx-lifecycleRuntimeKtx = "2.8.3"
 androidx-activityCompose = "1.9.0"
+androidx-composeRuntime = "1.6.8"
 androidx-appcompat = "1.7.0"
-androidx-espressoCore = "3.5.1"
+androidx-espressoCore = "3.6.1"
 androidx-coreKtx = "1.13.1"
 androidx-core = "1.13.1"
-androidx-junit = "1.1.5"
+androidx-junit = "1.2.1"
 androidx-navigationCompose = "2.7.7"
 google-accompanist = "0.35.1-alpha"
 about-libraries = "11.2.1"
@@ -33,6 +34,7 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-compat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "androidx-core" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidx-composeRuntime" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
