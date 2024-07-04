@@ -33,6 +33,8 @@ kotlin {
             implementation(libs.junit)
             implementation(libs.kotlin.test)
             implementation(libs.kotlin.test.junit)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.mockito.kotlin)
         }
     }
 }
