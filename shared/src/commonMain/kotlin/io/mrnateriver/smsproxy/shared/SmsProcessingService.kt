@@ -35,7 +35,9 @@ class SmsProcessingService(
             val entry = repository.insert(sms)
             processEntry(entry)
 
-            entry
+            // Entry might have been updated during processing, so we need to fetch it again
+            repository.getById(entry.guid)
+                ?: throw IllegalStateException("entry not found after processing")
         }
     }
 
@@ -101,7 +103,7 @@ class SmsProcessingService(
 
     private suspend fun startProcessing(entry: SmsEntry) {
         observability.log(Level.INFO, "relaying entry ${entry.guid}")
-        repository.startProgress(entry.guid)
+        repository.incrementRetriesAndStartProgress(entry.guid)
         relay.relay(entry)
     }
 
@@ -120,7 +122,7 @@ class SmsProcessingService(
         val retries = entry.sendRetries
         if (retries >= config.maxRetries) {
             observability.log(Level.WARNING, "entry ${entry.guid} reached max retries")
-            repository.updateStatus(entry.guid, SmsRelayStatus.FAILED)
+            repository.updateStatus(entry.guid, SmsRelayStatus.FAILED, "reached max retries")
             cont()
         }
     }

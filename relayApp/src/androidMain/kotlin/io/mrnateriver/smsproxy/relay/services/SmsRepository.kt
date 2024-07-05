@@ -11,7 +11,7 @@ class SmsRepository : SmsRepositoryContract {
         TODO("Not yet implemented")
     }
 
-    override suspend fun startProgress(id: UUID): SmsEntry {
+    override suspend fun incrementRetriesAndStartProgress(id: UUID): SmsEntry {
         TODO("Not yet implemented")
     }
 
