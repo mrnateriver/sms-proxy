@@ -10,17 +10,9 @@ import java.util.logging.Level
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-// TODO: tests
-
 data class SmsProcessingConfig(
     val maxRetries: UShort,
     val timeout: Duration = 30.seconds,
-)
-
-data class SmsProcessingStats(
-    val success: Int,
-    val errors: Int,
-    val failures: Int,
 )
 
 class SmsProcessingService(
@@ -34,14 +26,10 @@ class SmsProcessingService(
         return observability.runSpan("SmsProcessingService.process") {
             val entry = repository.insert(sms)
             processEntry(entry)
-
-            // Entry might have been updated during processing, so we need to fetch it again
-            repository.getById(entry.guid)
-                ?: throw IllegalStateException("entry not found after processing")
         }
     }
 
-    suspend fun handleUnprocessedMessages(): SmsProcessingStats = coroutineScope {
+    suspend fun handleUnprocessedMessages(): Iterable<SmsEntry> = coroutineScope {
         observability.runSpan("SmsProcessingService.handleUnprocessedMessages") {
             val entries = repository.getAll(
                 SmsRelayStatus.ERROR,
@@ -50,33 +38,17 @@ class SmsProcessingService(
             )
             observability.log(Level.INFO, "processing ${entries.size} entries")
 
-            var success = 0
-            var errors = 0
-            var failures = 0
-            for (it in entries.map { async { processEntry(it) } }.awaitAll()) {
-                when (it) {
-                    SmsRelayStatus.SUCCESS -> success++
-                    SmsRelayStatus.ERROR -> errors++
-                    SmsRelayStatus.FAILED -> failures++
-                    else -> Unit
-                }
-            }
-
-            SmsProcessingStats(success, errors, failures)
+            entries.map { async { processEntry(it) } }.awaitAll()
         }
     }
 
-    private suspend fun processEntry(entry: SmsEntry): SmsRelayStatus =
+    private suspend fun processEntry(entry: SmsEntry): SmsEntry =
         withContext(Dispatchers.IO) {
             observability.runSpan("SmsProcessingService.processEntry") {
                 try {
-                    checkTimeout(entry) {
-                        return@runSpan SmsRelayStatus.IN_PROGRESS
-                    }
-
-                    checkRetries(entry) {
-                        return@runSpan SmsRelayStatus.FAILED
-                    }
+                    checkStatus(entry) { return@runSpan it }
+                    checkTimeout(entry) { return@runSpan it }
+                    checkRetries(entry) { return@runSpan it }
 
                     startProcessing(entry)
 
@@ -87,43 +59,61 @@ class SmsProcessingService(
             }
         }
 
-    private suspend fun recordProcessingSuccess(entry: SmsEntry): SmsRelayStatus {
-        repository.updateStatus(entry.guid, SmsRelayStatus.SUCCESS)
-        return SmsRelayStatus.SUCCESS
+    private suspend fun recordProcessingSuccess(entry: SmsEntry): SmsEntry {
+        return repository.update(entry.copy(sendStatus = SmsRelayStatus.SUCCESS))
     }
 
     private suspend fun recordProcessingError(
         entry: SmsEntry,
         e: Exception,
-    ): SmsRelayStatus {
+    ): SmsEntry {
         observability.log(Level.WARNING, "failed to process entry ${entry.guid}: $e")
-        repository.updateStatus(entry.guid, SmsRelayStatus.ERROR, e.toString())
-        return SmsRelayStatus.ERROR
+        return repository.update(
+            entry.copy(sendStatus = SmsRelayStatus.ERROR, sendFailureReason = e.toString()),
+        )
     }
 
     private suspend fun startProcessing(entry: SmsEntry) {
         observability.log(Level.INFO, "relaying entry ${entry.guid}")
-        repository.incrementRetriesAndStartProgress(entry.guid)
-        relay.relay(entry)
+        relay.relay(
+            repository.update(
+                entry.copy(
+                    sendStatus = SmsRelayStatus.IN_PROGRESS,
+                    sendRetries = entry.sendRetries.inc()
+                ),
+            ),
+        )
     }
 
-    private inline fun checkTimeout(entry: SmsEntry, cont: () -> Unit) {
+    private inline fun checkStatus(entry: SmsEntry, cont: (entry: SmsEntry) -> Unit) {
+        if (entry.sendStatus == SmsRelayStatus.FAILED || entry.sendStatus == SmsRelayStatus.SUCCESS) {
+            cont(entry)
+        }
+    }
+
+    private inline fun checkTimeout(entry: SmsEntry, cont: (entry: SmsEntry) -> Unit) {
         if (entry.sendStatus == SmsRelayStatus.IN_PROGRESS) {
-            if (entry.updatedAt != null && entry.updatedAt.plus(config.timeout) > clock.now()) {
+            if (entry.updatedAt != null && entry.updatedAt.plus(config.timeout) >= clock.now()) {
                 observability.log(Level.WARNING, "entry ${entry.guid} is stuck in progress")
                 throw IllegalStateException("entry is stuck in progress")
             } else {
-                cont()
+                cont(entry)
             }
         }
     }
 
-    private suspend inline fun checkRetries(entry: SmsEntry, cont: () -> Unit) {
+    private suspend inline fun checkRetries(entry: SmsEntry, cont: (entry: SmsEntry) -> Unit) {
         val retries = entry.sendRetries
         if (retries >= config.maxRetries) {
             observability.log(Level.WARNING, "entry ${entry.guid} reached max retries")
-            repository.updateStatus(entry.guid, SmsRelayStatus.FAILED, "reached max retries")
-            cont()
+            cont(
+                repository.update(
+                    entry.copy(
+                        sendStatus = SmsRelayStatus.FAILED,
+                        sendFailureReason = "Reached max retries",
+                    ),
+                ),
+            )
         }
     }
 }
