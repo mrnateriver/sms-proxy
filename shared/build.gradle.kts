@@ -1,10 +1,12 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask as OpenApiGenerateTask
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.openapi)
 }
 
 kotlin {
@@ -39,8 +41,48 @@ kotlin {
     }
 }
 
+val rootPackage = "io.mrnateriver.smsproxy.shared"
+val proxyApiSpecPath =
+    "${layout.projectDirectory}/src/commonMain/typespec/proxy-api/tsp-output/@typespec/openapi3/openapi.yaml"
+val proxyApiOutputDirBase = "${layout.buildDirectory.get()}/generated"
+
+// TODO: this generates buildable modules; we need either to incorporate those modules into the whole repo, or refactor the codegen to generate source files directly
+
+fun OpenApiGenerateTask.configureCommon(outputDirSuffix: String) {
+    inputSpec = proxyApiSpecPath
+
+    outputDir = "${proxyApiOutputDirBase}/$outputDirSuffix"
+    packageName = rootPackage
+    apiPackage = "$rootPackage.api"
+    modelPackage = "$rootPackage.models"
+
+    configOptions = mapOf("dateLibrary" to "kotlinx-datetime", "interfaceOnly" to "true")
+    skipValidateSpec = false
+    logToStderr = true
+    generateAliasAsModel = false
+    enablePostProcessFile = false
+}
+
+tasks.register<OpenApiGenerateTask>("generateApiServer") {
+    generatorName = "kotlin-server"
+    library = "ktor"
+
+    configureCommon("api-server")
+}
+
+tasks.register<OpenApiGenerateTask>("generateApiClient") {
+    generatorName = "kotlin"
+    library = "jvm-retrofit2"
+
+    configureCommon("api-client")
+}
+
+tasks.register("generateApi") {
+    dependsOn("generateApiServer", "generateApiClient")
+}
+
 android {
-    namespace = "io.mrnateriver.smsproxy.shared"
+    namespace = rootPackage
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
