@@ -1,0 +1,13 @@
+{
+	"plugins": [
+		"./node_modules/@typespec/prettier-plugin-typespec/dist/index.js"
+	],
+	"overrides": [
+		{
+			"files": "*.tsp",
+			"options": {
+				"parser": "typespec"
+			}
+		}
+	]
+}
