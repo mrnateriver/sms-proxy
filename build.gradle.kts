@@ -8,4 +8,6 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.aboutLibraries) apply false
     alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.openapi) apply false
+    alias(libs.plugins.docker) apply false
 }

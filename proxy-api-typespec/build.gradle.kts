@@ -8,10 +8,10 @@ plugins {
     alias(libs.plugins.docker)
 }
 
-val rootPackage = "io.mrnateriver.smsproxy.shared"
+val rootGroupId = "io.mrnateriver.smsproxy"
+val rootPackage = "$rootGroupId.proxy"
 val proxyApiSpecDir = layout.projectDirectory
 val proxyApiSpecPath = proxyApiSpecDir.file("tsp-output/@typespec/openapi3/openapi.yaml")
-val proxyApiOutputDirBase = layout.buildDirectory.dir("generated")
 
 val buildTypeSpecApiGenImageName = "buildTypeSpecApiGenImage"
 val typeSpecApiGenContainerTag = "sms-proxy-api-gen:latest"
@@ -42,32 +42,48 @@ tasks.register<DockerStartContainer>("startTypeSpecApiGenContainer") {
 // TODO: this generates buildable modules; we need either to incorporate those modules into the whole repo, or refactor the codegen to generate source files directly
 
 fun OpenApiGenerateTask.configureCommon(outputDirSuffix: String) {
+    cleanupOutput = true
+
     inputSpec = proxyApiSpecPath.asFile.absolutePath
 
-    outputDir = "${proxyApiOutputDirBase}/$outputDirSuffix"
+    outputDir = rootProject.layout.projectDirectory.dir(outputDirSuffix).asFile.absolutePath
+    groupId = rootGroupId
     packageName = rootPackage
     apiPackage = "$rootPackage.api"
     modelPackage = "$rootPackage.models"
 
-    configOptions = mapOf("dateLibrary" to "kotlinx-datetime", "interfaceOnly" to "true")
+    globalProperties = mapOf(
+        "modelDocs" to "false",
+    )
+    configOptions = mapOf(
+        "dateLibrary" to "kotlinx-datetime",
+        "interfaceOnly" to "true",
+        "omitGradleWrapper" to "true",
+        "omitGradlePluginVersions" to "true",
+        "useSettingsGradle" to "false"
+    )
     skipValidateSpec = false
     logToStderr = true
     generateAliasAsModel = false
     enablePostProcessFile = false
+    generateApiTests = false
+    generateApiDocumentation = false
+    generateModelTests = false
+    generateModelDocumentation = false
 }
 
 tasks.register<OpenApiGenerateTask>("generateApiServer") {
     generatorName = "kotlin-server"
-    library = "ktor"
+    library = "jaxrs-spec"
 
-    configureCommon("api-server")
+    configureCommon("proxy-api-server")
 }
 
 tasks.register<OpenApiGenerateTask>("generateApiClient") {
     generatorName = "kotlin"
     library = "jvm-retrofit2"
 
-    configureCommon("api-client")
+    configureCommon("proxy-api-client")
 }
 
 tasks.register("generateApi") {

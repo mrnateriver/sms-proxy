@@ -83,6 +83,7 @@ android {
         val composeBom = platform(libs.androidx.compose.bom)
 
         implementation(projects.shared)
+        implementation(projects.proxyApiClient)
 
         implementation(libs.androidx.compat)
         implementation(libs.androidx.core.ktx)

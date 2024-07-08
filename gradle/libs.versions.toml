@@ -24,9 +24,13 @@ logback = "1.5.6"
 kotlinx-datetime = "0.6.0"
 kotlinx-coroutines = "1.8.0"
 hilt = "2.44"
+moshiAdapters = "1.15.1"
+moshiKotlin = "1.15.1"
+okhttp-loggingInterceptor = "4.12.0"
 mockito-kotlin = "5.3.1"
 openapi = "7.7.0"
 docker = "9.4.0"
+retrofitVersion = "2.11.0"
 
 [libraries]
 # Runtime: Android
@@ -46,6 +50,12 @@ androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigationCompose" }
 android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugarJdkLibs" }
+moshi-adapters = { module = "com.squareup.moshi:moshi-adapters", version.ref = "moshiAdapters" }
+moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
+okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp-loggingInterceptor" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+retrofit-converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofitVersion" }
+retrofit-converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofitVersion" }
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "google-accompanist" }
 about-libraries = { group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "about-libraries" }
 compose-preferences = { group = "me.zhanghai.compose.preference", name = "library", version.ref = "compose-preferences" }
@@ -65,6 +75,7 @@ ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "k
 ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
 
 # Shared Runtime
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
