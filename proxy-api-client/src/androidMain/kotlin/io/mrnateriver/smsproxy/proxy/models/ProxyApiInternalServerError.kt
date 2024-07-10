@@ -27,7 +27,7 @@ import com.squareup.moshi.JsonClass
  */
 
 
-data class MessageProxyInternalServerError (
+data class ProxyApiInternalServerError (
 
     /* Machine-readable error code. */
     @Json(name = "code")

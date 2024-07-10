@@ -19,11 +19,6 @@ model RegisterRecipientRequest {
 }
 
 @route("/recipients")
-@doc("Service for registering recipients for proxied messages. Uses random API keys for authentication, which are passed as HTTP Bearer tokens.")
-@useAuth(BearerAuth)
-@service({
-  title: "Service for registering recipients",
-})
 namespace Recipients {
   @post
   @route("/register")

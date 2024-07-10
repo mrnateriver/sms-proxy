@@ -25,6 +25,7 @@ import com.squareup.moshi.JsonClass
  *
  * @param code Machine-readable error code.
  * @param message Human-readable explanation of the error.
+ * @param invalidFields 
  */
 
 
@@ -36,7 +37,10 @@ data class MessagesProxy422Response (
 
     /* Human-readable explanation of the error. */
     @Json(name = "message")
-    val message: kotlin.String
+    val message: kotlin.String,
+
+    @Json(name = "invalidFields")
+    val invalidFields: kotlin.collections.List<MessagesProxy422ResponseInvalidFieldsInner>
 
 ) {
 

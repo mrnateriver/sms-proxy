@@ -11,7 +11,8 @@ plugins {
 val rootGroupId = "io.mrnateriver.smsproxy"
 val rootPackage = "$rootGroupId.proxy"
 val proxyApiSpecDir = layout.projectDirectory
-val proxyApiSpecPath = proxyApiSpecDir.file("tsp-output/@typespec/openapi3/openapi.yaml")
+val proxyApiSpecPath =
+    proxyApiSpecDir.file("tsp-output/@typespec/openapi3/openapi.yaml")
 
 val buildTypeSpecApiGenImageName = "buildTypeSpecApiGenImage"
 val typeSpecApiGenContainerTag = "sms-proxy-api-gen:latest"
@@ -38,8 +39,6 @@ tasks.register<DockerStartContainer>("startTypeSpecApiGenContainer") {
     containerId =
         tasks.getByName<DockerCreateContainer>(createTypeSpecApiGenContainerName).containerId
 }
-
-// TODO: this generates buildable modules; we need either to incorporate those modules into the whole repo, or refactor the codegen to generate source files directly
 
 fun OpenApiGenerateTask.configureCommon(
     outputDirSuffix: String,
@@ -81,14 +80,30 @@ fun OpenApiGenerateTask.configureCommon(
     generateModelDocumentation = false
 }
 
+fun Delete.clearCodegenOutput(outputDir: String) {
+    val rootDir = rootProject.layout.projectDirectory
+    delete(fileTree(rootDir.dir(outputDir).dir("src")) { include("**/*") })
+}
+
+val clearServerDirectory = tasks.register<Delete>("clearApiServerOutputDirectory") {
+    clearCodegenOutput("proxy-api-server")
+}
 tasks.register<OpenApiGenerateTask>("generateApiServer") {
+    dependsOn(clearServerDirectory)
+
+    // FIXME: not workable yet
     generatorName = "kotlin-server"
     library = "jaxrs-spec"
 
     configureCommon("proxy-api-server")
 }
 
+val clearClientDirectory = tasks.register<Delete>("clearApiClientOutputDirectory") {
+    clearCodegenOutput("proxy-api-client")
+}
 tasks.register<OpenApiGenerateTask>("generateApiClient") {
+    dependsOn(clearClientDirectory)
+
     generatorName = "kotlin"
     library = "jvm-retrofit2"
 

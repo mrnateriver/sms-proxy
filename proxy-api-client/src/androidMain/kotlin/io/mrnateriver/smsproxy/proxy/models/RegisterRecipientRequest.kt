@@ -23,6 +23,8 @@ import com.squareup.moshi.JsonClass
  * 
  *
  * @param notificationsId Opaque identifier of the recipient in the notification system. For example, device token in Firebase Cloud Messaging.
+ * @param recipientKey Random key of the recipient.
+ * @param publicKey Public key of the recipient for encrypting sent out messages.
  */
 
 
@@ -30,7 +32,15 @@ data class RegisterRecipientRequest (
 
     /* Opaque identifier of the recipient in the notification system. For example, device token in Firebase Cloud Messaging. */
     @Json(name = "notificationsId")
-    val notificationsId: kotlin.String
+    val notificationsId: kotlin.String,
+
+    /* Random key of the recipient. */
+    @Json(name = "recipientKey")
+    val recipientKey: kotlin.String,
+
+    /* Public key of the recipient for encrypting sent out messages. */
+    @Json(name = "publicKey")
+    val publicKey: kotlin.ByteArray
 
 ) {
 

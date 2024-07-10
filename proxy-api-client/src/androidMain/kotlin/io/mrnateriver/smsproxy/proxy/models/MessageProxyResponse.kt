@@ -22,10 +22,15 @@ import com.squareup.moshi.JsonClass
 /**
  * 
  *
+ * @param externalId ID of the message entry in the intermediary system.
  */
 
 
 data class MessageProxyResponse (
+
+    /* ID of the message entry in the intermediary system. */
+    @Json(name = "externalId")
+    val externalId: kotlin.String
 
 ) {
 

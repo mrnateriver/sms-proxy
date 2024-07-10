@@ -13,13 +13,11 @@ src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/infrastructure/ResponseExt.
 src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/infrastructure/Serializer.kt
 src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/infrastructure/URIAdapter.kt
 src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/infrastructure/UUIDAdapter.kt
-src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/MessageProxyInternalServerError.kt
 src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/MessageProxyRequest.kt
 src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/MessageProxyResponse.kt
 src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/MessagesProxy400Response.kt
 src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/MessagesProxy422Response.kt
 src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/MessagesProxy422ResponseInvalidFieldsInner.kt
+src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/ProxyApiInternalServerError.kt
 src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/RecipientTransientParams.kt
-src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/RecipientTransientParamsUpdate.kt
 src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/RegisterRecipientRequest.kt
-src/androidMain/kotlin/io/mrnateriver/smsproxy/proxy/models/RegisterRecipientRequestUpdate.kt

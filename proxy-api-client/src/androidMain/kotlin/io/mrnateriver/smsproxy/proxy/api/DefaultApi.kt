@@ -6,12 +6,12 @@ import retrofit2.Response
 import okhttp3.RequestBody
 import com.squareup.moshi.Json
 
-import io.mrnateriver.smsproxy.proxy.models.MessageProxyInternalServerError
 import io.mrnateriver.smsproxy.proxy.models.MessageProxyRequest
 import io.mrnateriver.smsproxy.proxy.models.MessageProxyResponse
 import io.mrnateriver.smsproxy.proxy.models.MessagesProxy400Response
 import io.mrnateriver.smsproxy.proxy.models.MessagesProxy422Response
-import io.mrnateriver.smsproxy.proxy.models.RecipientTransientParamsUpdate
+import io.mrnateriver.smsproxy.proxy.models.ProxyApiInternalServerError
+import io.mrnateriver.smsproxy.proxy.models.RecipientTransientParams
 import io.mrnateriver.smsproxy.proxy.models.RegisterRecipientRequest
 
 interface DefaultApi {
@@ -61,10 +61,10 @@ interface DefaultApi {
      *  - 503: Service unavailable.
      *
      * @param recipientKey 
-     * @param recipientTransientParamsUpdate 
+     * @param recipientTransientParams 
      * @return [Unit]
      */
     @PATCH("recipients/{recipientKey}")
-    suspend fun recipientsUpdate(@Path("recipientKey") recipientKey: kotlin.String, @Body recipientTransientParamsUpdate: RecipientTransientParamsUpdate): Response<Unit>
+    suspend fun recipientsUpdate(@Path("recipientKey") recipientKey: kotlin.String, @Body recipientTransientParams: RecipientTransientParams): Response<Unit>
 
 }

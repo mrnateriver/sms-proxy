@@ -30,7 +30,7 @@ data class RecipientTransientParams (
 
     /* Opaque identifier of the recipient in the notification system. For example, device token in Firebase Cloud Messaging. */
     @Json(name = "notificationsId")
-    val notificationsId: kotlin.String
+    val notificationsId: kotlin.String? = null
 
 ) {
 
