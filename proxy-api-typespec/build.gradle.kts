@@ -65,6 +65,7 @@ fun OpenApiGenerateTask.configureCommon(
         "interfaceOnly" to "true",
         "omitGradleWrapper" to "true",
         "omitGradlePluginVersions" to "true",
+        "generateOneOfAnyOfWrappers" to "true",
         "useSettingsGradle" to "false",
         "useCoroutines" to "true",
     )
