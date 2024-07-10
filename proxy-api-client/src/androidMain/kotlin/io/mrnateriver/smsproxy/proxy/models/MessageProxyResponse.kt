@@ -16,14 +16,17 @@
 package io.mrnateriver.smsproxy.proxy.models
 
 
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+
 /**
- *
+ * 
  *
  */
 
 
-data class MessageProxyResponse(
-    val x: Unit,
+data class MessageProxyResponse (
+
 ) {
 
 

@@ -2,7 +2,7 @@ package io.mrnateriver.smsproxy.proxy.api
 
 import io.mrnateriver.smsproxy.proxy.infrastructure.CollectionFormats.*
 import retrofit2.http.*
-import retrofit2.Call
+import retrofit2.Response
 import okhttp3.RequestBody
 import com.squareup.moshi.Json
 
@@ -27,10 +27,10 @@ interface DefaultApi {
      *  - 503: Service unavailable.
      *
      * @param messageProxyRequest 
-     * @return [Call]<[MessageProxyResponse]>
+     * @return [MessageProxyResponse]
      */
     @POST("messages/proxy")
-    fun messagesProxy(@Body messageProxyRequest: MessageProxyRequest): Call<MessageProxyResponse>
+    suspend fun messagesProxy(@Body messageProxyRequest: MessageProxyRequest): Response<MessageProxyResponse>
 
     /**
      * 
@@ -44,10 +44,10 @@ interface DefaultApi {
      *  - 503: Service unavailable.
      *
      * @param registerRecipientRequest 
-     * @return [Call]<[Unit]>
+     * @return [Unit]
      */
     @POST("recipients/register")
-    fun recipientsRegister(@Body registerRecipientRequest: RegisterRecipientRequest): Call<Unit>
+    suspend fun recipientsRegister(@Body registerRecipientRequest: RegisterRecipientRequest): Response<Unit>
 
     /**
      * 
@@ -62,9 +62,9 @@ interface DefaultApi {
      *
      * @param recipientKey 
      * @param recipientTransientParamsUpdate 
-     * @return [Call]<[Unit]>
+     * @return [Unit]
      */
     @PATCH("recipients/{recipientKey}")
-    fun recipientsUpdate(@Path("recipientKey") recipientKey: kotlin.String, @Body recipientTransientParamsUpdate: RecipientTransientParamsUpdate): Call<Unit>
+    suspend fun recipientsUpdate(@Path("recipientKey") recipientKey: kotlin.String, @Body recipientTransientParamsUpdate: RecipientTransientParamsUpdate): Response<Unit>
 
 }

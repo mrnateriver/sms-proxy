@@ -41,12 +41,14 @@ tasks.register<DockerStartContainer>("startTypeSpecApiGenContainer") {
 
 // TODO: this generates buildable modules; we need either to incorporate those modules into the whole repo, or refactor the codegen to generate source files directly
 
-fun OpenApiGenerateTask.configureCommon(outputDirSuffix: String) {
-    cleanupOutput = true
-
+fun OpenApiGenerateTask.configureCommon(
+    outputDirSuffix: String,
+    sourceFolder: String = "src/main/kotlin",
+) {
     inputSpec = proxyApiSpecPath.asFile.absolutePath
 
     outputDir = rootProject.layout.projectDirectory.dir(outputDirSuffix).asFile.absolutePath
+    ignoreFileOverride = "${outputDir.get()}/.openapi-generator-ignore"
     groupId = rootGroupId
     packageName = rootPackage
     apiPackage = "$rootPackage.api"
@@ -56,12 +58,18 @@ fun OpenApiGenerateTask.configureCommon(outputDirSuffix: String) {
         "modelDocs" to "false",
     )
     configOptions = mapOf(
+        "idea" to "true",
+        "sourceFolder" to sourceFolder,
+        "groupId" to rootGroupId,
         "dateLibrary" to "kotlinx-datetime",
         "interfaceOnly" to "true",
         "omitGradleWrapper" to "true",
         "omitGradlePluginVersions" to "true",
-        "useSettingsGradle" to "false"
+        "useSettingsGradle" to "false",
+        "useCoroutines" to "true",
     )
+
+    cleanupOutput = false
     skipValidateSpec = false
     logToStderr = true
     generateAliasAsModel = false
@@ -83,7 +91,7 @@ tasks.register<OpenApiGenerateTask>("generateApiClient") {
     generatorName = "kotlin"
     library = "jvm-retrofit2"
 
-    configureCommon("proxy-api-client")
+    configureCommon("proxy-api-client", "src/androidMain/kotlin")
 }
 
 tasks.register("generateApi") {
