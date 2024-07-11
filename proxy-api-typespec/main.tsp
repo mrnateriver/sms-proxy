@@ -1,6 +1,6 @@
 import "@typespec/http";
 import "./messages.tsp";
-import "./recipients.tsp";
+import "./receivers.tsp";
 import "./api.tsp";
 
 using TypeSpec.Http;
