@@ -6,8 +6,9 @@ import android.content.Intent
 import android.provider.Telephony
 import android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION
 import android.util.Log
+import dagger.hilt.android.AndroidEntryPoint
 
-//@AndroidEntryPoint
+@AndroidEntryPoint
 class SmsBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.i("SmsBroadcastReceiver.onReceive", intent.toString())

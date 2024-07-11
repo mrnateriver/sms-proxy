@@ -4,9 +4,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.mrnateriver.smsproxy.proxy.api.DefaultApi
-import io.mrnateriver.smsproxy.proxy.auth.HttpBearerAuth
-import io.mrnateriver.smsproxy.proxy.infrastructure.ApiClient
+import io.mrnateriver.smsproxy.api.DefaultApi
+import io.mrnateriver.smsproxy.auth.HttpBearerAuth
+import io.mrnateriver.smsproxy.infrastructure.ApiClient
+import io.mrnateriver.smsproxy.shared.AndroidObservabilityService
+import io.mrnateriver.smsproxy.shared.ObservabilityService
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -20,8 +22,14 @@ class DaggerModule {
     }
 
     @Provides
-    fun providesProxyApiService(): DefaultApi {
-        return providesApiClient().createService(DefaultApi::class.java)
+    fun providesProxyApiService(client: ApiClient): DefaultApi {
+        return client.createService(DefaultApi::class.java)
+    }
+
+    // TODO: perhaps this could be extracted to shared module for use in receiverApp?
+    @Provides
+    fun providesObservabilityService(): ObservabilityService {
+        return AndroidObservabilityService()
     }
 
 }
