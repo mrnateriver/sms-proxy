@@ -2,14 +2,11 @@ package io.mrnateriver.smsproxy.relay
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
-import io.mrnateriver.smsproxy.proxy.api.DefaultApi
-import retrofit2.Retrofit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -17,10 +14,23 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        val rb = Retrofit.Builder().baseUrl("https://whatever.com").build()
-        val svc = rb.create(DefaultApi::class.java)
-
-        Log.d("MainActivity", "RETROFIT2 SERVICE CREATED: $svc")
+//        val client = ApiClient("https://mrnateriver.io").setLogger { Log.d("ApiClient", it) }
+//        val svc = client.createService(DefaultApi::class.java)
+//
+//        runBlocking {
+//            try {
+//                svc.recipientsRegister(
+//                    RegisterRecipientRequest(
+//                        "1234567890",
+//                        "key",
+//                        "value".toByteArray()
+//                    )
+//                )
+//
+//            } catch (e: Exception) {
+//                Log.e("ApiClient", e.message.toString())
+//            }
+//        }
 
         setContent {
             App()

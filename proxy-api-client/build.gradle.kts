@@ -35,7 +35,7 @@ android {
     dependencies {
         implementation(libs.kotlin.reflect)
         implementation(libs.kotlinx.datetime)
-        implementation(libs.moshi.kotlin)
+        api(libs.moshi.kotlin)
         implementation(libs.moshi.adapters)
         implementation(libs.okhttp.loggingInterceptor)
         implementation(libs.retrofit.converter.moshi)
