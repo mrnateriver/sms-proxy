@@ -44,7 +44,7 @@ android {
 
         fun validateNonEmpty(prop: String): String {
             val value = project.properties.get(prop)?.toString()
-            if (value == null || value.trim().isEmpty()) {
+            if (value.isNullOrBlank()) {
                 throw RuntimeException("Project property '$prop' must be non-empty before build.")
             }
             return value

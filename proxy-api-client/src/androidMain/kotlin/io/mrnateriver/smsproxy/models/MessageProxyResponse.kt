@@ -13,7 +13,7 @@
     "UnusedImport"
 )
 
-package io.mrnateriver.smsproxy.proxy.models
+package io.mrnateriver.smsproxy.models
 
 
 import com.squareup.moshi.Json
@@ -22,18 +22,15 @@ import com.squareup.moshi.JsonClass
 /**
  * 
  *
- * @param `field` 
- * @param message 
+ * @param externalId ID of the message entry in the intermediary system.
  */
 
 
-data class MessagesProxy422ResponseInvalidFieldsInner (
+data class MessageProxyResponse (
 
-    @Json(name = "field")
-    val `field`: kotlin.String,
-
-    @Json(name = "message")
-    val message: kotlin.String
+    /* ID of the message entry in the intermediary system. */
+    @Json(name = "externalId")
+    val externalId: kotlin.String
 
 ) {
 

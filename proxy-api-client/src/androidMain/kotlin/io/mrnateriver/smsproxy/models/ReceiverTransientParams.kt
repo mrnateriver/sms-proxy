@@ -13,22 +13,22 @@
     "UnusedImport"
 )
 
-package io.mrnateriver.smsproxy.proxy.models
+package io.mrnateriver.smsproxy.models
 
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * Parameters of a message recipient that can change over time.
+ * Parameters of a message receiver that can change over time.
  *
- * @param notificationsId Opaque identifier of the recipient in the notification system. For example, device token in Firebase Cloud Messaging.
+ * @param notificationsId Opaque identifier of the receiver in the notification system. For example, device token in Firebase Cloud Messaging.
  */
 
 
-data class RecipientTransientParams (
+data class ReceiverTransientParams (
 
-    /* Opaque identifier of the recipient in the notification system. For example, device token in Firebase Cloud Messaging. */
+    /* Opaque identifier of the receiver in the notification system. For example, device token in Firebase Cloud Messaging. */
     @Json(name = "notificationsId")
     val notificationsId: kotlin.String? = null
 

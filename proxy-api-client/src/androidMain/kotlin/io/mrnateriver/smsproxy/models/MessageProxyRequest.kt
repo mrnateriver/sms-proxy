@@ -13,7 +13,7 @@
     "UnusedImport"
 )
 
-package io.mrnateriver.smsproxy.proxy.models
+package io.mrnateriver.smsproxy.models
 
 
 import com.squareup.moshi.Json
@@ -22,7 +22,7 @@ import com.squareup.moshi.JsonClass
 /**
  * 
  *
- * @param recipientKey Random key of the end recipient of the proxied message.
+ * @param receiverKey Random key of the end receiver of the proxied message.
  * @param sender 
  * @param message 
  * @param receivedAt 
@@ -31,9 +31,9 @@ import com.squareup.moshi.JsonClass
 
 data class MessageProxyRequest (
 
-    /* Random key of the end recipient of the proxied message. */
-    @Json(name = "recipientKey")
-    val recipientKey: kotlin.String,
+    /* Random key of the end receiver of the proxied message. */
+    @Json(name = "receiverKey")
+    val receiverKey: kotlin.String,
 
     @Json(name = "sender")
     val sender: kotlin.String,

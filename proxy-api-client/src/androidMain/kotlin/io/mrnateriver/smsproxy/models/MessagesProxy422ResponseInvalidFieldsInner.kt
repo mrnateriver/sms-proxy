@@ -13,27 +13,25 @@
     "UnusedImport"
 )
 
-package io.mrnateriver.smsproxy.proxy.models
+package io.mrnateriver.smsproxy.models
 
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * Unexpected internal server error occurred.
+ * 
  *
- * @param code Machine-readable error code.
- * @param message Human-readable explanation of the error.
+ * @param `field` 
+ * @param message 
  */
 
 
-data class ProxyApiInternalServerError (
+data class MessagesProxy422ResponseInvalidFieldsInner (
 
-    /* Machine-readable error code. */
-    @Json(name = "code")
-    val code: kotlin.Int,
+    @Json(name = "field")
+    val `field`: kotlin.String,
 
-    /* Human-readable explanation of the error. */
     @Json(name = "message")
     val message: kotlin.String
 

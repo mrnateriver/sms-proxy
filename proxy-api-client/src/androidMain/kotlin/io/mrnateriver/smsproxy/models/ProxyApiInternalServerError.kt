@@ -13,23 +13,21 @@
     "UnusedImport"
 )
 
-package io.mrnateriver.smsproxy.proxy.models
+package io.mrnateriver.smsproxy.models
 
-import io.mrnateriver.smsproxy.proxy.models.MessagesProxy422ResponseInvalidFieldsInner
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * Value was formatted properly but contained invalid data.
+ * Unexpected internal server error occurred.
  *
  * @param code Machine-readable error code.
  * @param message Human-readable explanation of the error.
- * @param invalidFields 
  */
 
 
-data class MessagesProxy422Response (
+data class ProxyApiInternalServerError (
 
     /* Machine-readable error code. */
     @Json(name = "code")
@@ -37,10 +35,7 @@ data class MessagesProxy422Response (
 
     /* Human-readable explanation of the error. */
     @Json(name = "message")
-    val message: kotlin.String,
-
-    @Json(name = "invalidFields")
-    val invalidFields: kotlin.collections.List<MessagesProxy422ResponseInvalidFieldsInner>
+    val message: kotlin.String
 
 ) {
 

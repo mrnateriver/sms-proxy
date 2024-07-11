@@ -1,6 +1,6 @@
-package io.mrnateriver.smsproxy.proxy.infrastructure
+package io.mrnateriver.smsproxy.infrastructure
 
-import io.mrnateriver.smsproxy.proxy.auth.HttpBearerAuth
+import io.mrnateriver.smsproxy.auth.HttpBearerAuth
 
 import okhttp3.Call
 import okhttp3.Interceptor
@@ -137,7 +137,7 @@ class ApiClient(
 
     companion object {
         @JvmStatic
-        protected val baseUrlKey = "io.mrnateriver.smsproxy.proxy.baseUrl"
+        protected val baseUrlKey = "io.mrnateriver.smsproxy.baseUrl"
 
         @JvmStatic
         val defaultBasePath: String by lazy {

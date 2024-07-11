@@ -13,7 +13,7 @@
     "UnusedImport"
 )
 
-package io.mrnateriver.smsproxy.proxy.models
+package io.mrnateriver.smsproxy.models
 
 
 import com.squareup.moshi.Json

@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.proxy.auth
+package io.mrnateriver.smsproxy.auth
 
 import java.io.IOException
 

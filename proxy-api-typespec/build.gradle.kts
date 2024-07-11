@@ -9,7 +9,7 @@ plugins {
 }
 
 val rootGroupId = "io.mrnateriver.smsproxy"
-val rootPackage = "$rootGroupId.proxy"
+val rootPackage = rootGroupId
 val proxyApiSpecDir = layout.projectDirectory
 val proxyApiSpecPath =
     proxyApiSpecDir.file("tsp-output/@typespec/openapi3/openapi.yaml")

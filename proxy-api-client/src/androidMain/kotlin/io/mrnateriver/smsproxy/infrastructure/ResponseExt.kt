@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.proxy.infrastructure
+package io.mrnateriver.smsproxy.infrastructure
 
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
