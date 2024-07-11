@@ -1,5 +1,7 @@
+import org.gradle.tooling.BuildException
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.net.URI
 
 plugins {
     id("kotlin-kapt")
@@ -40,21 +42,41 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        fun validateNonEmpty(prop: String): String {
+            val value = project.properties.get(prop)?.toString()
+            if (value == null || value.trim().isEmpty()) {
+                throw RuntimeException("Project property '$prop' must be non-empty before build.")
+            }
+            return value
+        }
+
+        fun validateUrl(prop: String): String {
+            val nonEmptyUrl = validateNonEmpty(prop)
+            try {
+                URI(nonEmptyUrl).toURL()
+            } catch (e: Exception) {
+                throw BuildException(
+                    "Project property '$prop' must be set to a valid URL before build.",
+                    e,
+                )
+            }
+            return nonEmptyUrl
+        }
+
         buildConfigField(
             "String",
             "AUTHOR_WEB_PAGE_URL",
-            "\"${System.getenv("AUTHOR_WEB_PAGE_URL") ?: "https://mrnateriver.io"}\""
+            "\"${validateUrl("io.mrnateriver.smsproxy.authorWebPageUrl")}\"",
         )
         buildConfigField(
             "String",
             "API_BASE_URL",
-            "\"${System.getenv("API_BASE_URL") ?: "https://localhost:3000"}\""
+            "\"${validateUrl("io.mrnateriver.smsproxy.apiBaseUrl")}\""
         )
-        // TODO: show a human-readable error message in UI if the API key is not set
         buildConfigField(
             "String",
             "API_KEY",
-            "\"${System.getenv("API_KEY") ?: ""}\""
+            "\"${validateNonEmpty("io.mrnateriver.smsproxy.apiKey")}\""
         )
     }
     packaging {
