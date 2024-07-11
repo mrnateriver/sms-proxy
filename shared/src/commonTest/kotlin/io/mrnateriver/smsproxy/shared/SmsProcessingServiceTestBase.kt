@@ -2,8 +2,6 @@ package io.mrnateriver.smsproxy.shared
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
@@ -51,7 +49,7 @@ abstract class SmsProcessingServiceTestBase {
     }
 
     protected fun createTestSmsData(clock: Clock = Clock.System) =
-        SmsData("123", clock.now().toLocalDateTime(TimeZone.UTC), "Hello, World!")
+        SmsData("123", clock.now(), "Hello, World!")
 
     protected fun createTestSmsEntry(
         smsData: SmsData,
