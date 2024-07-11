@@ -21,24 +21,23 @@ tasks.register<DockerBuildImage>(buildTypeSpecApiGenImageName) {
     images.add(typeSpecApiGenContainerTag)
 }
 
-val createTypeSpecApiGenContainerName = "createTypeSpecApiGenContainer"
-tasks.register<DockerCreateContainer>(createTypeSpecApiGenContainerName) {
-    dependsOn(buildTypeSpecApiGenImageName)
+val createTypeSpecApiGenContainer =
+    tasks.register<DockerCreateContainer>("createTypeSpecApiGenContainer") {
+        dependsOn(buildTypeSpecApiGenImageName)
 
-    imageId = typeSpecApiGenContainerTag
-    workingDir = "/app"
-    hostConfig.run {
-        autoRemove = true
-        binds.put("$proxyApiSpecDir/tsp-output", "/app/tsp-output")
+        imageId = typeSpecApiGenContainerTag
+        workingDir = "/app"
+        hostConfig.run {
+            autoRemove = true
+            binds.put("$proxyApiSpecDir/tsp-output", "/app/tsp-output")
+        }
     }
-}
 
-tasks.register<DockerStartContainer>("startTypeSpecApiGenContainer") {
-    dependsOn(createTypeSpecApiGenContainerName)
-
-    containerId =
-        tasks.getByName<DockerCreateContainer>(createTypeSpecApiGenContainerName).containerId
-}
+val startTypeSpecApiGenContainer =
+    tasks.register<DockerStartContainer>("startTypeSpecApiGenContainer") {
+        dependsOn(createTypeSpecApiGenContainer)
+        containerId = createTypeSpecApiGenContainer.get().containerId
+    }
 
 fun OpenApiGenerateTask.configureCommon(
     outputDirSuffix: String,
@@ -89,7 +88,7 @@ val clearServerDirectory = tasks.register<Delete>("clearApiServerOutputDirectory
     clearCodegenOutput("proxy-api-server")
 }
 tasks.register<OpenApiGenerateTask>("generateApiServer") {
-    dependsOn(clearServerDirectory)
+    dependsOn(listOf(startTypeSpecApiGenContainer, clearServerDirectory))
 
     // FIXME: not workable yet
     generatorName = "kotlin-server"
@@ -102,7 +101,7 @@ val clearClientDirectory = tasks.register<Delete>("clearApiClientOutputDirectory
     clearCodegenOutput("proxy-api-client")
 }
 tasks.register<OpenApiGenerateTask>("generateApiClient") {
-    dependsOn(clearClientDirectory)
+    dependsOn(listOf(startTypeSpecApiGenContainer, clearServerDirectory))
 
     generatorName = "kotlin"
     library = "jvm-retrofit2"
