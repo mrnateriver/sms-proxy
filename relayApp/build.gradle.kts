@@ -4,13 +4,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URI
 
 plugins {
-    id("kotlin-kapt")
-
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.aboutLibraries)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -91,6 +91,9 @@ android {
         compose = true
         buildConfig = true
     }
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
     dependencies {
         coreLibraryDesugaring(libs.android.desugar.jdk.libs)
 
@@ -112,6 +115,8 @@ android {
         implementation(libs.google.accompanist)
         implementation(libs.about.libraries)
         implementation(libs.compose.preferences)
+        implementation(libs.room.runtime)
+        implementation(libs.room.ktx)
 
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)
@@ -123,11 +128,12 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
+ksp {
+    arg("room.generateKotlin", "true")
 }
 
 dependencies {
     implementation(libs.android.hilt)
-    "kapt"(libs.android.hilt.compiler)
+    ksp(libs.android.hilt.compiler)
+    ksp(libs.room.compiler)
 }

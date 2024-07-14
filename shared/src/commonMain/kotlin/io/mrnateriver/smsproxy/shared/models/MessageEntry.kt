@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class MessageEntry(
     val guid: UUID,
-    val externalId: String,
+    val externalId: String?,
     val sendStatus: MessageRelayStatus,
     val sendRetries: UShort,
     val sendFailureReason: String?,

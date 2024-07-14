@@ -4,7 +4,7 @@ import android.util.Log
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import java.util.logging.Level
 
-// TODO: real observability, for instance Sentry
+// TODO: real observability, for instance Sentry; rename the class to something like "SentryObservabilityService"
 class AndroidObservabilityService : ObservabilityService {
     override fun log(level: Level, message: String) {
         Log.println(mapLogLevel(level), "shared", message)

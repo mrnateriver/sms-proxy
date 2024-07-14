@@ -2,6 +2,7 @@ package io.mrnateriver.smsproxy.relay.services
 
 import android.provider.Telephony
 
+// TODO: implement
 class SmsInboxService {
     fun readTotalSmsCount(): Int {
         return 0

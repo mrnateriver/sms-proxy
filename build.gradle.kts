@@ -12,4 +12,7 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.openapi) apply false
     alias(libs.plugins.docker) apply false
+    alias(libs.plugins.sqldelight) apply false
+    alias(libs.plugins.room) apply false
+    alias(libs.plugins.ksp) apply false
 }

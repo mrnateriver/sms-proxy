@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.shared
+package io.mrnateriver.smsproxy.shared.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -90,7 +90,7 @@ private val darkScheme = darkColorScheme(
 fun AppMaterialTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true, // Dynamic color is available on Android 12+
-    content: @Composable() () -> Unit
+    content: @Composable() () -> Unit,
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {

@@ -13,7 +13,7 @@ import io.mrnateriver.smsproxy.relay.layout.AppLayout
 import io.mrnateriver.smsproxy.relay.layout.AppNavHost
 import io.mrnateriver.smsproxy.relay.layout.AppPages
 import io.mrnateriver.smsproxy.relay.layout.drawer.AppDrawerContents
-import io.mrnateriver.smsproxy.shared.AppMaterialTheme
+import io.mrnateriver.smsproxy.shared.theme.AppMaterialTheme
 
 @Preview
 @Composable

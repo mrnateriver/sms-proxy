@@ -1,0 +1,27 @@
+CREATE TABLE messages (
+    guid UUID PRIMARY KEY NOT NULL,
+    externalId VARCHAR(255),
+    sendStatus VARCHAR(16) AS io.mrnateriver.smsproxy.shared.models.MessageRelayStatus NOT NULL,
+    sendRetries INT NOT NULL,
+    sendFailureReason TEXT,
+    messageData JSON AS io.mrnateriver.smsproxy.shared.models.MessageData NOT NULL,
+    createdAt TIMESTAMPTZ NOT NULL,
+    updatedAt TIMESTAMPTZ NULL
+);
+
+getCount:
+SELECT COUNT(guid) FROM messages;
+
+getAllBySendStatus:
+SELECT guid, externalId, sendStatus, sendRetries, sendFailureReason, messageData, createdAt, updatedAt
+FROM messages
+WHERE sendStatus = ?;
+
+update:
+UPDATE messages
+SET externalId = ?, sendStatus = ?, sendRetries = ?, sendFailureReason = ?, updatedAt = NOW()
+WHERE guid = ?;
+
+insert:
+INSERT INTO messages (guid, externalId, sendStatus, sendRetries, sendFailureReason, messageData, createdAt, updatedAt)
+VALUES (?, NULL, 'PENDING', 0, NULL, ?, NOW(), NULL);

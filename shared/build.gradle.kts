@@ -20,6 +20,8 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
         }
+        jvmMain.dependencies {
+        }
         commonMain.dependencies {
             api(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines)

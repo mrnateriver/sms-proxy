@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.shared.AppSpacings
+import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
 @Composable
 fun ApiKeyStatus(modifier: Modifier = Modifier) {

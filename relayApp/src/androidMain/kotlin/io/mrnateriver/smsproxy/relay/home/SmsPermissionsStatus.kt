@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.permissions.PermissionState
-import io.mrnateriver.smsproxy.shared.AppSpacings
+import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
 @Preview
 @Composable

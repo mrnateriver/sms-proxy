@@ -7,13 +7,17 @@ import dagger.hilt.components.SingletonComponent
 import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.auth.HttpBearerAuth
 import io.mrnateriver.smsproxy.infrastructure.ApiClient
+import io.mrnateriver.smsproxy.relay.services.MessageRelayService
+import io.mrnateriver.smsproxy.relay.services.MessageRepository
 import io.mrnateriver.smsproxy.shared.AndroidObservabilityService
+import io.mrnateriver.smsproxy.shared.MessageProcessingService
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
+import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
+import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
-
     @Provides
     fun providesApiClient(): ApiClient {
         val proxyApiKey = BuildConfig.API_KEY
@@ -26,10 +30,25 @@ class AppModule {
         return client.createService(DefaultApi::class.java)
     }
 
-    // TODO: perhaps this could be extracted to shared module for use in receiverApp?
     @Provides
-    fun providesObservabilityService(): ObservabilityService {
-        return AndroidObservabilityService()
-    }
+    fun providesObservabilityService(): ObservabilityService = AndroidObservabilityService()
 
+    @Provides
+    fun providesMessageRepository(impl: MessageRepository): MessageRepositoryContract = impl
+
+    @Provides
+    fun providesMessageRelayService(impl: MessageRelayService): MessageRelayServiceContract = impl
+
+    @Provides
+    fun providesMessageProcessingService(
+        repository: MessageRepositoryContract,
+        relay: MessageRelayServiceContract,
+        observability: ObservabilityService,
+    ): MessageProcessingService {
+        return MessageProcessingService(
+            repository = repository,
+            relay = relay,
+            observability = observability,
+        )
+    }
 }

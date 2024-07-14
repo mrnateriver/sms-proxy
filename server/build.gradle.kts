@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
+    alias(libs.plugins.sqldelight)
     application
 }
 
@@ -14,9 +15,23 @@ application {
 
 dependencies {
     implementation(projects.shared)
+
     implementation(libs.logback)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
+    implementation(libs.sqldelight.driver.jdbc)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.moshi.adapters)
+
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)
+}
+
+sqldelight {
+    databases {
+        create("MessagesDatabase") {
+            packageName.set("${rootProject.ext.get("basePackageName")}.shared.db")
+            dialect(libs.sqldelight.dialect.postgresql)
+        }
+    }
 }

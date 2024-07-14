@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.shared
+package io.mrnateriver.smsproxy.shared.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp
@@ -18,5 +18,5 @@ data class Spacings(
     val small: Dp,
     val medium: Dp,
     val large: Dp,
-    val extraLarge: Dp
+    val extraLarge: Dp,
 )
