@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.permissions.PermissionState
 import io.mrnateriver.smsproxy.shared.AppSpacings
-import io.mrnateriver.smsproxy.shared.SmsData
+import io.mrnateriver.smsproxy.shared.models.MessageData
 
 @Preview
 @Composable
@@ -18,7 +18,7 @@ fun Dashboard(
     showApiKeyError: Boolean = true,
     smsPermissionsState: PermissionState = PermissionState.UNKNOWN,
     smsStatsData: SmsStatsData = SmsStatsData(),
-    smsRecords: List<SmsData> = listOf(),
+    smsRecords: List<MessageData> = listOf(),
 ) {
     Column(
         modifier = modifier.padding(AppSpacings.medium),

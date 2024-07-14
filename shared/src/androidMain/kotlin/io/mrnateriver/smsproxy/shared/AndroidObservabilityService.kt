@@ -1,6 +1,7 @@
 package io.mrnateriver.smsproxy.shared
 
 import android.util.Log
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import java.util.logging.Level
 
 // TODO: real observability, for instance Sentry

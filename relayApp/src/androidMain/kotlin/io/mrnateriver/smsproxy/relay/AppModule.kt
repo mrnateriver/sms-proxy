@@ -8,7 +8,7 @@ import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.auth.HttpBearerAuth
 import io.mrnateriver.smsproxy.infrastructure.ApiClient
 import io.mrnateriver.smsproxy.shared.AndroidObservabilityService
-import io.mrnateriver.smsproxy.shared.ObservabilityService
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 
 @Module
 @InstallIn(SingletonComponent::class)

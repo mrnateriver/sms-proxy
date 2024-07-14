@@ -15,7 +15,7 @@ val proxyApiSpecPath =
     proxyApiSpecDir.file("tsp-output/@typespec/openapi3/openapi.yaml")
 
 val buildTypeSpecApiGenImageName = "buildTypeSpecApiGenImage"
-val typeSpecApiGenContainerTag = "sms-proxy-api-gen:latest"
+val typeSpecApiGenContainerTag = "${rootGroupId.replace('.', '-')}-api-gen:latest"
 tasks.register<DockerBuildImage>(buildTypeSpecApiGenImageName) {
     inputDir = proxyApiSpecDir
     images.add(typeSpecApiGenContainerTag)

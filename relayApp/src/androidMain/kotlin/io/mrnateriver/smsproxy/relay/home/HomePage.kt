@@ -19,7 +19,7 @@ import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
 import io.mrnateriver.smsproxy.relay.permissions.PermissionState
 import io.mrnateriver.smsproxy.relay.permissions.rememberSmsPermissions
 import io.mrnateriver.smsproxy.relay.settings.navigateToSettingsPage
-import io.mrnateriver.smsproxy.shared.SmsData
+import io.mrnateriver.smsproxy.shared.models.MessageData
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -34,29 +34,25 @@ fun NavGraphBuilder.homePage(navController: NavController) {
         // TODO: use a viewModel probably
         val smsRecords = remember {
             listOf(
-                SmsData(
+                MessageData(
                     sender = "+12223334455",
                     message = "Hello World",
-                    receivedAt = Clock.System.now()
-                        .toLocalDateTime(TimeZone.currentSystemDefault()),
+                    receivedAt = Clock.System.now(),
                 ),
-                SmsData(
+                MessageData(
                     sender = "Hello",
                     message = "General Kenobi",
-                    receivedAt = Clock.System.now()
-                        .toLocalDateTime(TimeZone.currentSystemDefault()),
+                    receivedAt = Clock.System.now(),
                 ),
-                SmsData(
+                MessageData(
                     sender = "+993742732",
                     message = "Test",
-                    receivedAt = Clock.System.now()
-                        .toLocalDateTime(TimeZone.currentSystemDefault()),
+                    receivedAt = Clock.System.now(),
                 ),
-                SmsData(
+                MessageData(
                     sender = "World",
                     message = "How's it going",
-                    receivedAt = Clock.System.now()
-                        .toLocalDateTime(TimeZone.currentSystemDefault()),
+                    receivedAt = Clock.System.now(),
                 ),
             )
         }
@@ -102,7 +98,7 @@ fun HomePage(
     showApiKeyError: Boolean = true,
     smsPermissionsState: PermissionState = PermissionState.UNKNOWN,
     smsStatsData: SmsStatsData = SmsStatsData(),
-    smsRecords: List<SmsData> = listOf(),
+    smsRecords: List<MessageData> = listOf(),
 ) {
     AppContentSurface {
         Dashboard(

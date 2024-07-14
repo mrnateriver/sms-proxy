@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.AppSpacings
-import io.mrnateriver.smsproxy.shared.SmsData
+import io.mrnateriver.smsproxy.shared.models.MessageData
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
@@ -25,7 +25,7 @@ import java.time.format.FormatStyle
 
 @Preview
 @Composable
-fun SmsLastRecords(modifier: Modifier = Modifier, records: List<SmsData> = previewSmsRecords) {
+fun SmsLastRecords(modifier: Modifier = Modifier, records: List<MessageData> = previewSmsRecords) {
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)) {
@@ -38,7 +38,10 @@ fun SmsLastRecords(modifier: Modifier = Modifier, records: List<SmsData> = previ
             SmsRecord(
                 from = record.sender,
                 message = record.message,
-                timestamp = dateFormatter.format(record.receivedAt.toJavaLocalDateTime()),
+                timestamp = dateFormatter.format(
+                    record.receivedAt.toLocalDateTime(TimeZone.currentSystemDefault())
+                        .toJavaLocalDateTime()
+                ),
             )
         }
     }
@@ -85,24 +88,24 @@ private fun SmsRecord(
 }
 
 private val previewSmsRecords = listOf(
-    SmsData(
+    MessageData(
         sender = "+12223334455",
         message = "Hello World",
-        receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        receivedAt = Clock.System.now(),
     ),
-    SmsData(
+    MessageData(
         sender = "Hello",
         message = "General Kenobi",
-        receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        receivedAt = Clock.System.now(),
     ),
-    SmsData(
+    MessageData(
         sender = "+993742732",
         message = "Test",
-        receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        receivedAt = Clock.System.now(),
     ),
-    SmsData(
+    MessageData(
         sender = "World",
         message = "How's it going",
-        receivedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        receivedAt = Clock.System.now(),
     ),
 )

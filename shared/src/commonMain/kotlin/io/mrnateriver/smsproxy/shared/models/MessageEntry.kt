@@ -1,15 +1,15 @@
-package io.mrnateriver.smsproxy.shared
+package io.mrnateriver.smsproxy.shared.models
 
 import kotlinx.datetime.Instant
 import java.util.UUID
 
-data class SmsEntry(
+data class MessageEntry(
     val guid: UUID,
     val externalId: String,
-    val sendStatus: SmsRelayStatus,
+    val sendStatus: MessageRelayStatus,
     val sendRetries: UShort,
     val sendFailureReason: String?,
-    val smsData: SmsData,
+    val messageData: MessageData,
     val createdAt: Instant?,
     val updatedAt: Instant?,
 )

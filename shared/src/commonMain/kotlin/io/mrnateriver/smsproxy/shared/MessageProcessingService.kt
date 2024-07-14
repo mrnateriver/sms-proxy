@@ -1,5 +1,11 @@
 package io.mrnateriver.smsproxy.shared
 
+import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService
+import io.mrnateriver.smsproxy.shared.contracts.MessageRepository
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
+import io.mrnateriver.smsproxy.shared.models.MessageData
+import io.mrnateriver.smsproxy.shared.models.MessageEntry
+import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -10,31 +16,31 @@ import java.util.logging.Level
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-data class SmsProcessingConfig(
+data class MessageProcessingConfig(
     val maxRetries: UShort,
     val timeout: Duration = 30.seconds,
 )
 
-class SmsProcessingService(
-    private val repository: SmsRepository,
-    private val relay: SmsRelayService,
+class MessageProcessingService(
+    private val repository: MessageRepository,
+    private val relay: MessageRelayService,
     private val observability: ObservabilityService,
-    private val config: SmsProcessingConfig = SmsProcessingConfig(3u),
+    private val config: MessageProcessingConfig = MessageProcessingConfig(3u),
     private val clock: Clock = Clock.System,
 ) {
-    suspend fun process(sms: SmsData): SmsEntry {
-        return observability.runSpan("SmsProcessingService.process") {
-            val entry = repository.insert(sms)
+    suspend fun process(msg: MessageData): MessageEntry {
+        return observability.runSpan("MessageProcessingService.process") {
+            val entry = repository.insert(msg)
             processEntry(entry)
         }
     }
 
-    suspend fun handleUnprocessedMessages(): Iterable<SmsEntry> = coroutineScope {
-        observability.runSpan("SmsProcessingService.handleUnprocessedMessages") {
+    suspend fun handleUnprocessedMessages(): Iterable<MessageEntry> = coroutineScope {
+        observability.runSpan("MessageProcessingService.handleUnprocessedMessages") {
             val entries = repository.getAll(
-                SmsRelayStatus.ERROR,
-                SmsRelayStatus.PENDING,
-                SmsRelayStatus.IN_PROGRESS
+                MessageRelayStatus.ERROR,
+                MessageRelayStatus.PENDING,
+                MessageRelayStatus.IN_PROGRESS
             )
             observability.log(Level.INFO, "processing ${entries.size} entries")
 
@@ -42,9 +48,9 @@ class SmsProcessingService(
         }
     }
 
-    private suspend fun processEntry(entry: SmsEntry): SmsEntry =
+    private suspend fun processEntry(entry: MessageEntry): MessageEntry =
         withContext(Dispatchers.IO) {
-            observability.runSpan("SmsProcessingService.processEntry") {
+            observability.runSpan("MessageProcessingService.processEntry") {
                 try {
                     checkStatus(entry) { return@runSpan it }
                     checkTimeout(entry) { return@runSpan it }
@@ -59,40 +65,40 @@ class SmsProcessingService(
             }
         }
 
-    private suspend fun recordProcessingSuccess(entry: SmsEntry): SmsEntry {
-        return repository.update(entry.copy(sendStatus = SmsRelayStatus.SUCCESS))
+    private suspend fun recordProcessingSuccess(entry: MessageEntry): MessageEntry {
+        return repository.update(entry.copy(sendStatus = MessageRelayStatus.SUCCESS))
     }
 
     private suspend fun recordProcessingError(
-        entry: SmsEntry,
+        entry: MessageEntry,
         e: Exception,
-    ): SmsEntry {
+    ): MessageEntry {
         observability.log(Level.WARNING, "failed to process entry ${entry.guid}: $e")
         return repository.update(
-            entry.copy(sendStatus = SmsRelayStatus.ERROR, sendFailureReason = e.toString()),
+            entry.copy(sendStatus = MessageRelayStatus.ERROR, sendFailureReason = e.toString()),
         )
     }
 
-    private suspend fun startProcessing(entry: SmsEntry) {
+    private suspend fun startProcessing(entry: MessageEntry) {
         observability.log(Level.INFO, "relaying entry ${entry.guid}")
         relay.relay(
             repository.update(
                 entry.copy(
-                    sendStatus = SmsRelayStatus.IN_PROGRESS,
+                    sendStatus = MessageRelayStatus.IN_PROGRESS,
                     sendRetries = entry.sendRetries.inc()
                 ),
             ),
         )
     }
 
-    private inline fun checkStatus(entry: SmsEntry, cont: (entry: SmsEntry) -> Unit) {
-        if (entry.sendStatus == SmsRelayStatus.FAILED || entry.sendStatus == SmsRelayStatus.SUCCESS) {
+    private inline fun checkStatus(entry: MessageEntry, cont: (entry: MessageEntry) -> Unit) {
+        if (entry.sendStatus == MessageRelayStatus.FAILED || entry.sendStatus == MessageRelayStatus.SUCCESS) {
             cont(entry)
         }
     }
 
-    private inline fun checkTimeout(entry: SmsEntry, cont: (entry: SmsEntry) -> Unit) {
-        if (entry.sendStatus == SmsRelayStatus.IN_PROGRESS) {
+    private inline fun checkTimeout(entry: MessageEntry, cont: (entry: MessageEntry) -> Unit) {
+        if (entry.sendStatus == MessageRelayStatus.IN_PROGRESS) {
             if (entry.updatedAt != null && entry.updatedAt.plus(config.timeout) >= clock.now()) {
                 observability.log(Level.WARNING, "entry ${entry.guid} is stuck in progress")
                 throw IllegalStateException("entry is stuck in progress")
@@ -102,14 +108,17 @@ class SmsProcessingService(
         }
     }
 
-    private suspend inline fun checkRetries(entry: SmsEntry, cont: (entry: SmsEntry) -> Unit) {
+    private suspend inline fun checkRetries(
+        entry: MessageEntry,
+        cont: (entry: MessageEntry) -> Unit,
+    ) {
         val retries = entry.sendRetries
         if (retries >= config.maxRetries) {
             observability.log(Level.WARNING, "entry ${entry.guid} reached max retries")
             cont(
                 repository.update(
                     entry.copy(
-                        sendStatus = SmsRelayStatus.FAILED,
+                        sendStatus = MessageRelayStatus.FAILED,
                         sendFailureReason = "Reached max retries",
                     ),
                 ),

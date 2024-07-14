@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.shared
+package io.mrnateriver.smsproxy.shared.contracts
 
 import java.util.logging.Level
 
