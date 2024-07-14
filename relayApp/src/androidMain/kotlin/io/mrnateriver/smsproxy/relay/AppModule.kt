@@ -12,7 +12,7 @@ import io.mrnateriver.smsproxy.shared.ObservabilityService
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DaggerModule {
+class AppModule {
 
     @Provides
     fun providesApiClient(): ApiClient {

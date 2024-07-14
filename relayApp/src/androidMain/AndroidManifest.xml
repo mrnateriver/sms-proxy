@@ -33,7 +33,7 @@
         </activity>
 
         <receiver
-            android:name="io.mrnateriver.smsproxy.relay.SmsBroadcastReceiver"
+            android:name="${basePackageName}.SmsBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">

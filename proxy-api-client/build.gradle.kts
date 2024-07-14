@@ -23,7 +23,7 @@ kotlin {
 }
 
 android {
-    namespace = "io.mrnateriver.smsproxy.api"
+    namespace = "${rootProject.ext["basePackageName"]}.api"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

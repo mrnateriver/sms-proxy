@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.docker)
 }
 
-val rootGroupId = "io.mrnateriver.smsproxy"
+val rootGroupId = rootProject.ext["basePackageName"] as String
 val rootPackage = rootGroupId
 val proxyApiSpecDir = layout.projectDirectory
 val proxyApiSpecPath =

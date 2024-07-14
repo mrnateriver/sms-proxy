@@ -14,7 +14,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
         }
@@ -25,7 +25,7 @@ kotlin {
 }
 
 android {
-    namespace = "io.mrnateriver.smsproxy.receiver"
+    namespace = "${rootProject.ext["basePackageName"]}.receiver"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -33,7 +33,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "io.mrnateriver.smsproxy.receiver"
+        applicationId = "${rootProject.ext["basePackageName"]}.receiver"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

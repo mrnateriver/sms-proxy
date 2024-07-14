@@ -28,7 +28,8 @@ kotlin {
 }
 
 android {
-    namespace = "io.mrnateriver.smsproxy.relay"
+    val basePackageName = "${rootProject.ext["basePackageName"]}.relay"
+    namespace = basePackageName
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -36,14 +37,17 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "io.mrnateriver.smsproxy.relay"
+        applicationId = basePackageName
+        manifestPlaceholders["basePackageName"] = basePackageName
+
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
         fun validateNonEmpty(prop: String): String {
-            val value = project.properties.get(prop)?.toString()
+            val value =
+                project.properties.get("${rootProject.ext["basePackageName"]}.$prop")?.toString()
             if (value.isNullOrBlank()) {
                 throw RuntimeException("Project property '$prop' must be non-empty before build.")
             }
@@ -63,21 +67,9 @@ android {
             return nonEmptyUrl
         }
 
-        buildConfigField(
-            "String",
-            "AUTHOR_WEB_PAGE_URL",
-            "\"${validateUrl("io.mrnateriver.smsproxy.authorWebPageUrl")}\"",
-        )
-        buildConfigField(
-            "String",
-            "API_BASE_URL",
-            "\"${validateUrl("io.mrnateriver.smsproxy.apiBaseUrl")}\""
-        )
-        buildConfigField(
-            "String",
-            "API_KEY",
-            "\"${validateNonEmpty("io.mrnateriver.smsproxy.apiKey")}\""
-        )
+        buildConfigField("String", "AUTHOR_WEB_PAGE_URL", "\"${validateUrl("authorWebPageUrl")}\"")
+        buildConfigField("String", "API_BASE_URL", "\"${validateUrl("apiBaseUrl")}\"")
+        buildConfigField("String", "API_KEY", "\"${validateNonEmpty("apiKey")}\"")
     }
     packaging {
         resources {

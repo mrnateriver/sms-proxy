@@ -4,11 +4,12 @@ plugins {
     application
 }
 
-group = "io.mrnateriver.smsproxy"
+group = rootProject.ext["basePackageName"] as String
 version = "1.0.0"
 application {
-    mainClass.set("io.mrnateriver.smsproxy.ApplicationKt")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
+    mainClass.set("$group.ApplicationKt")
+    applicationDefaultJvmArgs =
+        listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
 }
 
 dependencies {

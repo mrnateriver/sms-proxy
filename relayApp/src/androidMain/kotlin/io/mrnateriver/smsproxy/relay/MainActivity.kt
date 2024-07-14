@@ -14,24 +14,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-//        val client = ApiClient("https://mrnateriver.io").setLogger { Log.d("ApiClient", it) }
-//        val svc = client.createService(DefaultApi::class.java)
-//
-//        runBlocking {
-//            try {
-//                svc.recipientsRegister(
-//                    RegisterRecipientRequest(
-//                        "1234567890",
-//                        "key",
-//                        "value".toByteArray()
-//                    )
-//                )
-//
-//            } catch (e: Exception) {
-//                Log.e("ApiClient", e.message.toString())
-//            }
-//        }
-
         setContent {
             App()
         }

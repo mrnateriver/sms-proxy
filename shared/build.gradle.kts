@@ -40,7 +40,7 @@ kotlin {
 }
 
 android {
-    namespace = "io.mrnateriver.smsproxy.shared"
+    namespace = "${rootProject.ext["basePackageName"]}.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
