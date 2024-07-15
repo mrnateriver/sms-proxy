@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "34a61d965b8abd60c37ea79eb05b90f1",
+    "identityHash": "af8951d91fa18a59d10c698d8519e67a",
     "entities": [
       {
         "tableName": "MessageEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`guid` BLOB NOT NULL, `externalId` TEXT, `sendStatus` TEXT NOT NULL, `sendRetries` INTEGER NOT NULL, `sendFailureReason` TEXT, `createdAt` INTEGER, `updatedAt` INTEGER, `sender` TEXT NOT NULL, `receivedAt` INTEGER NOT NULL, `message` TEXT NOT NULL, PRIMARY KEY(`guid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`guid` BLOB NOT NULL, `externalId` TEXT, `sendStatus` TEXT NOT NULL, `sendRetries` INTEGER NOT NULL, `sendFailureReason` TEXT, `createdAt` INTEGER, `updatedAt` INTEGER, `internalId` TEXT, `sender` TEXT NOT NULL, `receivedAt` INTEGER NOT NULL, `message` TEXT NOT NULL, PRIMARY KEY(`guid`))",
         "fields": [
           {
             "fieldPath": "guid",
@@ -45,6 +45,11 @@
             "fieldPath": "updatedAt",
             "columnName": "updatedAt",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "messageData.internalId",
+            "columnName": "internalId",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "messageData.sender",
@@ -86,7 +91,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '34a61d965b8abd60c37ea79eb05b90f1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'af8951d91fa18a59d10c698d8519e67a')"
     ]
   }
 }
