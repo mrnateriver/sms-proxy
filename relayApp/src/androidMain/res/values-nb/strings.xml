@@ -23,7 +23,7 @@
     <string name="settings_page_entry_receiver_key_error_format">Ugyldig mottakernøkkel</string>
     <string name="settings_page_address_and_key_warning_message">Serveradresse og mottakernøkkel må være satt for å videresende meldinger.</string>
     <string name="dashboard_stats_title">Statistikk</string>
-    <string name="dashboard_stats_card_title_received">Mottatt</string>
+    <string name="dashboard_stats_card_title_processed">Prosessert</string>
     <string name="dashboard_stats_card_title_relayed">Videresendt</string>
     <string name="dashboard_stats_card_title_errors">Feil</string>
     <string name="dashboard_stats_card_title_failures">Avbryte</string>

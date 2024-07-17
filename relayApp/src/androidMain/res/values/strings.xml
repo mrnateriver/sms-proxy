@@ -23,7 +23,7 @@
     <string name="settings_page_entry_receiver_key_error_format">Invalid receiver key</string>
     <string name="settings_page_address_and_key_warning_message">Server address and receiver key must be set for proxying messages.</string>
     <string name="dashboard_stats_title">Statistics</string>
-    <string name="dashboard_stats_card_title_received">Received</string>
+    <string name="dashboard_stats_card_title_processed">Processed</string>
     <string name="dashboard_stats_card_title_relayed">Relayed</string>
     <string name="dashboard_stats_card_title_errors">Errors</string>
     <string name="dashboard_stats_card_title_failures">Failures</string>

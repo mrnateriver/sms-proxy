@@ -77,7 +77,7 @@ fun SmsStats(
         ) {
             StatsCard(
                 modifier = Modifier.weight(1f),
-                title = stringResource(R.string.dashboard_stats_card_title_received),
+                title = stringResource(R.string.dashboard_stats_card_title_processed),
                 value = data.received.toString(),
                 lastEvent = formatDate(data.lastReceivedAt),
             )
