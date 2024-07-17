@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.permissions
+package io.mrnateriver.smsproxy.relay.composables
 
 import android.Manifest
 import androidx.compose.runtime.Composable

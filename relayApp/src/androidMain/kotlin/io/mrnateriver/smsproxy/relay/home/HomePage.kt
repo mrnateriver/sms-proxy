@@ -15,9 +15,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import io.mrnateriver.smsproxy.relay.composables.PermissionState
+import io.mrnateriver.smsproxy.relay.composables.rememberSmsPermissions
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
-import io.mrnateriver.smsproxy.relay.permissions.PermissionState
-import io.mrnateriver.smsproxy.relay.permissions.rememberSmsPermissions
 import io.mrnateriver.smsproxy.relay.settings.navigateToSettingsPage
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import kotlinx.datetime.Clock
