@@ -7,6 +7,8 @@ import android.provider.Telephony
 import android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION
 import android.telephony.SmsMessage
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.mrnateriver.smsproxy.relay.services.MessageProcessingWorker
 import io.mrnateriver.smsproxy.shared.MessageProcessingService
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageData
@@ -18,6 +20,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SmsBroadcastReceiver : BroadcastReceiver() {
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
     @Inject
     lateinit var smsProcessingService: MessageProcessingService
 
@@ -42,15 +48,20 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
             try {
                 smsProcessingService.process(
                     MessageData(
-                        // internalId = message.index.toString(), // TODO: !
                         sender = message.displayOriginatingAddress ?: "",
                         message = message.displayMessageBody,
                         receivedAt = Instant.fromEpochMilliseconds(message.timestampMillis),
                     )
                 )
             } catch (e: Exception) {
-                // TODO: dispatch background repeat job
-                observabilityService.log(Level.WARNING, "Failed to process message: $e")
+                // TODO: record error in stats service
+
+                observabilityService.log(
+                    Level.WARNING,
+                    "Failed to process message: $e\nScheduling background job to retry."
+                )
+
+                MessageProcessingWorker.schedule(context)
             }
         }
     }

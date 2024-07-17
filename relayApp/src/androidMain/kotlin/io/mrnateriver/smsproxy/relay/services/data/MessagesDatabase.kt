@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import javax.inject.Singleton
 
 @Singleton
-@Database(entities = [MessageEntity::class], version = 1)
+@Database(entities = [MessageEntity::class], version = 2)
 @TypeConverters(InstantTypeConverter::class)
 abstract class MessagesDatabase : RoomDatabase() {
     abstract fun messagesDao(): MessagesDao

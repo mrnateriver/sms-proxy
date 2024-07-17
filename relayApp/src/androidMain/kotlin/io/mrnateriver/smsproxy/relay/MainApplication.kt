@@ -4,11 +4,18 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.os.PowerManager
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
+import io.mrnateriver.smsproxy.relay.services.MessageProcessingWorker
+import javax.inject.Inject
 
 @HiltAndroidApp
-class MainApplication : Application() {
+class MainApplication : Application(), Configuration.Provider {
     private lateinit var wakeLock: PowerManager.WakeLock
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
 
     @SuppressLint("WakelockTimeout")
     override fun onCreate() {
@@ -19,10 +26,16 @@ class MainApplication : Application() {
                 acquire()
             }
         }
+
+        // Process any forgotten messages on startup
+        MessageProcessingWorker.schedule(this)
     }
 
     override fun onTerminate() {
         super.onTerminate()
         wakeLock.release()
     }
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
 }

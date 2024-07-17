@@ -21,9 +21,8 @@ class SmsInboxService @Inject constructor(@ApplicationContext private val contex
                 var i = 0
                 do {
                     val messageData = MessageData(
-                        internalId = cursor.getString(0),
                         sender = cursor.getString(1),
-                        receivedAt = Instant.fromEpochMilliseconds(cursor.getString(2).toLong()),
+                        receivedAt = Instant.fromEpochMilliseconds(cursor.getLong(2)),
                         message = cursor.getString(3)
                     )
                     result.add(messageData)

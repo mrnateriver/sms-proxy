@@ -104,6 +104,7 @@ android {
 
         implementation(libs.androidx.compat)
         implementation(libs.androidx.core.ktx)
+        implementation(libs.androidx.work.runtime.ktx)
         implementation(libs.androidx.lifecycle.runtime.ktx)
         implementation(libs.androidx.activity.compose)
         implementation(composeBom)
@@ -134,6 +135,8 @@ ksp {
 
 dependencies {
     implementation(libs.android.hilt)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
     ksp(libs.android.hilt.compiler)
     ksp(libs.room.compiler)
 }
