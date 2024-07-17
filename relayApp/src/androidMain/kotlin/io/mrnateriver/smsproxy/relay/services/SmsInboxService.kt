@@ -1,29 +1,29 @@
 package io.mrnateriver.smsproxy.relay.services
 
-import android.app.Activity
+import android.content.Context
 import android.database.Cursor
 import android.net.Uri
-import dagger.hilt.android.qualifiers.ActivityContext
-import dagger.hilt.android.scopes.ActivityScoped
+import androidx.annotation.IntRange
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import kotlinx.datetime.Instant
+import javax.inject.Inject
 
-@ActivityScoped
-class SmsInboxService(@ActivityContext private val activityContext: Activity) {
+class SmsInboxService @Inject constructor(@ApplicationContext private val context: Context) {
     fun getTotalSmsCount(): Int {
         return querySms { it.count } ?: 0
     }
 
-    fun getRecentSms(count: UInt): List<MessageData> {
+    fun getRecentSms(@IntRange(from = 0) count: Int): List<MessageData> {
         return querySms { cursor ->
             val result = mutableListOf<MessageData>()
             if (cursor.moveToFirst()) {
-                var i = 0u
+                var i = 0
                 do {
                     val messageData = MessageData(
                         internalId = cursor.getString(0),
                         sender = cursor.getString(1),
-                        receivedAt = Instant.parse(cursor.getString(2)),
+                        receivedAt = Instant.fromEpochMilliseconds(cursor.getString(2).toLong()),
                         message = cursor.getString(3)
                     )
                     result.add(messageData)
@@ -34,7 +34,7 @@ class SmsInboxService(@ActivityContext private val activityContext: Activity) {
     }
 
     private fun <T> querySms(cb: (cursor: Cursor) -> T): T? {
-        return activityContext.contentResolver.query(
+        return context.contentResolver.query(
             Uri.parse("content://sms/inbox"),
             arrayOf("_id", "address", "date", "body"),
             null,
