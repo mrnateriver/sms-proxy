@@ -5,30 +5,53 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
 import android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION
-import android.util.Log
+import android.telephony.SmsMessage
 import dagger.hilt.android.AndroidEntryPoint
+import io.mrnateriver.smsproxy.shared.MessageProcessingService
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
+import io.mrnateriver.smsproxy.shared.models.MessageData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Instant
+import java.util.logging.Level
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SmsBroadcastReceiver : BroadcastReceiver() {
+    @Inject
+    lateinit var smsProcessingService: MessageProcessingService
+
+    @Inject
+    lateinit var observabilityService: ObservabilityService
+
     override fun onReceive(context: Context, intent: Intent) {
-        Log.i("SmsBroadcastReceiver.onReceive", intent.toString())
+        observabilityService.log(Level.INFO, "Received intent broadcast: $intent")
         if (intent.action == SMS_RECEIVED_ACTION) {
-            // TODO: save the sms to local storage synchronously
-            // TODO: spawn background job that would send the SMS to the server
-
-            val smsMessages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-
-            val smsMessageBuilder = StringBuilder()
-
-            for (message in smsMessages) {
-                val phoneNumber = message.displayOriginatingAddress
-                message.protocolIdentifier
-                smsMessageBuilder.append("From: $phoneNumber\n")
-                smsMessageBuilder.append(message.displayMessageBody)
-                smsMessageBuilder.append("\n")
+            runBlocking {
+                observabilityService.runSpan("SmsBroadcastReceiver.onReceive") {
+                    for (message in Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
+                        processMessage(message)
+                    }
+                }
             }
+        }
+    }
 
-            Log.i("SmsBroadcastReceiver.onReceive", smsMessageBuilder.toString())
+    private fun processMessage(message: SmsMessage) {
+        runBlocking(Dispatchers.IO) {
+            try {
+                smsProcessingService.process(
+                    MessageData(
+                        // internalId = message.index.toString(), // TODO: !
+                        sender = message.displayOriginatingAddress ?: "",
+                        message = message.displayMessageBody,
+                        receivedAt = Instant.fromEpochMilliseconds(message.timestampMillis),
+                    )
+                )
+            } catch (e: Exception) {
+                // TODO: dispatch background repeat job
+                observabilityService.log(Level.WARNING, "Failed to process message: $e")
+            }
         }
     }
 }

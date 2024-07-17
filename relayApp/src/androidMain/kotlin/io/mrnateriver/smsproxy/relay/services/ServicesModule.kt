@@ -15,9 +15,6 @@ import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as Observab
 @InstallIn(SingletonComponent::class)
 abstract class ServicesModule {
     @Binds
-    abstract fun bindsObservabilityService(impl: AndroidObservabilityService): ObservabilityServiceContract
-
-    @Binds
     abstract fun bindsMessageRepository(impl: MessageRepository): MessageRepositoryContract
 
     @Binds
@@ -26,6 +23,11 @@ abstract class ServicesModule {
     @Module
     @InstallIn(SingletonComponent::class)
     class MessageProcessingModule {
+        @Provides
+        fun bindsObservabilityService(): ObservabilityServiceContract {
+            return AndroidObservabilityService()
+        }
+
         @Provides
         fun providesMessageProcessingService(
             repository: MessageRepositoryContract,
