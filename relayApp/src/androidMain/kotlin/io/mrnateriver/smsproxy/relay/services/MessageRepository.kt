@@ -35,6 +35,10 @@ class MessageRepository @Inject constructor(
         return messagesDao.getAll(*statuses).map { it.toEntry() }
     }
 
+    override suspend fun getCountByStatus(vararg statuses: MessageRelayStatus): Int {
+        return messagesDao.getCountByStatuses(*statuses)
+    }
+
     override suspend fun getCount(): Int {
         return messagesDao.getCount()
     }
