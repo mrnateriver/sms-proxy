@@ -42,7 +42,7 @@ class MessageProcessingService(
                 MessageRelayStatus.PENDING,
                 MessageRelayStatus.IN_PROGRESS
             )
-            observability.log(Level.INFO, "processing ${entries.size} entries")
+            observability.log(Level.INFO, "Processing ${entries.size} entries")
 
             entries.map { async { processEntry(it) } }.awaitAll()
         }
@@ -61,6 +61,7 @@ class MessageProcessingService(
                     recordProcessingSuccess(entry)
                 } catch (e: Exception) {
                     recordProcessingError(entry, e)
+                    throw e
                 }
             }
         }
@@ -73,14 +74,14 @@ class MessageProcessingService(
         entry: MessageEntry,
         e: Exception,
     ): MessageEntry {
-        observability.log(Level.WARNING, "failed to process entry ${entry.guid}: $e")
+        observability.log(Level.WARNING, "Failed to process entry ${entry.guid}: $e")
         return repository.update(
             entry.copy(sendStatus = MessageRelayStatus.ERROR, sendFailureReason = e.toString()),
         )
     }
 
     private suspend fun startProcessing(entry: MessageEntry) {
-        observability.log(Level.INFO, "relaying entry ${entry.guid}")
+        observability.log(Level.INFO, "Relaying entry ${entry.guid}")
         relay.relay(
             repository.update(
                 entry.copy(
@@ -100,8 +101,8 @@ class MessageProcessingService(
     private inline fun checkTimeout(entry: MessageEntry, cont: (entry: MessageEntry) -> Unit) {
         if (entry.sendStatus == MessageRelayStatus.IN_PROGRESS) {
             if (entry.updatedAt != null && entry.updatedAt.plus(config.timeout) >= clock.now()) {
-                observability.log(Level.WARNING, "entry ${entry.guid} is stuck in progress")
-                throw IllegalStateException("entry is stuck in progress")
+                observability.log(Level.WARNING, "Entry ${entry.guid} is stuck in progress")
+                throw IllegalStateException("Entry is stuck in progress")
             } else {
                 cont(entry)
             }
@@ -114,7 +115,7 @@ class MessageProcessingService(
     ) {
         val retries = entry.sendRetries
         if (retries >= config.maxRetries) {
-            observability.log(Level.WARNING, "entry ${entry.guid} reached max retries")
+            observability.log(Level.WARNING, "Entry ${entry.guid} reached max retries")
             cont(
                 repository.update(
                     entry.copy(

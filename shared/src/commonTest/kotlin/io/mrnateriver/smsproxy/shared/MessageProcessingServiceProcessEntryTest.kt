@@ -10,6 +10,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 
 class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBase() {
     @Test
@@ -99,6 +100,30 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
                 ),
             ),
         )
+    }
+
+    @Test
+    fun `when processing entry and storing it fails should throw exception`() = runTest {
+        val msgData = createTestMessageData()
+
+        whenever(mockRepository.insert(any())).thenThrow(RuntimeException("test"))
+
+        assertFails {
+            subject.process(msgData)
+        }
+    }
+
+    @Test
+    fun `when processing entry and relaying fails should throw exception`() = runTest {
+        val msgData = createTestMessageData()
+        val msgEntry = createTestMessageEntry(msgData, MessageRelayStatus.PENDING)
+
+        whenever(mockRepository.insert(any())).thenReturn(msgEntry)
+        whenever(mockRelayService.relay(any())).thenThrow(RuntimeException("test"))
+
+        assertFails {
+            subject.process(msgData)
+        }
     }
 
 }
