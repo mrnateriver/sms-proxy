@@ -7,15 +7,24 @@ import dagger.hilt.components.SingletonComponent
 import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.auth.HttpBearerAuth
 import io.mrnateriver.smsproxy.infrastructure.ApiClient
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
+import java.util.logging.Level
 
 @Module
 @InstallIn(SingletonComponent::class)
 class ProxyApiModule {
     @Provides
-    fun providesApiClient(): ApiClient {
+    fun providesApiClient(observabilityService: ObservabilityService): ApiClient {
         val proxyApiKey = BuildConfig.API_KEY
         val proxyApiBaseUrl = BuildConfig.API_BASE_URL
-        return ApiClient(proxyApiBaseUrl).addAuthorization("Bearer", HttpBearerAuth(proxyApiKey))
+
+        return ApiClient(proxyApiBaseUrl)
+            .addAuthorization("Bearer", HttpBearerAuth(proxyApiKey))
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    logger = { message -> observabilityService.log(Level.FINEST, message) }
+                }
+            }
     }
 
     @Provides
