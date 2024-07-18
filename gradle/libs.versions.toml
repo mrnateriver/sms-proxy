@@ -15,6 +15,7 @@ androidx-junit = "1.2.1"
 androidx-navigationCompose = "2.7.7"
 androidx-workRuntimeKtx = "2.9.0"
 androidx-hiltWork = "1.2.0"
+androidx-datastorePreferences = "1.1.1"
 google-accompanist = "0.35.1-alpha"
 about-libraries = "11.2.1"
 compose-preferences = "1.0.0"
@@ -40,6 +41,7 @@ room = "2.7.0-alpha05"
 # Android Runtime
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastorePreferences" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hiltWork" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hiltWork" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycleRuntimeKtx" }

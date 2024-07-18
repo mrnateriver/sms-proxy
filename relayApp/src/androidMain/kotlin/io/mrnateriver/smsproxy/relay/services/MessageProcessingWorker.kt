@@ -23,27 +23,26 @@ class MessageProcessingWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val smsProcessingService: MessageProcessingService,
+    private val statsService: MessageStatsService,
     private val observabilityService: ObservabilityService,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
             observabilityService.runSpan("MessageProcessingWorker.doWork") {
-                val results = smsProcessingService.handleUnprocessedMessages().toList()
-
-                observabilityService.log(Level.FINE, "Processing ${results.size} messages:")
-                for (msg in results) {
-                    observabilityService.log(Level.FINE, "$msg")
-                }
-
+                val results = smsProcessingService
+                    .handleUnprocessedMessages()
+                    .map { it.sendStatus }.toList()
                 val result = when {
-                    results.any { it.sendStatus == MessageRelayStatus.ERROR || it.sendStatus == MessageRelayStatus.IN_PROGRESS } -> Result.retry()
-                    results.any { it.sendStatus == MessageRelayStatus.SUCCESS } -> Result.success() // This would mean the rest have FAILURE status, and we don't want to retry them
+                    results.any { it == MessageRelayStatus.ERROR || it == MessageRelayStatus.IN_PROGRESS } -> Result.retry()
+                    results.any { it == MessageRelayStatus.SUCCESS } -> Result.success() // This would mean the rest have FAILURE status, and we don't want to retry them
                     results.isNotEmpty() -> Result.failure()
                     else -> Result.success()
                 }
 
-                // TODO: record errors in stats service
+                for (i in 0 until results.count { it == MessageRelayStatus.ERROR }) {
+                    statsService.incrementProcessingFailures()
+                }
 
                 observabilityService.log(Level.FINE, "Processed ${results.size} messages: $result")
                 result

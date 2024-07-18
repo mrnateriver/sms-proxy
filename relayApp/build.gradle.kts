@@ -111,6 +111,7 @@ android {
         implementation(libs.androidx.work.runtime.ktx)
         implementation(libs.androidx.lifecycle.runtime.ktx)
         implementation(libs.androidx.activity.compose)
+        implementation(libs.androidx.datastore.preferences)
         implementation(composeBom)
         implementation(libs.androidx.ui)
         implementation(libs.androidx.ui.graphics)

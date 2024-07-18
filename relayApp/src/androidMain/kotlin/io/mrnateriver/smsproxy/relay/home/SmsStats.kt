@@ -10,14 +10,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
+import io.mrnateriver.smsproxy.relay.services.MessageStatsService
+import io.mrnateriver.smsproxy.shared.AndroidObservabilityService
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
@@ -93,11 +98,23 @@ fun SmsStats(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium),
         ) {
+            // FIXME: temporary!
+            val ctx = LocalContext.current
+            val errorsFlow by remember {
+                val svc = MessageStatsService(ctx, AndroidObservabilityService())
+                svc.getProcessingFailures()
+            }.collectAsState(initial = 0)
+
+            val errorsDateFlow by remember {
+                val svc = MessageStatsService(ctx, AndroidObservabilityService())
+                svc.getLastProcessingFailureTimestamp()
+            }.collectAsState(initial = null)
+
             StatsCard(
                 modifier = Modifier.weight(1f),
                 title = stringResource(R.string.dashboard_stats_card_title_errors),
-                value = data.errors.toString(),
-                lastEvent = formatDate(data.lastErrorAt),
+                value = errorsFlow.toString(),
+                lastEvent = formatDate(errorsDateFlow),
                 textColor = MaterialTheme.colorScheme.error,
             )
             StatsCard(

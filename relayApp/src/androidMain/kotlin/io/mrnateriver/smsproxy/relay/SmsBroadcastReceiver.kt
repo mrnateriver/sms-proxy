@@ -9,6 +9,7 @@ import android.telephony.SmsMessage
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.mrnateriver.smsproxy.relay.services.MessageProcessingWorker
+import io.mrnateriver.smsproxy.relay.services.MessageStatsService
 import io.mrnateriver.smsproxy.shared.MessageProcessingService
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageData
@@ -26,6 +27,9 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
     lateinit var smsProcessingService: MessageProcessingService
+
+    @Inject
+    lateinit var statsService: MessageStatsService
 
     @Inject
     lateinit var observabilityService: ObservabilityService
@@ -54,7 +58,7 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
                     )
                 )
             } catch (e: Exception) {
-                // TODO: record error in stats service
+                statsService.incrementProcessingFailures()
 
                 observabilityService.log(
                     Level.WARNING,
