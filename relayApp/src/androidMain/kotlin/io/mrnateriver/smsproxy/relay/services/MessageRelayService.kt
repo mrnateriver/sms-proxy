@@ -24,7 +24,7 @@ class MessageRelayService @Inject constructor(
             throw IllegalStateException("Receiver key is not set.")
         }
 
-        proxyApiService.messagesProxy(
+        val response = proxyApiService.messagesProxy(
             MessageProxyRequest(
                 receiverKey,
                 entry.messageData.sender,
@@ -32,5 +32,12 @@ class MessageRelayService @Inject constructor(
                 entry.messageData.receivedAt,
             )
         )
+        if (!response.isSuccessful) {
+            throw IllegalStateException(
+                "Failed to relay message, status code: ${response.code()} ${response.message()}\n${
+                    response.errorBody()?.toString()
+                }"
+            )
+        }
     }
 }
