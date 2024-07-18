@@ -22,11 +22,11 @@ class AndroidObservabilityService : ObservabilityService {
             Level.SEVERE -> Log.ERROR
             Level.WARNING -> Log.WARN
             Level.INFO -> Log.INFO
-            Level.CONFIG -> Log.DEBUG
-            Level.FINE -> Log.VERBOSE
-            Level.FINER -> Log.VERBOSE
-            Level.FINEST -> Log.VERBOSE
-            else -> Log.VERBOSE
+            Level.CONFIG -> Log.VERBOSE
+            Level.FINE -> Log.DEBUG
+            Level.FINER -> Log.DEBUG
+            Level.FINEST -> Log.DEBUG
+            else -> Log.DEBUG
         }
     }
 
