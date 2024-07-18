@@ -24,6 +24,10 @@ class MessagesDatabaseModule {
 
         if (BuildConfig.DEBUG) {
             builder.setQueryCallback({ sqlQuery, bindArgs ->
+                if (sqlQuery.contains("TRANSACTION")) {
+                    return@setQueryCallback
+                }
+
                 observabilityService.log(
                     Level.FINEST,
                     "SQL: $sqlQuery${if (bindArgs.isNotEmpty()) "\nArgs: $bindArgs" else ""}"

@@ -33,10 +33,9 @@ class MessageRelayService @Inject constructor(
             )
         )
         if (!response.isSuccessful) {
+            val body = response.errorBody()?.string()
             throw IllegalStateException(
-                "Failed to relay message, status code: ${response.code()} ${response.message()}\n${
-                    response.errorBody()?.toString()
-                }"
+                "Failed to relay message, status code: ${response.code()} ${response.message()}${if (body.isNullOrBlank()) "" else "\n$body"}"
             )
         }
     }
