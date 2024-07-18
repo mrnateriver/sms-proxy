@@ -125,7 +125,7 @@ class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTe
             val msgEntry = createTestMessageEntry(
                 msgData,
                 MessageRelayStatus.IN_PROGRESS,
-                1u,
+                1,
                 Instant.fromEpochMilliseconds(0),
                 Instant.fromEpochSeconds(10),
             )

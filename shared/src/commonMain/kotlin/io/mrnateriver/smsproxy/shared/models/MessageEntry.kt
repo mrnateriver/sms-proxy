@@ -7,7 +7,7 @@ data class MessageEntry(
     val guid: UUID,
     val externalId: String?,
     val sendStatus: MessageRelayStatus,
-    val sendRetries: UShort,
+    val sendRetries: Int,
     val sendFailureReason: String?,
     val messageData: MessageData,
     val createdAt: Instant?,

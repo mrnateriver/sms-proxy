@@ -20,7 +20,7 @@ import kotlin.time.Duration.Companion.seconds
 abstract class MessageProcessingServiceTestBase {
     protected lateinit var subject: MessageProcessingService
 
-    protected val mockProcessingConfig = MessageProcessingConfig(7u, 48.seconds)
+    protected val mockProcessingConfig = MessageProcessingConfig(7, 48.seconds)
     protected val mockRelayService = mock<MessageRelayService>()
     protected val mockRepository = mock<MessageRepository> {
         onBlocking { update(any<MessageEntry>()) }.then { it.arguments[0] }
@@ -58,7 +58,7 @@ abstract class MessageProcessingServiceTestBase {
     protected fun createTestMessageEntry(
         messageData: MessageData,
         status: MessageRelayStatus = MessageRelayStatus.PENDING,
-        retries: UShort = 0u,
+        retries: Int = 0,
         createdAt: Instant? = mockClock.now(),
         updatedAt: Instant? = mockClock.now(),
     ) =

@@ -17,7 +17,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 data class MessageProcessingConfig(
-    val maxRetries: UShort,
+    val maxRetries: Int,
     val timeout: Duration = 30.seconds,
 )
 
@@ -25,7 +25,7 @@ class MessageProcessingService(
     private val repository: MessageRepository,
     private val relay: MessageRelayService,
     private val observability: ObservabilityService,
-    private val config: MessageProcessingConfig = MessageProcessingConfig(3u),
+    private val config: MessageProcessingConfig = MessageProcessingConfig(3),
     private val clock: Clock = Clock.System,
 ) {
     suspend fun process(msg: MessageData): MessageEntry {
@@ -61,7 +61,8 @@ class MessageProcessingService(
                     checkTimeout(updated) { return@runSpan it to null }
                     checkRetries(updated) { return@runSpan it to null }
 
-                    updated = startProcessing(entry)
+                    updated = startProcessing(updated)
+                    relay.relay(updated)
 
                     recordProcessingSuccess(updated) to null
                 } catch (e: Exception) {
@@ -86,15 +87,12 @@ class MessageProcessingService(
 
     private suspend fun startProcessing(entry: MessageEntry): MessageEntry {
         observability.log(Level.INFO, "Relaying entry ${entry.guid}")
-        val updated = repository.update(
+        return repository.update(
             entry.copy(
                 sendStatus = MessageRelayStatus.IN_PROGRESS,
                 sendRetries = entry.sendRetries.inc()
             ),
         )
-
-        relay.relay(updated)
-        return updated
     }
 
     private inline fun checkStatus(entry: MessageEntry, cont: (entry: MessageEntry) -> Unit) {

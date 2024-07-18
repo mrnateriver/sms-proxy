@@ -38,7 +38,7 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
             eq(
                 msgEntry.copy(
                     sendStatus = MessageRelayStatus.IN_PROGRESS,
-                    sendRetries = 1u,
+                    sendRetries = 1,
                 ),
             ),
         )
@@ -133,17 +133,17 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
     @Test
     fun `when processing entry should increment number of retries`() = runTest {
         val msgData = createTestMessageData()
-        val msgEntry = createTestMessageEntry(messageData = msgData, retries = 2u)
+        val msgEntry = createTestMessageEntry(messageData = msgData, retries = 2)
 
         whenever(mockRepository.insert(any())).thenReturn(msgEntry)
 
         subject.process(msgData)
 
         verify(mockRepository).update(
-            eq(msgEntry.copy(sendStatus = MessageRelayStatus.IN_PROGRESS, sendRetries = 3u)),
+            eq(msgEntry.copy(sendStatus = MessageRelayStatus.IN_PROGRESS, sendRetries = 3)),
         )
         verify(mockRepository).update(
-            eq(msgEntry.copy(sendStatus = MessageRelayStatus.SUCCESS, sendRetries = 3u)),
+            eq(msgEntry.copy(sendStatus = MessageRelayStatus.SUCCESS, sendRetries = 3)),
         )
     }
 
