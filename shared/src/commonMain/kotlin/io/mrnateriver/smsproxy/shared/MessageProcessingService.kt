@@ -55,16 +55,17 @@ class MessageProcessingService(
     private suspend fun processEntry(entry: MessageEntry): Pair<MessageEntry, Exception?> =
         withContext(Dispatchers.IO) {
             observability.runSpan("MessageProcessingService.processEntry") {
+                var updated = entry
                 try {
-                    checkStatus(entry) { return@runSpan it to null }
-                    checkTimeout(entry) { return@runSpan it to null }
-                    checkRetries(entry) { return@runSpan it to null }
+                    checkStatus(updated) { return@runSpan it to null }
+                    checkTimeout(updated) { return@runSpan it to null }
+                    checkRetries(updated) { return@runSpan it to null }
 
-                    startProcessing(entry)
+                    updated = startProcessing(entry)
 
-                    recordProcessingSuccess(entry) to null
+                    recordProcessingSuccess(updated) to null
                 } catch (e: Exception) {
-                    recordProcessingError(entry, e) to e
+                    recordProcessingError(updated, e) to e
                 }
             }
         }
@@ -83,16 +84,17 @@ class MessageProcessingService(
         )
     }
 
-    private suspend fun startProcessing(entry: MessageEntry) {
+    private suspend fun startProcessing(entry: MessageEntry): MessageEntry {
         observability.log(Level.INFO, "Relaying entry ${entry.guid}")
-        relay.relay(
-            repository.update(
-                entry.copy(
-                    sendStatus = MessageRelayStatus.IN_PROGRESS,
-                    sendRetries = entry.sendRetries.inc()
-                ),
+        val updated = repository.update(
+            entry.copy(
+                sendStatus = MessageRelayStatus.IN_PROGRESS,
+                sendRetries = entry.sendRetries.inc()
             ),
         )
+
+        relay.relay(updated)
+        return updated
     }
 
     private inline fun checkStatus(entry: MessageEntry, cont: (entry: MessageEntry) -> Unit) {
