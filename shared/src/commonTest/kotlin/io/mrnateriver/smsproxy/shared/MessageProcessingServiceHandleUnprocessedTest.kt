@@ -12,6 +12,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTestBase() {
@@ -128,7 +130,7 @@ class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTe
                 Instant.fromEpochSeconds(10),
             )
 
-            whenever(mockClock.now()).thenReturn(Instant.fromEpochSeconds((10.seconds + mockProcessingConfig.timeout).inWholeSeconds))
+            whenever(mockClock.now()).thenReturn(Instant.fromEpochMilliseconds((10.seconds + mockProcessingConfig.timeout + 1.milliseconds).inWholeMilliseconds))
             whenever(mockRepository.getAll(anyVararg(MessageRelayStatus::class)))
                 .thenReturn(listOf(msgEntry))
 
@@ -139,5 +141,52 @@ class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTe
                         sendFailureReason != null &&
                         sendFailureReason!!.contains("stuck in progress")
             })
+        }
+
+    @Test
+    fun `when handling unprocessed entries should processed entries with final status`() =
+        runTest {
+            val msgData = createTestMessageData()
+            val msgEntries = listOf(
+                createTestMessageEntry(msgData, MessageRelayStatus.ERROR),
+                createTestMessageEntry(msgData, MessageRelayStatus.PENDING),
+                createTestMessageEntry(msgData, MessageRelayStatus.IN_PROGRESS),
+            )
+
+            whenever(mockRepository.getAll(anyVararg(MessageRelayStatus::class)))
+                .thenReturn(msgEntries)
+
+            val results = subject.handleUnprocessedMessages().toList()
+
+            assertEquals(msgEntries.size, results.size)
+            assertEquals(
+                listOf(
+                    MessageRelayStatus.SUCCESS,
+                    MessageRelayStatus.SUCCESS,
+                    MessageRelayStatus.IN_PROGRESS
+                ),
+                results.map { it.sendStatus }
+            )
+        }
+
+    @Test
+    fun `when handling unprocessed entries should not throw exception if relaying fails`() =
+        runTest {
+            val msgData = createTestMessageData()
+            val msgEntries = listOf(
+                createTestMessageEntry(msgData, MessageRelayStatus.PENDING),
+                createTestMessageEntry(msgData, MessageRelayStatus.PENDING),
+            )
+
+            whenever(mockRepository.getAll(anyVararg(MessageRelayStatus::class)))
+                .thenReturn(msgEntries)
+            whenever(mockRelayService.relay(any())).thenThrow(RuntimeException("test"))
+
+            val results = subject.handleUnprocessedMessages().toList()
+
+            assertEquals(msgEntries.size, results.size)
+            assertEquals(
+                listOf(MessageRelayStatus.ERROR, MessageRelayStatus.ERROR),
+                results.map { it.sendStatus })
         }
 }

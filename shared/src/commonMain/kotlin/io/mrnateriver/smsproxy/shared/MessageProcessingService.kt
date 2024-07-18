@@ -31,7 +31,11 @@ class MessageProcessingService(
     suspend fun process(msg: MessageData): MessageEntry {
         return observability.runSpan("MessageProcessingService.process") {
             val entry = repository.insert(msg)
-            processEntry(entry)
+            val (result, exception) = processEntry(entry)
+            if (exception != null) {
+                throw exception
+            }
+            result
         }
     }
 
@@ -44,24 +48,23 @@ class MessageProcessingService(
             )
             observability.log(Level.INFO, "Processing ${entries.size} entries")
 
-            entries.map { async { processEntry(it) } }.awaitAll()
+            entries.map { async { processEntry(it).component1() } }.awaitAll()
         }
     }
 
-    private suspend fun processEntry(entry: MessageEntry): MessageEntry =
+    private suspend fun processEntry(entry: MessageEntry): Pair<MessageEntry, Exception?> =
         withContext(Dispatchers.IO) {
             observability.runSpan("MessageProcessingService.processEntry") {
                 try {
-                    checkStatus(entry) { return@runSpan it }
-                    checkTimeout(entry) { return@runSpan it }
-                    checkRetries(entry) { return@runSpan it }
+                    checkStatus(entry) { return@runSpan it to null }
+                    checkTimeout(entry) { return@runSpan it to null }
+                    checkRetries(entry) { return@runSpan it to null }
 
                     startProcessing(entry)
 
-                    recordProcessingSuccess(entry)
+                    recordProcessingSuccess(entry) to null
                 } catch (e: Exception) {
-                    recordProcessingError(entry, e)
-                    throw e
+                    recordProcessingError(entry, e) to e
                 }
             }
         }
@@ -100,7 +103,7 @@ class MessageProcessingService(
 
     private inline fun checkTimeout(entry: MessageEntry, cont: (entry: MessageEntry) -> Unit) {
         if (entry.sendStatus == MessageRelayStatus.IN_PROGRESS) {
-            if (entry.updatedAt != null && entry.updatedAt.plus(config.timeout) >= clock.now()) {
+            if (entry.updatedAt != null && entry.updatedAt.plus(config.timeout) < clock.now()) {
                 observability.log(Level.WARNING, "Entry ${entry.guid} is stuck in progress")
                 throw IllegalStateException("Entry is stuck in progress")
             } else {

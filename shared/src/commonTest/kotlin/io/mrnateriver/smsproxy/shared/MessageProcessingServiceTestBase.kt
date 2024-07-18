@@ -34,9 +34,7 @@ abstract class MessageProcessingServiceTestBase {
             }
         }
 
-    protected val mockClock = mock<Clock> {
-        on(it.now()).then { Clock.System.now() }
-    }
+    protected val mockClock = mock<Clock> { on(it.now()).thenReturn(Clock.System.now()) }
 
     @BeforeTest
     fun setup() {
@@ -54,15 +52,15 @@ abstract class MessageProcessingServiceTestBase {
         reset(mockRepository, mockRelayService, mockObservabilityService)
     }
 
-    protected fun createTestMessageData(clock: Clock = Clock.System) =
-        MessageData("123", clock.now(), "Hello, World!")
+    protected fun createTestMessageData(receivedAt: Instant = mockClock.now()) =
+        MessageData("123", receivedAt, "Hello, World!")
 
     protected fun createTestMessageEntry(
         messageData: MessageData,
         status: MessageRelayStatus = MessageRelayStatus.PENDING,
         retries: UShort = 0u,
-        createdAt: Instant? = Clock.System.now(),
-        updatedAt: Instant? = Clock.System.now(),
+        createdAt: Instant? = mockClock.now(),
+        updatedAt: Instant? = mockClock.now(),
     ) =
         MessageEntry(
             UUID.randomUUID(),

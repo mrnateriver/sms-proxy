@@ -29,9 +29,7 @@ class MessageProcessingWorker @AssistedInject constructor(
     override fun doWork(): Result {
         return runBlocking(Dispatchers.IO) {
             observabilityService.runSpan("MessageProcessingWorker.doWork") {
-                val results =
-                    smsProcessingService.handleUnprocessedMessages() // FIXME: this throws exception! makes the worker fail
-                        .toList()
+                val results = smsProcessingService.handleUnprocessedMessages().toList()
                 val result = when {
                     results.any { it.sendStatus == MessageRelayStatus.ERROR } -> Result.retry()
                     results.any { it.sendStatus == MessageRelayStatus.SUCCESS } -> Result.success()

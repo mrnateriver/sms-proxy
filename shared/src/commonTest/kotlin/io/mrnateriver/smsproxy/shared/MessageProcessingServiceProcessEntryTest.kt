@@ -90,7 +90,11 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
         whenever(mockRepository.insert(any())).thenReturn(msgEntry)
         whenever(mockRelayService.relay(any())).thenThrow(RuntimeException("test"))
 
-        subject.process(msgData)
+        try {
+            subject.process(msgData)
+        } catch (e: Exception) {
+            //
+        }
 
         verify(mockRepository).update(
             eq(
