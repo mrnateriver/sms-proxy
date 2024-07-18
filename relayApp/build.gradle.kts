@@ -77,8 +77,12 @@ android {
         }
     }
     buildTypes {
-        getByName("release") {
+        release {
+            manifestPlaceholders["networkSecurityConfig"] = "@xml/network_security_config"
             isMinifyEnabled = false
+        }
+        debug {
+            manifestPlaceholders["networkSecurityConfig"] = "@xml/network_security_config_debug"
         }
     }
     compileOptions {
