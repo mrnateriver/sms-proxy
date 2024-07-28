@@ -17,6 +17,9 @@ abstract class MessagesDao {
     @Query("SELECT * FROM MessageEntity WHERE sendStatus IN (:statuses)")
     abstract suspend fun getAll(vararg statuses: MessageRelayStatus): List<MessageEntity>
 
+    @Query("SELECT * FROM MessageEntity WHERE sendStatus IN (:statuses) ORDER BY updatedAt DESC LIMIT 1")
+    abstract suspend fun getLastEntryByStatus(vararg statuses: MessageRelayStatus): MessageEntity?
+
     @Query("SELECT COUNT(guid) FROM MessageEntity")
     abstract suspend fun getCount(): Int
 

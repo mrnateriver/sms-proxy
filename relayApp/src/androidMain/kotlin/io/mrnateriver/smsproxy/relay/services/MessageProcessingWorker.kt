@@ -44,6 +44,8 @@ class MessageProcessingWorker @AssistedInject constructor(
                     statsService.incrementProcessingFailures()
                 }
 
+                statsService.triggerUpdate()
+
                 observabilityService.log(Level.FINE, "Processed ${results.size} messages: $result")
                 result
             }
@@ -62,6 +64,5 @@ class MessageProcessingWorker @AssistedInject constructor(
 
             WorkManager.getInstance(context).enqueue(request)
         }
-
     }
 }

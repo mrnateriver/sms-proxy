@@ -9,7 +9,14 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
+import io.mrnateriver.smsproxy.shared.models.MessageEntry
+import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -21,6 +28,7 @@ import kotlinx.datetime.toLocalDateTime
 import java.util.logging.Level
 import javax.inject.Inject
 import javax.inject.Singleton
+import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 private const val METRICS_NAME_PROCESSING_FAILURES = "processing_failures"
 
@@ -33,7 +41,15 @@ private val KEY_PROCESSING_FAILURE_TIMESTAMP = longPreferencesKey("processing_fa
 class MessageStatsService @Inject constructor(
     @ApplicationContext private val context: Context,
     private val observabilityService: ObservabilityService,
+    private val messagesRepository: MessageRepositoryContract,
 ) {
+    private val updateTrigger = MutableSharedFlow<Unit>()
+
+    val statsUpdates = updateTrigger.asSharedFlow()
+
+    fun triggerUpdate() {
+        updateTrigger.tryEmit(Unit)
+    }
 
     suspend fun incrementProcessingFailures() = supervisorScope {
         // We don't want to fail storage operation if observability fails, hence the supervisorScope
@@ -52,21 +68,54 @@ class MessageStatsService @Inject constructor(
         }
     }
 
-    fun getProcessingFailures(): Flow<Int> {
+    fun getProcessingFailures(): Flow<StatsEntry> {
         return context.dataStore.data.map { preferences ->
-            preferences[KEY_PROCESSING_FAILURES] ?: 0
-        }
-    }
-
-    fun getLastProcessingFailureTimestamp(): Flow<LocalDateTime?> {
-        return context.dataStore.data.map { preferences ->
-            val ts = preferences[KEY_PROCESSING_FAILURE_TIMESTAMP]
-            if (ts != null) {
-                Instant.fromEpochMilliseconds(ts).toLocalDateTime(TimeZone.currentSystemDefault())
+            val value = preferences[KEY_PROCESSING_FAILURES] ?: 0
+            val tsValue = preferences[KEY_PROCESSING_FAILURE_TIMESTAMP]
+            val ts = if (tsValue != null) {
+                Instant.fromEpochMilliseconds(tsValue)
+                    .toLocalDateTime(TimeZone.currentSystemDefault())
             } else {
                 null
             }
+
+            StatsEntry(value, ts)
         }
     }
 
+    fun getProxyingFailures(): Flow<StatsEntry> {
+        return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.FAILED) }
+    }
+
+    fun getTotalProcessedMessages(): Flow<StatsEntry> {
+        return updateTrigger.map {
+            getMessageEntryCountByStatus(
+                MessageRelayStatus.PENDING,
+                MessageRelayStatus.SUCCESS,
+                MessageRelayStatus.FAILED
+            )
+        }
+    }
+
+    fun getTotalRelayedMessages(): Flow<StatsEntry> {
+        return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.SUCCESS) }
+    }
+
+    private suspend fun getMessageEntryCountByStatus(vararg status: MessageRelayStatus): StatsEntry =
+        coroutineScope {
+            val (count, entry) = listOf(
+                async { messagesRepository.getCountByStatus(*status) },
+                async { messagesRepository.getLastEntryByStatus(*status) },
+            ).awaitAll()
+
+            StatsEntry(
+                count as Int,
+                (entry as MessageEntry?)?.updatedAt?.toLocalDateTime(TimeZone.currentSystemDefault())
+            )
+        }
+
+    data class StatsEntry(
+        val value: Int,
+        val lastEvent: LocalDateTime?,
+    )
 }

@@ -15,6 +15,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import io.mrnateriver.smsproxy.relay.BuildConfig
 import io.mrnateriver.smsproxy.relay.composables.PermissionState
 import io.mrnateriver.smsproxy.relay.composables.rememberSmsPermissions
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
@@ -71,9 +72,7 @@ fun NavGraphBuilder.homePage(navController: NavController) {
             )
         }
 
-        // TODO: check buildconfig
-        val showApiKeyError = true
-
+        val showApiKeyError = BuildConfig.API_KEY.isBlank()
         HomePage(
             showApiKeyError = showApiKeyError,
             smsPermissionsState = receiveSmsPermissionResult,

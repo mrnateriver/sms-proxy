@@ -8,11 +8,11 @@ import kotlinx.datetime.Clock
 import java.util.UUID
 import javax.inject.Inject
 import io.mrnateriver.smsproxy.relay.services.data.MessageEntity as MessageDaoEntity
-import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as SmsRepositoryContract
+import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 class MessageRepository @Inject constructor(
     private val messagesDao: MessagesDao,
-) : SmsRepositoryContract {
+) : MessageRepositoryContract {
     override suspend fun insert(entry: MessageData): MessageEntry {
         val result = MessageEntry(
             guid = UUID.randomUUID(),
@@ -33,6 +33,10 @@ class MessageRepository @Inject constructor(
 
     override suspend fun getAll(vararg statuses: MessageRelayStatus): List<MessageEntry> {
         return messagesDao.getAll(*statuses).map { it.toEntry() }
+    }
+
+    override suspend fun getLastEntryByStatus(vararg statuses: MessageRelayStatus): MessageEntry? {
+        return messagesDao.getLastEntryByStatus(*statuses)?.toEntry()
     }
 
     override suspend fun getCountByStatus(vararg statuses: MessageRelayStatus): Int {
