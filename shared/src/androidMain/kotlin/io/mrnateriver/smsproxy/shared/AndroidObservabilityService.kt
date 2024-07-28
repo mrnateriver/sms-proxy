@@ -17,6 +17,11 @@ class AndroidObservabilityService : ObservabilityService {
         return result
     }
 
+    override suspend fun incrementCounter(metricName: String) {
+        // TODO: actually report metrics
+        log(Level.FINE, "Incrementing counter: $metricName")
+    }
+
     private fun mapLogLevel(level: Level): Int {
         return when (level) {
             Level.SEVERE -> Log.ERROR

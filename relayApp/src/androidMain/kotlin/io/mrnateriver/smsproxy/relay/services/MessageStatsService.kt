@@ -11,6 +11,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
@@ -20,10 +22,12 @@ import java.util.logging.Level
 import javax.inject.Inject
 import javax.inject.Singleton
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "messages_stats")
+private const val METRICS_NAME_PROCESSING_FAILURES = "processing_failures"
 
-val KEY_PROCESSING_FAILURES = intPreferencesKey("processing_failures")
-val KEY_PROCESSING_FAILURE_TIMESTAMP = longPreferencesKey("processing_failure_timestamp")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "messages_stats")
+
+private val KEY_PROCESSING_FAILURES = intPreferencesKey(METRICS_NAME_PROCESSING_FAILURES)
+private val KEY_PROCESSING_FAILURE_TIMESTAMP = longPreferencesKey("processing_failure_timestamp")
 
 @Singleton
 class MessageStatsService @Inject constructor(
@@ -31,7 +35,10 @@ class MessageStatsService @Inject constructor(
     private val observabilityService: ObservabilityService,
 ) {
 
-    suspend fun incrementProcessingFailures() {
+    suspend fun incrementProcessingFailures() = supervisorScope {
+        // We don't want to fail storage operation if observability fails, hence the supervisorScope
+        launch { observabilityService.incrementCounter(METRICS_NAME_PROCESSING_FAILURES) }
+
         context.dataStore.edit { preferences ->
             val currentFailures = preferences[KEY_PROCESSING_FAILURES] ?: 0
             val now = Clock.System.now()
