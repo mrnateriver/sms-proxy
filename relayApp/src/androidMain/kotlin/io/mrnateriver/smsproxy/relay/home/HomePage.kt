@@ -15,6 +15,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import io.mrnateriver.smsproxy.relay.AppViewModel
 import io.mrnateriver.smsproxy.relay.BuildConfig
 import io.mrnateriver.smsproxy.relay.composables.PermissionState
 import io.mrnateriver.smsproxy.relay.composables.rememberSmsPermissions
@@ -27,7 +28,7 @@ import kotlinx.datetime.toLocalDateTime
 
 const val HomePageRoute = "/"
 
-fun NavGraphBuilder.homePage(navController: NavController) {
+fun NavGraphBuilder.homePage(navController: NavController, appViewModel: AppViewModel) {
     composable(HomePageRoute) {
         // TODO: move to an initialization service or something
         val receiveSmsPermissionResult = rememberSmsPermissions()
@@ -73,6 +74,7 @@ fun NavGraphBuilder.homePage(navController: NavController) {
         }
 
         val showApiKeyError = BuildConfig.API_KEY.isBlank()
+
         HomePage(
             showApiKeyError = showApiKeyError,
             smsPermissionsState = receiveSmsPermissionResult,

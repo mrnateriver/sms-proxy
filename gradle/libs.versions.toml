@@ -4,8 +4,8 @@ kotlin = "2.0.0"
 kotlin-ksp = "2.0.0-1.0.21"
 android-desugarJdkLibs = "2.0.4"
 androidx-composeBom = "2024.06.00"
-androidx-lifecycleRuntimeKtx = "2.8.3"
-androidx-activityCompose = "1.9.0"
+androidx-lifecycleRuntimeKtx = "2.8.4"
+androidx-activityCompose = "1.9.1"
 androidx-composeRuntime = "1.6.8"
 androidx-appcompat = "1.7.0"
 androidx-espressoCore = "3.6.1"
@@ -16,6 +16,7 @@ androidx-navigationCompose = "2.7.7"
 androidx-workRuntimeKtx = "2.9.0"
 androidx-hiltWork = "1.2.0"
 androidx-datastorePreferences = "1.1.1"
+androidx-lifecycleRuntimeComposeAndroid = "2.8.4"
 google-accompanist = "0.35.1-alpha"
 about-libraries = "11.2.1"
 compose-preferences = "1.0.0"
@@ -43,6 +44,7 @@ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", versi
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastorePreferences" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hiltWork" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidx-hiltWork" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hiltWork" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycleRuntimeKtx" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-workRuntimeKtx" }
@@ -58,6 +60,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigationCompose" }
+androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "androidx-lifecycleRuntimeComposeAndroid" }
 android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugarJdkLibs" }
 moshi-adapters = { module = "com.squareup.moshi:moshi-adapters", version.ref = "moshi" }
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }

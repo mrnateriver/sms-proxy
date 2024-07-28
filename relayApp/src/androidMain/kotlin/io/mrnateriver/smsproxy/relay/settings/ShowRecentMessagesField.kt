@@ -4,15 +4,22 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
 import io.mrnateriver.smsproxy.relay.R
-import me.zhanghai.compose.preference.checkboxPreference
+import io.mrnateriver.smsproxy.relay.composables.rememberMutableCoroutineState
+import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
+import me.zhanghai.compose.preference.CheckboxPreference
 
-private const val PREF_KEY_SHOW_RECENT_MESSAGES = "show-recent-messages"
+fun LazyListScope.showRecentMessagesPreference(settingsService: SettingsService) {
+    item(key = "show-recent-messages", contentType = "CheckboxPreference") {
+        val state = rememberMutableCoroutineState(
+            settingsService.showRecentMessages,
+            settingsService::setShowRecentMessages,
+            false,
+        )
 
-fun LazyListScope.showRecentMessagesPreference() {
-    checkboxPreference(
-        key = PREF_KEY_SHOW_RECENT_MESSAGES,
-        defaultValue = true,
-        title = { Text(stringResource(R.string.settings_page_entry_recent_messages_title)) },
-        summary = { Text(stringResource(R.string.settings_page_entry_recent_messages_summary)) },
-    )
+        CheckboxPreference(
+            state = state,
+            title = { Text(stringResource(R.string.settings_page_entry_recent_messages_title)) },
+            summary = { Text(stringResource(R.string.settings_page_entry_recent_messages_summary)) },
+        )
+    }
 }

@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay
+package io.mrnateriver.smsproxy.relay.services
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -8,8 +8,6 @@ import android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION
 import android.telephony.SmsMessage
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.mrnateriver.smsproxy.relay.services.MessageProcessingWorker
-import io.mrnateriver.smsproxy.relay.services.MessageStatsService
 import io.mrnateriver.smsproxy.shared.MessageProcessingService
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageData

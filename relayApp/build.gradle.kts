@@ -107,6 +107,8 @@ android {
         implementation(projects.shared)
         implementation(projects.proxyApiClient)
 
+        implementation(libs.android.hilt)
+        implementation(libs.androidx.hilt.work)
         implementation(libs.androidx.compat)
         implementation(libs.androidx.core.ktx)
         implementation(libs.androidx.work.runtime.ktx)
@@ -124,6 +126,8 @@ android {
         implementation(libs.compose.preferences)
         implementation(libs.room.runtime)
         implementation(libs.room.ktx)
+        implementation(libs.androidx.hilt.navigation.compose)
+        implementation(libs.androidx.lifecycle.runtime.compose.android)
 
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)
@@ -140,8 +144,6 @@ ksp {
 }
 
 dependencies {
-    implementation(libs.android.hilt)
-    implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.android.hilt.compiler)
     ksp(libs.room.compiler)

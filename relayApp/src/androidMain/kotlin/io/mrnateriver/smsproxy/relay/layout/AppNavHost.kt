@@ -12,13 +12,18 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import io.mrnateriver.smsproxy.relay.AppViewModel
 import io.mrnateriver.smsproxy.relay.about.aboutPage
 import io.mrnateriver.smsproxy.relay.home.HomePageRoute
 import io.mrnateriver.smsproxy.relay.home.homePage
 import io.mrnateriver.smsproxy.relay.settings.settingsPage
 
 @Composable
-fun AppNavHost(modifier: Modifier = Modifier, navController: NavHostController) {
+fun AppNavHost(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    appViewModel: AppViewModel,
+) {
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -28,9 +33,9 @@ fun AppNavHost(modifier: Modifier = Modifier, navController: NavHostController) 
         popEnterTransition = { navPopEnterTransitionBuilder() },
         popExitTransition = { navPopExitTransitionBuilder() },
     ) {
-        homePage(navController)
+        homePage(navController, appViewModel)
+        settingsPage(navController, appViewModel)
         aboutPage(navController)
-        settingsPage(navController)
     }
 }
 
