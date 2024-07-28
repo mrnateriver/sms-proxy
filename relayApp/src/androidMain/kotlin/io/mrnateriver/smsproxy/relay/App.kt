@@ -9,11 +9,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import io.mrnateriver.smsproxy.relay.pages.home.isHomePageRoute
 import io.mrnateriver.smsproxy.relay.layout.AppLayout
 import io.mrnateriver.smsproxy.relay.layout.AppNavHost
 import io.mrnateriver.smsproxy.relay.layout.AppPages
 import io.mrnateriver.smsproxy.relay.layout.drawer.AppDrawerContents
+import io.mrnateriver.smsproxy.relay.pages.home.isHomePageRoute
 import io.mrnateriver.smsproxy.shared.theme.AppMaterialTheme
 
 @Preview
@@ -43,7 +43,7 @@ fun App() {
                 content = {
                     AppNavHost(
                         navController = navController,
-                        appViewModel = appViewModel
+                        viewModel = appViewModel
                     )
                 },
             )

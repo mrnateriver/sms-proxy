@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +19,7 @@ fun <T> rememberMutableCoroutineState(
     val scope = rememberCoroutineScope()
     val state = value.collectAsStateWithLifecycle(defaultValue)
 
-    return AsMutableState(state) { scope.launch { setter(it) } }
+    return remember { AsMutableState(state) { scope.launch { setter(it) } } }
 }
 
 @Stable

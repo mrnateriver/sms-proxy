@@ -7,79 +7,42 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import io.mrnateriver.smsproxy.relay.AppViewModel
-import io.mrnateriver.smsproxy.relay.BuildConfig
-import io.mrnateriver.smsproxy.relay.composables.PermissionState
-import io.mrnateriver.smsproxy.relay.composables.rememberSmsPermissions
+import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
+import io.mrnateriver.smsproxy.relay.composables.rememberMessagePermissions
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
 import io.mrnateriver.smsproxy.relay.pages.settings.navigateToSettingsPage
+import io.mrnateriver.smsproxy.relay.services.MessageStatsData
 import io.mrnateriver.smsproxy.shared.models.MessageData
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 const val HomePageRoute = "/"
 
-fun NavGraphBuilder.homePage(navController: NavController, appViewModel: AppViewModel) {
+fun NavGraphBuilder.homePage(
+    navController: NavController,
+    viewModel: AppViewModel,
+) {
     composable(HomePageRoute) {
-        // TODO: move to an initialization service or something
-        val receiveSmsPermissionResult = rememberSmsPermissions()
-
-        // TODO: use a viewModel probably
-        val smsRecords = remember {
-            listOf(
-                MessageData(
-                    sender = "+12223334455",
-                    message = "Hello World",
-                    receivedAt = Clock.System.now(),
-                ),
-                MessageData(
-                    sender = "Hello",
-                    message = "General Kenobi",
-                    receivedAt = Clock.System.now(),
-                ),
-                MessageData(
-                    sender = "+993742732",
-                    message = "Test",
-                    receivedAt = Clock.System.now(),
-                ),
-                MessageData(
-                    sender = "World",
-                    message = "How's it going",
-                    receivedAt = Clock.System.now(),
-                ),
-            )
-        }
-
-        // TODO: use a viewModel probably
-        val smsStatsData = remember {
-            SmsStatsData(
-                received = 123,
-                relayed = 456,
-                errors = 0,
-                failures = 0,
-                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                null,
-            )
-        }
-
-        val showApiKeyError = BuildConfig.API_KEY.isBlank()
+        val showApiKeyError = viewModel.showApiKeyError
+        val messagePermissionsStatus by rememberMessagePermissions()
+        val showServerSettingsHint by viewModel.showServerSettingsHint.collectAsStateWithLifecycle(false)
+        val messageRecordsRecent by viewModel.messageRecordsRecent.collectAsStateWithLifecycle(listOf())
+        val messageStats by viewModel.messageStats.collectAsStateWithLifecycle(MessageStatsData())
 
         HomePage(
             showApiKeyError = showApiKeyError,
-            smsPermissionsState = receiveSmsPermissionResult,
-            smsStatsData = smsStatsData,
-            smsRecords = smsRecords,
+            showServerSettingsHint = showServerSettingsHint,
+            messagePermissionsStatus = messagePermissionsStatus,
+            messageStatsData = messageStats,
+            messageRecordsRecent = messageRecordsRecent,
             onGoToSettingsClick = { navController.navigateToSettingsPage() },
         )
     }
@@ -97,9 +60,10 @@ fun HomePage(
     modifier: Modifier = Modifier,
     onGoToSettingsClick: () -> Unit = {},
     showApiKeyError: Boolean = true,
-    smsPermissionsState: PermissionState = PermissionState.UNKNOWN,
-    smsStatsData: SmsStatsData = SmsStatsData(),
-    smsRecords: List<MessageData> = listOf(),
+    showServerSettingsHint: Boolean = true,
+    messagePermissionsStatus: PermissionStatus = PermissionStatus.UNKNOWN,
+    messageStatsData: MessageStatsData = MessageStatsData(),
+    messageRecordsRecent: List<MessageData> = listOf(),
 ) {
     AppContentSurface {
         Dashboard(
@@ -107,11 +71,12 @@ fun HomePage(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.navigationBars),
-            showApiKeyError = showApiKeyError,
-            smsPermissionsState = smsPermissionsState,
-            smsStatsData = smsStatsData,
-            smsRecords = smsRecords,
             onGoToSettingsClick = onGoToSettingsClick,
+            showApiKeyError = showApiKeyError,
+            showServerSettingsHint = showServerSettingsHint,
+            messagePermissionStatus = messagePermissionsStatus,
+            messageStatsData = messageStatsData,
+            messageRecordsRecent = messageRecordsRecent,
         )
     }
 }

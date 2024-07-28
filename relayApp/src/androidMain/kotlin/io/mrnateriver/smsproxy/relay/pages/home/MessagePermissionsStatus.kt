@@ -17,16 +17,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.relay.composables.PermissionState
+import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
 @Preview
 @Composable
-fun SmsPermissionsStatus(
+fun MessagePermissionsStatus(
     modifier: Modifier = Modifier,
-    permissionState: PermissionState = PermissionState.UNKNOWN,
+    status: PermissionStatus = PermissionStatus.UNKNOWN,
 ) {
-    if (permissionState == PermissionState.UNKNOWN) {
+    if (status == PermissionStatus.UNKNOWN) {
         PermissionStatusCard {
             Row(
                 modifier = Modifier.padding(AppSpacings.medium),
@@ -41,7 +41,7 @@ fun SmsPermissionsStatus(
                 )
             }
         }
-    } else if (permissionState == PermissionState.DENIED) {
+    } else if (status == PermissionStatus.DENIED) {
         // TODO: refactor into an "ErrorCard" or something
         PermissionStatusCard(error = true) {
             Column(

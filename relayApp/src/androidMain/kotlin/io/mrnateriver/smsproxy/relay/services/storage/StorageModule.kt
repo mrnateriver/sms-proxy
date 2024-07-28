@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.services.data
+package io.mrnateriver.smsproxy.relay.services.storage
 
 import android.content.Context
 import androidx.room.Room
@@ -11,10 +11,11 @@ import io.mrnateriver.smsproxy.relay.BuildConfig
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import java.util.concurrent.Executors
 import java.util.logging.Level
+import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 @Module
 @InstallIn(SingletonComponent::class)
-class MessagesDatabaseModule {
+class StorageModule {
     @Provides
     fun providesMessagesDatabase(
         @ApplicationContext context: Context,
@@ -40,4 +41,8 @@ class MessagesDatabaseModule {
 
     @Provides
     fun providesMessagesDao(database: MessagesDatabase): MessagesDao = database.messagesDao()
+
+    @Provides
+    fun providesMessageRepository(dao: MessagesDao): MessageRepositoryContract =
+        MessageRepository(dao)
 }

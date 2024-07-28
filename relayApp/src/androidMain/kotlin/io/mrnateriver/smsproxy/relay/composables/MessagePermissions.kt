@@ -3,6 +3,7 @@ package io.mrnateriver.smsproxy.relay.composables
 import android.Manifest
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,10 +12,10 @@ import androidx.compose.runtime.setValue
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
-private const val PERMISSION_RECEIVE_SMS = Manifest.permission.RECEIVE_SMS
-private const val PERMISSION_READ_SMS = Manifest.permission.READ_SMS
+private const val PERMISSION_RECEIVE_MESSAGES = Manifest.permission.RECEIVE_SMS
+private const val PERMISSION_READ_MESSAGES = Manifest.permission.READ_SMS
 
-enum class PermissionState {
+enum class PermissionStatus {
     UNKNOWN,
     GRANTED,
     DENIED
@@ -22,12 +23,12 @@ enum class PermissionState {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun rememberSmsPermissions(): PermissionState {
+fun rememberMessagePermissions(): State<PermissionStatus> {
     var gotUserResponse by remember { mutableStateOf(false) }
     val state = rememberMultiplePermissionsState(
         permissions = listOf(
-            PERMISSION_RECEIVE_SMS,
-            PERMISSION_READ_SMS,
+            PERMISSION_RECEIVE_MESSAGES,
+            PERMISSION_READ_MESSAGES,
         )
     ) { gotUserResponse = true }
 
@@ -35,15 +36,13 @@ fun rememberSmsPermissions(): PermissionState {
         state.launchMultiplePermissionRequest()
     }
 
-    val result by remember {
+    return remember {
         derivedStateOf {
             when {
-                !gotUserResponse -> PermissionState.UNKNOWN
-                state.allPermissionsGranted -> PermissionState.GRANTED
-                else -> PermissionState.DENIED
+                !gotUserResponse -> PermissionStatus.UNKNOWN
+                state.allPermissionsGranted -> PermissionStatus.GRANTED
+                else -> PermissionStatus.DENIED
             }
         }
     }
-
-    return result
 }

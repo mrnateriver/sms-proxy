@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.services.data
+package io.mrnateriver.smsproxy.relay.services.storage
 
 import androidx.room.Embedded
 import androidx.room.Entity

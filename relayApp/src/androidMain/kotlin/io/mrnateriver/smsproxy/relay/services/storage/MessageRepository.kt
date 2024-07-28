@@ -1,19 +1,18 @@
-package io.mrnateriver.smsproxy.relay.services
+package io.mrnateriver.smsproxy.relay.services.storage
 
-import io.mrnateriver.smsproxy.relay.services.data.MessagesDao
+import io.mrnateriver.smsproxy.shared.contracts.MessageRepository
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
 import kotlinx.datetime.Clock
 import java.util.UUID
 import javax.inject.Inject
-import io.mrnateriver.smsproxy.relay.services.data.MessageEntity as MessageDaoEntity
-import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 class MessageRepository @Inject constructor(
     private val messagesDao: MessagesDao,
-) : MessageRepositoryContract {
+) : MessageRepository {
     override suspend fun insert(entry: MessageData): MessageEntry {
+        val now = Clock.System.now()
         val result = MessageEntry(
             guid = UUID.randomUUID(),
             externalId = null,
@@ -21,8 +20,8 @@ class MessageRepository @Inject constructor(
             sendRetries = 0,
             sendFailureReason = null,
             messageData = entry,
-            createdAt = Clock.System.now(),
-            updatedAt = null,
+            createdAt = now,
+            updatedAt = now,
         )
         return result.also { messagesDao.insert(it.toEntity()) }
     }
@@ -33,6 +32,10 @@ class MessageRepository @Inject constructor(
 
     override suspend fun getAll(vararg statuses: MessageRelayStatus): List<MessageEntry> {
         return messagesDao.getAll(*statuses).map { it.toEntry() }
+    }
+
+    override suspend fun getLastEntries(limit: Int): List<MessageEntry> {
+        return messagesDao.getLastEntries(limit).map { it.toEntry() }
     }
 
     override suspend fun getLastEntryByStatus(vararg statuses: MessageRelayStatus): MessageEntry? {
@@ -48,7 +51,7 @@ class MessageRepository @Inject constructor(
     }
 }
 
-private fun MessageDaoEntity.toEntry() = MessageEntry(
+private fun MessageEntity.toEntry() = MessageEntry(
     guid = guid,
     externalId = externalId,
     sendStatus = sendStatus,
@@ -59,7 +62,7 @@ private fun MessageDaoEntity.toEntry() = MessageEntry(
     updatedAt = updatedAt,
 )
 
-private fun MessageEntry.toEntity() = MessageDaoEntity(
+private fun MessageEntry.toEntity() = MessageEntity(
     guid = guid,
     externalId = externalId,
     sendStatus = sendStatus,

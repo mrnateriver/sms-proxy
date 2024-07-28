@@ -25,17 +25,24 @@ import java.time.format.FormatStyle
 
 @Preview
 @Composable
-fun SmsLastRecords(modifier: Modifier = Modifier, records: List<MessageData> = previewSmsRecords) {
+fun MessageRecordsRecent(
+    modifier: Modifier = Modifier,
+    records: List<MessageData> = previewMessageRecords,
+) {
+    if (records.isEmpty()) {
+        return
+    }
+
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)) {
         Text(
             modifier = Modifier.padding(start = AppSpacings.medium),
-            text = stringResource(R.string.dashboard_last_messages_title),
+            text = stringResource(R.string.dashboard_recent_messages_title),
             style = MaterialTheme.typography.headlineMedium,
         )
         records.forEach { record ->
-            SmsRecord(
+            MessageRecord(
                 from = record.sender,
                 message = record.message,
                 timestamp = dateFormatter.format(
@@ -49,7 +56,7 @@ fun SmsLastRecords(modifier: Modifier = Modifier, records: List<MessageData> = p
 
 @Preview
 @Composable
-private fun SmsRecord(
+private fun MessageRecord(
     modifier: Modifier = Modifier,
     from: String = "+12223334455",
     message: String = "Hello World",
@@ -87,7 +94,7 @@ private fun SmsRecord(
     }
 }
 
-private val previewSmsRecords = listOf(
+private val previewMessageRecords = listOf(
     MessageData(
         sender = "+12223334455",
         message = "Hello World",

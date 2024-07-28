@@ -15,9 +15,6 @@ import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as Observab
 @InstallIn(SingletonComponent::class)
 abstract class ServicesModule {
     @Binds
-    abstract fun bindsMessageRepository(impl: MessageRepository): MessageRepositoryContract
-
-    @Binds
     abstract fun bindsMessageRelayService(impl: MessageRelayService): MessageRelayServiceContract
 
     @Module

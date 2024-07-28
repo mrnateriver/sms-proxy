@@ -28,7 +28,7 @@
     <string name="dashboard_stats_card_title_relayed">Переадресовано</string>
     <string name="dashboard_stats_card_title_errors">Ошибок</string>
     <string name="dashboard_stats_card_title_failures">Отказов</string>
-    <string name="dashboard_last_messages_title">Последние сообщения</string>
+    <string name="dashboard_recent_messages_title">Последние сообщения</string>
     <string name="dashboard_permissions_status_text_pending">Ожидание доступа…</string>
     <string name="dashboard_permissions_status_denied_title">В доступе отказано</string>
     <string name="dashboard_permissions_status_denied_text">Пожалуйста, предоставьте приложению доступ к необходимым функциям.</string>

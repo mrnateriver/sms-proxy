@@ -9,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
+import io.mrnateriver.smsproxy.relay.services.MessageStatsData
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
@@ -27,24 +27,12 @@ import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-@Stable
-data class SmsStatsData(
-    val received: Int = 0,
-    val relayed: Int = 0,
-    val errors: Int = 0,
-    val failures: Int = 0,
-    val lastReceivedAt: LocalDateTime? = null,
-    val lastRelayedAt: LocalDateTime? = null,
-    val lastErrorAt: LocalDateTime? = null,
-    val lastFailureAt: LocalDateTime? = null,
-)
-
 @Preview
 @Composable
-fun SmsStats(
+fun MessageStats(
     modifier: Modifier = Modifier,
     // TODO: move this to a preview definition
-    data: SmsStatsData = SmsStatsData(
+    data: MessageStatsData = MessageStatsData(
         123,
         456,
         42,
@@ -78,8 +66,8 @@ fun SmsStats(
             StatsCard(
                 modifier = Modifier.weight(1f),
                 title = stringResource(R.string.dashboard_stats_card_title_processed),
-                value = data.received.toString(),
-                lastEvent = formatDate(data.lastReceivedAt),
+                value = data.processed.toString(),
+                lastEvent = formatDate(data.lastProcessedAt),
             )
             StatsCard(
                 modifier = Modifier.weight(1f),

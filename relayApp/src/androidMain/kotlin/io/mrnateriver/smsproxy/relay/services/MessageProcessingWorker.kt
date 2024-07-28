@@ -22,7 +22,7 @@ import java.util.logging.Level
 class MessageProcessingWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val smsProcessingService: MessageProcessingService,
+    private val processingService: MessageProcessingService,
     private val statsService: MessageStatsService,
     private val observabilityService: ObservabilityService,
 ) : CoroutineWorker(appContext, workerParams) {
@@ -30,7 +30,7 @@ class MessageProcessingWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
             observabilityService.runSpan("MessageProcessingWorker.doWork") {
-                val results = smsProcessingService
+                val results = processingService
                     .handleUnprocessedMessages()
                     .map { it.sendStatus }.toList()
                 val result = when {

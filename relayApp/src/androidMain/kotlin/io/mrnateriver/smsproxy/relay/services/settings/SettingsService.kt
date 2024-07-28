@@ -11,8 +11,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import javax.inject.Inject
@@ -26,43 +27,35 @@ private val PREF_KEY_SHOW_RECENT_MESSAGES = booleanPreferencesKey("show-recent-m
 class SettingsService @Inject constructor(@ApplicationContext private val context: Context) {
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    val serverAddress: SharedFlow<String>
+    val serverAddress: Flow<String>
         get() = context.settingsStore.data.map {
             it[PREF_KEY_API_SERVER_ADDRESS] ?: ""
         }.shareIn(scope, SharingStarted.Lazily, 1)
 
-    val receiverKey: SharedFlow<String>
+    val receiverKey: Flow<String>
         get() = context.settingsStore.data.map {
             it[PREF_KEY_API_SERVER_RECEIVER_KEY] ?: ""
         }.shareIn(scope, SharingStarted.Lazily, 1)
 
-    val showRecentMessages: SharedFlow<Boolean>
+    val showRecentMessages: Flow<Boolean>
         get() = context.settingsStore.data.map {
             it[PREF_KEY_SHOW_RECENT_MESSAGES] ?: true
         }.shareIn(scope, SharingStarted.Lazily, 1)
 
-    @Throws(SettingValidationError::class)
-    suspend fun setServerAddress(value: String) {
-        val validationError = validateServerAddress(value, context.resources)
-        if (validationError.isNotEmpty()) {
-            throw SettingValidationError(validationError)
+    val isServerConfigured: Flow<Boolean> =
+        combine(serverAddress, receiverKey) { serverAddress, receiverKey ->
+            serverAddress.isNotEmpty() && receiverKey.isNotEmpty()
         }
+
+    suspend fun setServerAddress(value: String) {
         context.settingsStore.edit { it[PREF_KEY_API_SERVER_ADDRESS] = value }
     }
 
-    @Throws(SettingValidationError::class)
     suspend fun setReceiverKey(value: String) {
-        val validationError = validateReceiverKey(value, context.resources)
-        if (!validationError.isNullOrEmpty()) {
-            throw SettingValidationError(validationError)
-        }
         context.settingsStore.edit { it[PREF_KEY_API_SERVER_RECEIVER_KEY] = value }
     }
 
     suspend fun setShowRecentMessages(value: Boolean) {
         context.settingsStore.edit { it[PREF_KEY_SHOW_RECENT_MESSAGES] = value }
     }
-}
-
-class SettingValidationError(msg: String) : IllegalArgumentException(msg) {
 }

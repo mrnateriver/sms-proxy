@@ -6,7 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import io.mrnateriver.smsproxy.relay.composables.PermissionState
+import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
+import io.mrnateriver.smsproxy.relay.services.MessageStatsData
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
@@ -16,9 +17,10 @@ fun Dashboard(
     modifier: Modifier = Modifier,
     onGoToSettingsClick: () -> Unit = {},
     showApiKeyError: Boolean = true,
-    smsPermissionsState: PermissionState = PermissionState.UNKNOWN,
-    smsStatsData: SmsStatsData = SmsStatsData(),
-    smsRecords: List<MessageData> = listOf(),
+    showServerSettingsHint: Boolean = true,
+    messagePermissionStatus: PermissionStatus = PermissionStatus.UNKNOWN,
+    messageStatsData: MessageStatsData = MessageStatsData(),
+    messageRecordsRecent: List<MessageData> = listOf(),
 ) {
     Column(
         modifier = modifier.padding(AppSpacings.medium),
@@ -27,9 +29,11 @@ fun Dashboard(
         if (showApiKeyError) {
             ApiKeyStatus()
         }
-        SmsPermissionsStatus(permissionState = smsPermissionsState)
-        ServerSettingsStatus(onGoToSettingsClick = onGoToSettingsClick)
-        SmsStats(data = smsStatsData)
-        SmsLastRecords(records = smsRecords)
+        if (showServerSettingsHint) {
+            ServerSettingsStatus(onGoToSettingsClick = onGoToSettingsClick)
+        }
+        MessagePermissionsStatus(status = messagePermissionStatus)
+        MessageStats(data = messageStatsData)
+        MessageRecordsRecent(records = messageRecordsRecent)
     }
 }

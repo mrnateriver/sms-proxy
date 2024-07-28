@@ -11,12 +11,15 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -43,7 +46,7 @@ class MessageStatsService @Inject constructor(
     private val observabilityService: ObservabilityService,
     private val messagesRepository: MessageRepositoryContract,
 ) {
-    private val updateTrigger = MutableSharedFlow<Unit>()
+    private val updateTrigger = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
 
     val statsUpdates = updateTrigger.asSharedFlow()
 
@@ -68,7 +71,30 @@ class MessageStatsService @Inject constructor(
         }
     }
 
-    fun getProcessingFailures(): Flow<StatsEntry> {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun getStats(): Flow<MessageStatsData> {
+        return updateTrigger.flatMapLatest {
+            combine(
+                getProcessingErrors(),
+                getProcessingFailures(),
+                getProcessedMessages(),
+                getRelayedMessages(),
+            ) { errors, failures, processed, relayed ->
+                MessageStatsData(
+                    processed = processed.value,
+                    relayed = relayed.value,
+                    errors = errors.value,
+                    failures = failures.value,
+                    lastProcessedAt = processed.lastEvent,
+                    lastRelayedAt = relayed.lastEvent,
+                    lastErrorAt = errors.lastEvent,
+                    lastFailureAt = failures.lastEvent,
+                )
+            }
+        }
+    }
+
+    fun getProcessingErrors(): Flow<StatsEntry> {
         return context.dataStore.data.map { preferences ->
             val value = preferences[KEY_PROCESSING_FAILURES] ?: 0
             val tsValue = preferences[KEY_PROCESSING_FAILURE_TIMESTAMP]
@@ -83,11 +109,11 @@ class MessageStatsService @Inject constructor(
         }
     }
 
-    fun getProxyingFailures(): Flow<StatsEntry> {
+    fun getProcessingFailures(): Flow<StatsEntry> {
         return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.FAILED) }
     }
 
-    fun getTotalProcessedMessages(): Flow<StatsEntry> {
+    fun getProcessedMessages(): Flow<StatsEntry> {
         return updateTrigger.map {
             getMessageEntryCountByStatus(
                 MessageRelayStatus.PENDING,
@@ -97,7 +123,7 @@ class MessageStatsService @Inject constructor(
         }
     }
 
-    fun getTotalRelayedMessages(): Flow<StatsEntry> {
+    fun getRelayedMessages(): Flow<StatsEntry> {
         return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.SUCCESS) }
     }
 
@@ -119,3 +145,4 @@ class MessageStatsService @Inject constructor(
         val lastEvent: LocalDateTime?,
     )
 }
+

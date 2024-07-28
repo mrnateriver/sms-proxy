@@ -27,7 +27,7 @@
     <string name="dashboard_stats_card_title_relayed">Relayed</string>
     <string name="dashboard_stats_card_title_errors">Errors</string>
     <string name="dashboard_stats_card_title_failures">Failures</string>
-    <string name="dashboard_last_messages_title">Last Messages</string>
+    <string name="dashboard_recent_messages_title">Recent Messages</string>
     <string name="dashboard_permissions_status_text_pending">Waiting for permissions…</string>
     <string name="dashboard_permissions_status_denied_title">Permission Denied</string>
     <string name="dashboard_permissions_status_denied_text">Please grant the necessary permissions for the app to function.</string>

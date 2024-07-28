@@ -22,7 +22,7 @@ import io.mrnateriver.smsproxy.relay.pages.settings.settingsPage
 fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    appViewModel: AppViewModel,
+    viewModel: AppViewModel,
 ) {
     NavHost(
         modifier = modifier,
@@ -33,8 +33,8 @@ fun AppNavHost(
         popEnterTransition = { navPopEnterTransitionBuilder() },
         popExitTransition = { navPopExitTransitionBuilder() },
     ) {
-        homePage(navController, appViewModel)
-        settingsPage(navController, appViewModel)
+        homePage(navController, viewModel)
+        settingsPage(navController, viewModel)
         aboutPage(navController)
     }
 }

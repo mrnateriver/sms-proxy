@@ -57,7 +57,6 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
                     receivedAt = Instant.fromEpochMilliseconds(message.timestampMillis),
                 )
             )
-            statsService.triggerUpdate()
         } catch (e: Exception) {
             statsService.incrementProcessingFailures()
 
@@ -67,6 +66,8 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
             )
 
             MessageProcessingWorker.schedule(context)
+        } finally {
+            statsService.triggerUpdate()
         }
     }
 }

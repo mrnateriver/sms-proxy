@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.services.data
+package io.mrnateriver.smsproxy.relay.services.storage
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -16,6 +16,9 @@ abstract class MessagesDao {
 
     @Query("SELECT * FROM MessageEntity WHERE sendStatus IN (:statuses)")
     abstract suspend fun getAll(vararg statuses: MessageRelayStatus): List<MessageEntity>
+
+    @Query("SELECT * FROM MessageEntity ORDER BY updatedAt DESC LIMIT :limit")
+    abstract suspend fun getLastEntries(limit: Int): List<MessageEntity>
 
     @Query("SELECT * FROM MessageEntity WHERE sendStatus IN (:statuses) ORDER BY updatedAt DESC LIMIT 1")
     abstract suspend fun getLastEntryByStatus(vararg statuses: MessageRelayStatus): MessageEntity?
