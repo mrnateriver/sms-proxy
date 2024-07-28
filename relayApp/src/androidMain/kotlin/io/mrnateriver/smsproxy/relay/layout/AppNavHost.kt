@@ -13,10 +13,10 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import io.mrnateriver.smsproxy.relay.AppViewModel
-import io.mrnateriver.smsproxy.relay.about.aboutPage
-import io.mrnateriver.smsproxy.relay.home.HomePageRoute
-import io.mrnateriver.smsproxy.relay.home.homePage
-import io.mrnateriver.smsproxy.relay.settings.settingsPage
+import io.mrnateriver.smsproxy.relay.pages.about.aboutPage
+import io.mrnateriver.smsproxy.relay.pages.home.HomePageRoute
+import io.mrnateriver.smsproxy.relay.pages.home.homePage
+import io.mrnateriver.smsproxy.relay.pages.settings.settingsPage
 
 @Composable
 fun AppNavHost(

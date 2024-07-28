@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.about
+package io.mrnateriver.smsproxy.relay.pages.about
 
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable

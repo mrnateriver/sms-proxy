@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.about
+package io.mrnateriver.smsproxy.relay.pages.about
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

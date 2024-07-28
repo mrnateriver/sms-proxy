@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.settings
+package io.mrnateriver.smsproxy.relay.pages.settings
 
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.Text

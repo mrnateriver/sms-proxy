@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.settings
+package io.mrnateriver.smsproxy.relay.pages.settings
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,23 +10,26 @@ import androidx.compose.ui.res.stringResource
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.composables.rememberMutableCoroutineState
 import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
-import io.mrnateriver.smsproxy.relay.services.settings.validateReceiverKey
+import io.mrnateriver.smsproxy.relay.services.settings.validateServerAddress
 
-fun LazyListScope.receiverKeyPreference(settingsService: SettingsService) {
-    item(key = "api-receiver-key-preferences-key", contentType = "ValidatedStringFieldPreference") {
+fun LazyListScope.serverAddressPreference(settingsService: SettingsService) {
+    item(
+        key = "api-server-address-preferences-key",
+        contentType = "ValidatedStringFieldPreference"
+    ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             val state = rememberMutableCoroutineState(
-                settingsService.receiverKey,
-                settingsService::setReceiverKey,
-                ""
+                settingsService.serverAddress,
+                settingsService::setServerAddress,
+                "",
             )
 
             val resources = LocalContext.current.resources
 
             ValidatedStringFieldPreference(
                 state = state,
-                title = stringResource(R.string.settings_page_entry_receiver_key_title),
-                validate = { validateReceiverKey(it, resources) },
+                title = stringResource(R.string.settings_page_entry_server_address_title),
+                validate = { validateServerAddress(it, resources) },
             )
         }
 

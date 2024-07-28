@@ -9,12 +9,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptionsBuilder
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.relay.about.isAboutPageRoute
-import io.mrnateriver.smsproxy.relay.about.isLicensesPageRoute
-import io.mrnateriver.smsproxy.relay.about.navigateToAboutPage
-import io.mrnateriver.smsproxy.relay.about.navigateToLicensesPage
-import io.mrnateriver.smsproxy.relay.settings.isSettingsPageRoute
-import io.mrnateriver.smsproxy.relay.settings.navigateToSettingsPage
+import io.mrnateriver.smsproxy.relay.pages.about.isAboutPageRoute
+import io.mrnateriver.smsproxy.relay.pages.about.isLicensesPageRoute
+import io.mrnateriver.smsproxy.relay.pages.about.navigateToAboutPage
+import io.mrnateriver.smsproxy.relay.pages.about.navigateToLicensesPage
+import io.mrnateriver.smsproxy.relay.pages.settings.isSettingsPageRoute
+import io.mrnateriver.smsproxy.relay.pages.settings.navigateToSettingsPage
 
 enum class AppPages(
     val icon: ImageVector? = null,

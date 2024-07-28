@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.home
+package io.mrnateriver.smsproxy.relay.pages.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

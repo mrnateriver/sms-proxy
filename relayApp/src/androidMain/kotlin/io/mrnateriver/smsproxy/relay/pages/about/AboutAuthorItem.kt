@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.about
+package io.mrnateriver.smsproxy.relay.pages.about
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size

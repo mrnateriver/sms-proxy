@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.home
+package io.mrnateriver.smsproxy.relay.pages.home
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +20,7 @@ import io.mrnateriver.smsproxy.relay.BuildConfig
 import io.mrnateriver.smsproxy.relay.composables.PermissionState
 import io.mrnateriver.smsproxy.relay.composables.rememberSmsPermissions
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
-import io.mrnateriver.smsproxy.relay.settings.navigateToSettingsPage
+import io.mrnateriver.smsproxy.relay.pages.settings.navigateToSettingsPage
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone

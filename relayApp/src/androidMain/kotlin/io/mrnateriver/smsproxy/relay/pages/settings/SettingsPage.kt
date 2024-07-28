@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.settings
+package io.mrnateriver.smsproxy.relay.pages.settings
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
