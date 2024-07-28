@@ -10,13 +10,12 @@ import io.mrnateriver.smsproxy.models.MessageProxyRequest
 import io.mrnateriver.smsproxy.relay.settings.PREF_KEY_API_SERVER_RECEIVER_KEY
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import javax.inject.Inject
-import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as SmsRelayServiceContract
+import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
 
 class MessageRelayService @Inject constructor(
     private val proxyApiService: DefaultApi,
     @ApplicationContext private val context: Context,
-) :
-    SmsRelayServiceContract {
+) : MessageRelayServiceContract {
     override suspend fun relay(entry: MessageEntry) {
         val receiverKey = PreferenceManager.getDefaultSharedPreferences(context)
             .getString(PREF_KEY_API_SERVER_RECEIVER_KEY, "")

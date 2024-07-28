@@ -70,6 +70,7 @@ android {
         buildConfigField("String", "AUTHOR_WEB_PAGE_URL", "\"${validateUrl("authorWebPageUrl")}\"")
         buildConfigField("String", "API_BASE_URL", "\"${validateUrl("apiBaseUrl")}\"")
         buildConfigField("String", "API_KEY", "\"${validateNonEmpty("apiKey")}\"")
+        buildConfigField("long", "API_TIMEOUT_MS", "${validateNonEmpty("apiTimeoutMs")}L")
     }
     packaging {
         resources {
