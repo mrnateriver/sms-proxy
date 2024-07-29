@@ -24,7 +24,7 @@ class AppViewModel @Inject constructor(
 ) : ViewModel() {
     val showApiKeyError = BuildConfig.API_KEY.isBlank()
 
-    val showServerSettingsHint = settingsService.isServerConfigured.map { !it }
+    val showServerSettingsHint = settingsService.isApiConfigured.map { !it }
 
     val messageStats: Flow<MessageStatsData> = statsService.getStats()
 

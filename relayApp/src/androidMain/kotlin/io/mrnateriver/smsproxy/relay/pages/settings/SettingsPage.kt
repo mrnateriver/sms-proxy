@@ -40,14 +40,14 @@ fun SettingsPage(navController: NavController, settingsService: SettingsService)
     SettingsPageAppBarActions(navController)
 
     AppContentSurface {
-        val serverConfigured by settingsService.isServerConfigured.collectAsStateWithLifecycle(false)
+        val apiConfigured by settingsService.isApiConfigured.collectAsStateWithLifecycle(false)
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            if (!serverConfigured) {
-                item { ServerSettingsWarningCard(Modifier.padding(AppSpacings.medium)) }
+            if (!apiConfigured) {
+                item { ApiSettingsWarningCard(Modifier.padding(AppSpacings.medium)) }
             }
 
-            serverAddressPreference(settingsService)
+            baseApiUrlPreference(settingsService)
             receiverKeyPreference(settingsService)
             showRecentMessagesPreference(settingsService)
         }

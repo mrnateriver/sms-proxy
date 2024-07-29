@@ -20,28 +20,28 @@ import javax.inject.Inject
 
 private val Context.settingsStore: DataStore<Preferences> by preferencesDataStore(name = "app_settings")
 
-private val PREF_KEY_API_SERVER_ADDRESS = stringPreferencesKey("api-server-address")
-private val PREF_KEY_API_SERVER_RECEIVER_KEY = stringPreferencesKey("api-server-receiver-key")
+private val PREF_KEY_API_BASE_API_URL = stringPreferencesKey("api-base-url")
+private val PREF_KEY_API_RECEIVER_KEY = stringPreferencesKey("api-receiver-key")
 private val PREF_KEY_SHOW_RECENT_MESSAGES = booleanPreferencesKey("show-recent-messages")
 
 class SettingsService @Inject constructor(@ApplicationContext private val context: Context) {
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    val serverAddress = getSetting(PREF_KEY_API_SERVER_ADDRESS, "")
-    val receiverKey = getSetting(PREF_KEY_API_SERVER_RECEIVER_KEY, "")
+    val baseApiUrl = getSetting(PREF_KEY_API_BASE_API_URL, "")
+    val receiverKey = getSetting(PREF_KEY_API_RECEIVER_KEY, "")
     val showRecentMessages = getSetting(PREF_KEY_SHOW_RECENT_MESSAGES, true)
 
-    val isServerConfigured: Flow<Boolean> =
-        combine(serverAddress, receiverKey) { serverAddress, receiverKey ->
-            serverAddress.isNotEmpty() && receiverKey.isNotEmpty()
+    val isApiConfigured: Flow<Boolean> =
+        combine(baseApiUrl, receiverKey) { baseApiUrl, receiverKey ->
+            baseApiUrl.isNotEmpty() && receiverKey.isNotEmpty()
         }
 
-    suspend fun setServerAddress(value: String) {
-        context.settingsStore.edit { it[PREF_KEY_API_SERVER_ADDRESS] = value }
+    suspend fun setBaseApiUrl(value: String) {
+        context.settingsStore.edit { it[PREF_KEY_API_BASE_API_URL] = value }
     }
 
     suspend fun setReceiverKey(value: String) {
-        context.settingsStore.edit { it[PREF_KEY_API_SERVER_RECEIVER_KEY] = value }
+        context.settingsStore.edit { it[PREF_KEY_API_RECEIVER_KEY] = value }
     }
 
     suspend fun setShowRecentMessages(value: Boolean) {

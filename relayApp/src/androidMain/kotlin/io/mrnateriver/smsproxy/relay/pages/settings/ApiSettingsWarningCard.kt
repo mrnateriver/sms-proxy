@@ -17,7 +17,7 @@ import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
 @Composable
-fun ServerSettingsWarningCard(modifier: Modifier = Modifier) {
+fun ApiSettingsWarningCard(modifier: Modifier = Modifier) {
     // TODO: refactor into a reusable card along with ServerSettingsStatus
     Surface(
         modifier = modifier.fillMaxWidth(),

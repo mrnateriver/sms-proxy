@@ -15,8 +15,8 @@ import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
 @Composable
-fun ServerSettingsStatus(modifier: Modifier = Modifier, onGoToSettingsClick: () -> Unit = {}) {
-    // TODO: refactor into a reusable card along with ServerSettingsWarningCard
+fun ApiSettingsStatus(modifier: Modifier = Modifier, onGoToSettingsClick: () -> Unit = {}) {
+    // TODO: refactor into a reusable card along with ApiSettingsWarningCard
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
@@ -28,12 +28,12 @@ fun ServerSettingsStatus(modifier: Modifier = Modifier, onGoToSettingsClick: () 
             verticalArrangement = Arrangement.spacedBy(AppSpacings.medium),
         ) {
             Text(
-                text = stringResource(R.string.home_page_server_settings_card_title),
+                text = stringResource(R.string.home_page_api_settings_card_title),
                 style = MaterialTheme.typography.titleMedium,
             )
-            Text(text = stringResource(R.string.home_page_server_settings_card_text))
+            Text(text = stringResource(R.string.home_page_api_settings_card_text))
             Button(onClick = onGoToSettingsClick) {
-                Text(text = stringResource(R.string.home_page_server_settings_card_button_label))
+                Text(text = stringResource(R.string.home_page_api_settings_card_button_label))
             }
         }
     }

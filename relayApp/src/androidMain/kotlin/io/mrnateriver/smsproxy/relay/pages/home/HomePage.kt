@@ -33,20 +33,16 @@ fun NavGraphBuilder.homePage(
     composable(HomePageRoute) {
         val showApiKeyError = viewModel.showApiKeyError
         val messagePermissionsStatus by rememberMessagePermissions()
-        val showServerSettingsHint by viewModel.showServerSettingsHint.collectAsStateWithLifecycle(
-            false
-        )
-        val messageRecordsRecent by viewModel.messageRecordsRecent.collectAsStateWithLifecycle(
-            listOf()
-        )
+        val showSettingsHint by viewModel.showServerSettingsHint.collectAsStateWithLifecycle(false)
+        val messageRecent by viewModel.messageRecordsRecent.collectAsStateWithLifecycle(listOf())
         val messageStats by viewModel.messageStats.collectAsStateWithLifecycle(MessageStatsData())
 
         HomePage(
             showApiKeyError = showApiKeyError,
-            showServerSettingsHint = showServerSettingsHint,
+            showApiSettingsHint = showSettingsHint,
             messagePermissionsStatus = messagePermissionsStatus,
             messageStatsData = messageStats,
-            messageRecordsRecent = messageRecordsRecent,
+            messageRecordsRecent = messageRecent,
             onGoToSettingsClick = { navController.navigateToSettingsPage() },
         )
     }
@@ -64,7 +60,7 @@ fun HomePage(
     modifier: Modifier = Modifier,
     onGoToSettingsClick: () -> Unit = {},
     showApiKeyError: Boolean = true,
-    showServerSettingsHint: Boolean = true,
+    showApiSettingsHint: Boolean = true,
     messagePermissionsStatus: PermissionStatus = PermissionStatus.UNKNOWN,
     messageStatsData: MessageStatsData = MessageStatsData(),
     messageRecordsRecent: List<MessageEntry> = listOf(),
@@ -77,7 +73,7 @@ fun HomePage(
                 .windowInsetsPadding(WindowInsets.navigationBars),
             onGoToSettingsClick = onGoToSettingsClick,
             showApiKeyError = showApiKeyError,
-            showServerSettingsHint = showServerSettingsHint,
+            showApiSettingsHint = showApiSettingsHint,
             messagePermissionStatus = messagePermissionsStatus,
             messageStatsData = messageStatsData,
             messageRecordsRecent = messageRecordsRecent,

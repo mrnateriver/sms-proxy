@@ -10,17 +10,17 @@ import androidx.compose.ui.res.stringResource
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.composables.rememberMutableCoroutineState
 import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
-import io.mrnateriver.smsproxy.relay.services.settings.validateServerAddress
+import io.mrnateriver.smsproxy.relay.services.settings.validateBaseApiUrl
 
-fun LazyListScope.serverAddressPreference(settingsService: SettingsService) {
+fun LazyListScope.baseApiUrlPreference(settingsService: SettingsService) {
     item(
-        key = "api-server-address-preferences-key",
+        key = "api-base-url-preferences-key",
         contentType = "ValidatedStringFieldPreference"
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             val state = rememberMutableCoroutineState(
-                settingsService.serverAddress,
-                settingsService::setServerAddress,
+                settingsService.baseApiUrl,
+                settingsService::setBaseApiUrl,
                 "",
             )
 
@@ -28,8 +28,8 @@ fun LazyListScope.serverAddressPreference(settingsService: SettingsService) {
 
             ValidatedStringFieldPreference(
                 state = state,
-                title = stringResource(R.string.settings_page_entry_server_address_title),
-                validate = { validateServerAddress(it, resources) },
+                title = stringResource(R.string.settings_page_entry_api_base_url_title),
+                validate = { validateBaseApiUrl(it, resources) },
             )
         }
 

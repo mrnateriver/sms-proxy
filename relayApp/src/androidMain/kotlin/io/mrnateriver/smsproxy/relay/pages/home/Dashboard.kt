@@ -17,7 +17,7 @@ fun Dashboard(
     modifier: Modifier = Modifier,
     onGoToSettingsClick: () -> Unit = {},
     showApiKeyError: Boolean = true,
-    showServerSettingsHint: Boolean = true,
+    showApiSettingsHint: Boolean = true,
     messagePermissionStatus: PermissionStatus = PermissionStatus.UNKNOWN,
     messageStatsData: MessageStatsData = MessageStatsData(),
     messageRecordsRecent: List<MessageEntry> = listOf(),
@@ -29,8 +29,8 @@ fun Dashboard(
         if (showApiKeyError) {
             ApiKeyStatus()
         }
-        if (showServerSettingsHint) {
-            ServerSettingsStatus(onGoToSettingsClick = onGoToSettingsClick)
+        if (showApiSettingsHint) {
+            ApiSettingsStatus(onGoToSettingsClick = onGoToSettingsClick)
         }
         MessagePermissionsStatus(status = messagePermissionStatus)
         MessageStats(data = messageStatsData)
