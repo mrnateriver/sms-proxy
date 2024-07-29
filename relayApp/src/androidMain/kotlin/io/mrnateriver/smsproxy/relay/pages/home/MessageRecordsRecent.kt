@@ -15,6 +15,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.models.MessageData
+import io.mrnateriver.smsproxy.shared.models.MessageEntry
+import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -22,18 +24,20 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.util.UUID
 
 @Preview
 @Composable
 fun MessageRecordsRecent(
     modifier: Modifier = Modifier,
-    records: List<MessageData> = previewMessageRecords,
+    entries: List<MessageEntry> = previewMessageRecords,
 ) {
-    if (records.isEmpty()) {
+    if (entries.isEmpty()) {
         return
     }
 
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
+    val timeZone = remember { TimeZone.currentSystemDefault() }
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)) {
         Text(
@@ -41,12 +45,13 @@ fun MessageRecordsRecent(
             text = stringResource(R.string.dashboard_recent_messages_title),
             style = MaterialTheme.typography.headlineMedium,
         )
-        records.forEach { record ->
+        entries.forEach { entry ->
+            // TODO: show a processing status indicator based on entry.sendStatus
             MessageRecord(
-                from = record.sender,
-                message = record.message,
+                from = entry.messageData.sender,
+                message = entry.messageData.message,
                 timestamp = dateFormatter.format(
-                    record.receivedAt.toLocalDateTime(TimeZone.currentSystemDefault())
+                    entry.messageData.receivedAt.toLocalDateTime(timeZone)
                         .toJavaLocalDateTime()
                 ),
             )
@@ -95,24 +100,60 @@ private fun MessageRecord(
 }
 
 private val previewMessageRecords = listOf(
-    MessageData(
-        sender = "+12223334455",
-        message = "Hello World",
-        receivedAt = Clock.System.now(),
+    MessageEntry(
+        guid = UUID.randomUUID(),
+        externalId = null,
+        sendRetries = 0,
+        sendFailureReason = null,
+        sendStatus = MessageRelayStatus.SUCCESS,
+        createdAt = null,
+        updatedAt = null,
+        messageData = MessageData(
+            sender = "+12223334455",
+            message = "Hello World",
+            receivedAt = Clock.System.now(),
+        )
     ),
-    MessageData(
-        sender = "Hello",
-        message = "General Kenobi",
-        receivedAt = Clock.System.now(),
+    MessageEntry(
+        guid = UUID.randomUUID(),
+        externalId = null,
+        sendRetries = 0,
+        sendFailureReason = null,
+        sendStatus = MessageRelayStatus.SUCCESS,
+        createdAt = null,
+        updatedAt = null,
+        messageData = MessageData(
+            sender = "Hello",
+            message = "General Kenobi",
+            receivedAt = Clock.System.now(),
+        )
     ),
-    MessageData(
-        sender = "+993742732",
-        message = "Test",
-        receivedAt = Clock.System.now(),
+    MessageEntry(
+        guid = UUID.randomUUID(),
+        externalId = null,
+        sendRetries = 0,
+        sendFailureReason = null,
+        sendStatus = MessageRelayStatus.SUCCESS,
+        createdAt = null,
+        updatedAt = null,
+        messageData = MessageData(
+            sender = "+993742732",
+            message = "Test",
+            receivedAt = Clock.System.now(),
+        )
     ),
-    MessageData(
-        sender = "World",
-        message = "How's it going",
-        receivedAt = Clock.System.now(),
+    MessageEntry(
+        guid = UUID.randomUUID(),
+        externalId = null,
+        sendRetries = 0,
+        sendFailureReason = null,
+        sendStatus = MessageRelayStatus.SUCCESS,
+        createdAt = null,
+        updatedAt = null,
+        messageData = MessageData(
+            sender = "World",
+            message = "How's it going",
+            receivedAt = Clock.System.now(),
+        )
     ),
 )

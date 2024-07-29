@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
 import io.mrnateriver.smsproxy.relay.services.MessageStatsData
-import io.mrnateriver.smsproxy.shared.models.MessageData
+import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
 @Preview
@@ -20,7 +20,7 @@ fun Dashboard(
     showServerSettingsHint: Boolean = true,
     messagePermissionStatus: PermissionStatus = PermissionStatus.UNKNOWN,
     messageStatsData: MessageStatsData = MessageStatsData(),
-    messageRecordsRecent: List<MessageData> = listOf(),
+    messageRecordsRecent: List<MessageEntry> = listOf(),
 ) {
     Column(
         modifier = modifier.padding(AppSpacings.medium),
@@ -34,6 +34,6 @@ fun Dashboard(
         }
         MessagePermissionsStatus(status = messagePermissionStatus)
         MessageStats(data = messageStatsData)
-        MessageRecordsRecent(records = messageRecordsRecent)
+        MessageRecordsRecent(entries = messageRecordsRecent)
     }
 }

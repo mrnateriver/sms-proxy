@@ -22,7 +22,7 @@ import io.mrnateriver.smsproxy.relay.composables.rememberMessagePermissions
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
 import io.mrnateriver.smsproxy.relay.pages.settings.navigateToSettingsPage
 import io.mrnateriver.smsproxy.relay.services.MessageStatsData
-import io.mrnateriver.smsproxy.shared.models.MessageData
+import io.mrnateriver.smsproxy.shared.models.MessageEntry
 
 const val HomePageRoute = "/"
 
@@ -33,8 +33,12 @@ fun NavGraphBuilder.homePage(
     composable(HomePageRoute) {
         val showApiKeyError = viewModel.showApiKeyError
         val messagePermissionsStatus by rememberMessagePermissions()
-        val showServerSettingsHint by viewModel.showServerSettingsHint.collectAsStateWithLifecycle(false)
-        val messageRecordsRecent by viewModel.messageRecordsRecent.collectAsStateWithLifecycle(listOf())
+        val showServerSettingsHint by viewModel.showServerSettingsHint.collectAsStateWithLifecycle(
+            false
+        )
+        val messageRecordsRecent by viewModel.messageRecordsRecent.collectAsStateWithLifecycle(
+            listOf()
+        )
         val messageStats by viewModel.messageStats.collectAsStateWithLifecycle(MessageStatsData())
 
         HomePage(
@@ -63,7 +67,7 @@ fun HomePage(
     showServerSettingsHint: Boolean = true,
     messagePermissionsStatus: PermissionStatus = PermissionStatus.UNKNOWN,
     messageStatsData: MessageStatsData = MessageStatsData(),
-    messageRecordsRecent: List<MessageData> = listOf(),
+    messageRecordsRecent: List<MessageEntry> = listOf(),
 ) {
     AppContentSurface {
         Dashboard(
