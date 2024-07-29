@@ -9,6 +9,7 @@ import io.mrnateriver.smsproxy.relay.layout.AppPages
 @Composable
 fun AppDrawerContents(
     activePage: AppPages? = null,
+    toggleDrawer: () -> Unit = {},
     onNavigateClick: (route: AppPages) -> Unit = {},
 ) {
     for (page in listOf(AppPages.SETTINGS, AppPages.ABOUT)) {
@@ -16,7 +17,7 @@ fun AppDrawerContents(
             icon = page.icon,
             label = stringResource(page.titleResId),
             selected = page == activePage,
-            onClick = { onNavigateClick(page) },
+            onClick = { if (page == activePage) toggleDrawer() else onNavigateClick(page) },
         )
     }
 }

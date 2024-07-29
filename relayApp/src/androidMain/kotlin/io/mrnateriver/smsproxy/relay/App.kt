@@ -37,6 +37,7 @@ fun App() {
                 drawerContent = { toggleDrawer ->
                     AppDrawerContents(
                         activePage = activePage,
+                        toggleDrawer = toggleDrawer,
                         onNavigateClick = navigate(toggleDrawer, navController),
                     )
                 },
