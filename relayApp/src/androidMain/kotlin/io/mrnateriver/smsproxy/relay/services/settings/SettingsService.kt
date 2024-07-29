@@ -27,20 +27,9 @@ private val PREF_KEY_SHOW_RECENT_MESSAGES = booleanPreferencesKey("show-recent-m
 class SettingsService @Inject constructor(@ApplicationContext private val context: Context) {
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    val serverAddress: Flow<String>
-        get() = context.settingsStore.data.map {
-            it[PREF_KEY_API_SERVER_ADDRESS] ?: ""
-        }.shareIn(scope, SharingStarted.Lazily, 1)
-
-    val receiverKey: Flow<String>
-        get() = context.settingsStore.data.map {
-            it[PREF_KEY_API_SERVER_RECEIVER_KEY] ?: ""
-        }.shareIn(scope, SharingStarted.Lazily, 1)
-
-    val showRecentMessages: Flow<Boolean>
-        get() = context.settingsStore.data.map {
-            it[PREF_KEY_SHOW_RECENT_MESSAGES] ?: true
-        }.shareIn(scope, SharingStarted.Lazily, 1)
+    val serverAddress = getSetting(PREF_KEY_API_SERVER_ADDRESS, "")
+    val receiverKey = getSetting(PREF_KEY_API_SERVER_RECEIVER_KEY, "")
+    val showRecentMessages = getSetting(PREF_KEY_SHOW_RECENT_MESSAGES, true)
 
     val isServerConfigured: Flow<Boolean> =
         combine(serverAddress, receiverKey) { serverAddress, receiverKey ->
@@ -57,5 +46,11 @@ class SettingsService @Inject constructor(@ApplicationContext private val contex
 
     suspend fun setShowRecentMessages(value: Boolean) {
         context.settingsStore.edit { it[PREF_KEY_SHOW_RECENT_MESSAGES] = value }
+    }
+
+    private fun <T> getSetting(key: Preferences.Key<T>, defaultValue: T): Flow<T> {
+        return context.settingsStore.data.map {
+            it[key] ?: defaultValue
+        }.shareIn(scope, SharingStarted.Lazily, 1)
     }
 }

@@ -24,9 +24,10 @@ fun ValidatedStringFieldPreference(
     title: String,
 ) {
     val currentValue by state
-    var currentError by remember { mutableStateOf(validate(currentValue)) }
-
     var popupValue by remember { mutableStateOf(currentValue) }
+
+    val currentError = validate(popupValue.ifEmpty { currentValue })
+
     var popupError by remember { mutableStateOf(currentError) }
     var shouldShowPopupError by remember { mutableStateOf(currentValue.isNotEmpty()) }
 
@@ -36,32 +37,37 @@ fun ValidatedStringFieldPreference(
         title = { Text(title) },
         valueToText = { popupValue.ifEmpty { currentValue } },
         textToValue = {
-            currentError = popupError
-            if (popupError.isNullOrEmpty()) it else ""
+            val popupFieldError = validate(it)
+
+            popupValue = it
+            popupError = popupFieldError
+
+            if (popupFieldError.isNullOrBlank()) it else ""
         },
         summary = {
             Text(
-                (currentError ?: "").ifEmpty { currentValue },
+                text = (currentError ?: "").ifEmpty { currentValue },
                 color = if (currentError.isNullOrEmpty()) Color.Unspecified else MaterialTheme.colorScheme.error,
             )
         },
         textField = { fieldValue, onValueChange, onOk ->
+            val popupFieldError = validate(fieldValue.text)
+            val isInputInvalid = shouldShowPopupError && !popupFieldError.isNullOrEmpty()
+
             OutlinedTextField(
                 value = fieldValue,
                 onValueChange = {
                     shouldShowPopupError = true
-                    popupValue = it.text
-                    popupError = validate(it.text)
                     onValueChange(it)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(autoCorrect = false),
                 keyboardActions = KeyboardActions { onOk() },
                 singleLine = true,
-                isError = shouldShowPopupError && !popupError.isNullOrEmpty(),
+                isError = isInputInvalid,
                 supportingText = {
-                    if (shouldShowPopupError && !popupError.isNullOrEmpty()) {
-                        Text(popupError!!, color = MaterialTheme.colorScheme.error)
+                    if (isInputInvalid) {
+                        Text(popupFieldError!!, color = MaterialTheme.colorScheme.error)
                     }
                 },
             )
