@@ -16,7 +16,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Instant
+import kotlinx.datetime.Clock
 import java.util.logging.Level
 import javax.inject.Inject
 
@@ -54,7 +54,11 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
                 MessageData(
                     sender = message.displayOriginatingAddress ?: "",
                     message = message.displayMessageBody,
-                    receivedAt = Instant.fromEpochMilliseconds(message.timestampMillis),
+
+                    // We have to use our own record creation timestamp, because timestampMillis in
+                    // SMS messages is parsed from the PDU and reported by the network, which can
+                    // operate in a different time zone
+                    receivedAt = Clock.System.now(),
                 )
             )
         } catch (e: Exception) {
