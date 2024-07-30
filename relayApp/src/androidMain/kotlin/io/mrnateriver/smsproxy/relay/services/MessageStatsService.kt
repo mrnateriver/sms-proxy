@@ -115,11 +115,18 @@ class MessageStatsService @Inject constructor(
 
     fun getProcessedMessages(): Flow<StatsEntry> {
         return updateTrigger.map {
-            getMessageEntryCountByStatus(
-                MessageRelayStatus.PENDING,
-                MessageRelayStatus.SUCCESS,
-                MessageRelayStatus.FAILED
-            )
+            coroutineScope {
+                val (count, lastEntries) = listOf(
+                    async { messagesRepository.getCount() },
+                    async { messagesRepository.getLastEntries(1) },
+                ).awaitAll()
+
+                val lastEntry = (lastEntries as Iterable<*>).firstOrNull() as MessageEntry?
+                StatsEntry(
+                    count as Int,
+                    lastEntry?.updatedAt?.toLocalDateTime(TimeZone.currentSystemDefault())
+                )
+            }
         }
     }
 
