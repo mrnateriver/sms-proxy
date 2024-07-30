@@ -1,0 +1,12 @@
+@startuml C4 System Context
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+
+Person(person, "User", "Has access to both the source of the proxied messages and their destination")
+System(proxyService, "Message Proxy Service", "Two smartphone apps and a backend which handles the secure exchange of messages between them")
+System_Ext(firebase, "Firebase", "Used for sending push notifications to receiver apps")
+
+Rel(person, proxyService, "Uses")
+Rel(proxyService, firebase, "Delivers messages to destinations via")
+
+@enduml
