@@ -27,7 +27,7 @@ class MessageRepository @Inject constructor(
     }
 
     override suspend fun update(entry: MessageEntry): MessageEntry {
-        return entry.also { messagesDao.update(it.toEntity()) }
+        return entry.also { messagesDao.update(it.toEntity().copy(updatedAt = Clock.System.now())) }
     }
 
     override suspend fun getAll(vararg statuses: MessageRelayStatus): List<MessageEntry> {
