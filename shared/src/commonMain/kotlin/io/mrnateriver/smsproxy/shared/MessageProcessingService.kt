@@ -105,6 +105,8 @@ class MessageProcessingService(
         entry: MessageEntry,
         exception: Exception,
     ): MessageEntry {
+        observability.reportException(exception)
+
         observability.log(Level.WARNING, "Failed to process entry ${entry.guid}: $exception")
 
         val retries = entry.sendRetries

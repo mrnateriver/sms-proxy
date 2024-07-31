@@ -10,6 +10,10 @@ class AndroidObservabilityService : ObservabilityService {
         Log.println(mapLogLevel(level), "shared", message)
     }
 
+    override fun reportException(exception: Throwable) {
+        log(Level.SEVERE, "Exception: $exception")
+    }
+
     override suspend fun <T> runSpan(name: String, body: suspend () -> T): T {
         log(Level.FINE, "Starting span: $name")
         val result = body()

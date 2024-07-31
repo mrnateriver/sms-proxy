@@ -65,7 +65,14 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
 
         val result = subject.process(msgData)
 
-        verify(mockRepository).update(eq(msgEntry.copy(sendStatus = MessageRelayStatus.SUCCESS)))
+        verify(mockRepository).update(
+            eq(
+                msgEntry.copy(
+                    sendRetries = 1,
+                    sendStatus = MessageRelayStatus.SUCCESS
+                )
+            )
+        )
         assertEquals(MessageRelayStatus.SUCCESS, result.sendStatus)
     }
 
@@ -99,12 +106,32 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
         verify(mockRepository).update(
             eq(
                 msgEntry.copy(
+                    sendRetries = 1,
                     sendStatus = MessageRelayStatus.ERROR,
                     sendFailureReason = "java.lang.RuntimeException: test"
                 ),
             ),
         )
     }
+
+    @Test
+    fun `when processing entry and relaying fails should report exception via observability`() =
+        runTest {
+            val msgData = createTestMessageData()
+            val msgEntry = createTestMessageEntry(msgData, MessageRelayStatus.PENDING)
+
+            whenever(mockRepository.insert(any())).thenReturn(msgEntry)
+            whenever(mockRelayService.relay(any())).thenThrow(RuntimeException("test"))
+
+            var exception: Throwable? = null
+            try {
+                subject.process(msgData)
+            } catch (e: Exception) {
+                exception = e
+            }
+
+            verify(mockObservabilityService).reportException(exception!!)
+        }
 
     @Test
     fun `when processing entry and storing it fails should throw exception`() = runTest {
