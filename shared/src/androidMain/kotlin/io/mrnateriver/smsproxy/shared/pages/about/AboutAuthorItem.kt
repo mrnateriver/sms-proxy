@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.pages.about
+package io.mrnateriver.smsproxy.shared.pages.about
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
@@ -13,8 +13,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.mrnateriver.smsproxy.relay.BuildConfig
-import io.mrnateriver.smsproxy.relay.R
+import io.mrnateriver.smsproxy.shared.BuildConfig
+import io.mrnateriver.smsproxy.shared.R
 
 @Preview
 @Composable

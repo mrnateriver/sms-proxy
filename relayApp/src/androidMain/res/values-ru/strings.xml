@@ -3,10 +3,6 @@
     <string name="app_name">Ретранслятор SMS</string>
     <string name="settings_page_app_bar_action_save_tooltip">Сохранить настройки</string>
     <string name="settings_page_app_bar_action_save_label">Сохранить настройки</string>
-    <string name="about_page_entry_author_title">Автор</string>
-    <string name="about_page_entry_licenses_title">Лицензии открытого ПО</string>
-    <string name="about_page_entry_licenses_text">Лицензии стороннего ПО</string>
-    <string name="about_page_entry_version_title">Версия</string>
     <string name="home_page_api_settings_card_title">Настройте сервер</string>
     <string name="home_page_api_settings_card_text">Прежде чем приложение начнет работать, вам необходимо настроить параметры подключения к серверу.</string>
     <string name="home_page_api_settings_card_button_label">Перейти к настройкам</string>
@@ -30,8 +26,6 @@
     <string name="dashboard_permissions_status_denied_title">В доступе отказано</string>
     <string name="dashboard_permissions_status_denied_text">Пожалуйста, предоставьте приложению доступ к необходимым функциям.</string>
     <string name="page_title_settings">Настройки</string>
-    <string name="page_title_about">О приложении</string>
-    <string name="page_title_licenses">Лицензии</string>
     <string name="home_page_invalid_api_key_card_title">Некорректный ключ API</string>
     <string name="home_page_invalid_api_key_card_text">Приложение собрано с пустым или некорректным ключом API. Ключ необходим для ретрансляции сообщений.</string>
 </resources>

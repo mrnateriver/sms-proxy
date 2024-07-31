@@ -2,10 +2,6 @@
     <string name="app_name">SMS Videresending</string>
     <string name="settings_page_app_bar_action_save_tooltip">Lagre innstillinger</string>
     <string name="settings_page_app_bar_action_save_label">Lagre innstillinger</string>
-    <string name="about_page_entry_author_title">Forfatter</string>
-    <string name="about_page_entry_licenses_title">Åpen kildekode-lisenser</string>
-    <string name="about_page_entry_licenses_text">Lisenser for tredjepartsprogramvare</string>
-    <string name="about_page_entry_version_title">Versjon</string>
     <string name="home_page_api_settings_card_title">Konfigurer server</string>
     <string name="home_page_api_settings_card_text">Før denne applikasjonen kan fungere, må du konfigurere tilkoblingsinnstillingene til proxyserveren.</string>
     <string name="home_page_api_settings_card_button_label">Gå til innstillinger</string>
@@ -29,8 +25,6 @@
     <string name="dashboard_permissions_status_denied_title">Tillatelse nektet</string>
     <string name="dashboard_permissions_status_denied_text">Vennligst gi de nødvendige tillatelsene for at appen skal fungere.</string>
     <string name="page_title_settings">Innstillinger</string>
-    <string name="page_title_about">Om</string>
-    <string name="page_title_licenses">Lisenser</string>
     <string name="home_page_invalid_api_key_card_title">Ugyldig API-nøkkel</string>
     <string name="home_page_invalid_api_key_card_text">Applikasjonen ble bygget med en tom eller ugyldig API-nøkkel. API-nøkkel er nødvendig for å videresende meldinger.</string>
 </resources>

@@ -3,6 +3,7 @@ package io.mrnateriver.smsproxy.relay.layout.appbar
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,19 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
+import io.mrnateriver.smsproxy.shared.rememberRootBackgroundColor
 
-// FIXME: definitely move to shared
-@Composable
-fun rememberRootBackgroundColor(): Color {
-    return if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceContainerLowest else MaterialTheme.colorScheme.primary
-}
-
-@Preview
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AppBar(
@@ -64,4 +58,16 @@ fun AppBar(
         title = { Text(text = title ?: stringResource(R.string.app_name)) },
         actions = actions,
     )
+}
+
+@Preview
+@Composable
+private fun AppBarPreview_ExplicitIcon() {
+    AppBar(title = "App Bar", navigationIconImageVector = Icons.Outlined.Settings)
+}
+
+@Preview
+@Composable
+private fun AppBarPreview_Defaults() {
+    AppBar()
 }

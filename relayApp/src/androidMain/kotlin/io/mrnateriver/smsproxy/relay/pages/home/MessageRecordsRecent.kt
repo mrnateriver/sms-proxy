@@ -26,11 +26,10 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.UUID
 
-@Preview
 @Composable
 fun MessageRecordsRecent(
     modifier: Modifier = Modifier,
-    entries: List<MessageEntry> = previewMessageRecords,
+    entries: List<MessageEntry> = listOf(),
 ) {
     if (entries.isEmpty()) {
         return
@@ -59,13 +58,12 @@ fun MessageRecordsRecent(
     }
 }
 
-@Preview
 @Composable
 private fun MessageRecord(
     modifier: Modifier = Modifier,
-    from: String = "+12223334455",
-    message: String = "Hello World",
-    timestamp: String = "24.06.2024 15:36:23 UTC+2",
+    from: String,
+    message: String,
+    timestamp: String,
 ) {
     Surface(
         modifier = modifier,
@@ -99,7 +97,25 @@ private fun MessageRecord(
     }
 }
 
-private val previewMessageRecords = listOf(
+@Preview
+@Composable
+fun MessageRecordsRecentPreview() {
+    MessageRecordsRecent(entries = previewMessageRecords)
+}
+
+@Preview
+@Composable
+private fun MessageRecordPreview(
+) {
+    MessageRecord(
+        modifier = Modifier,
+        from = "+12223334455",
+        message = "Hello World",
+        timestamp = "24.06.2024 15:36:23 UTC+2",
+    )
+}
+
+val previewMessageRecords = listOf(
     MessageEntry(
         guid = UUID.randomUUID(),
         externalId = null,

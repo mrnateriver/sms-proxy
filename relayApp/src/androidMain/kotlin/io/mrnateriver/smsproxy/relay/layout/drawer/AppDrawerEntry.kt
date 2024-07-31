@@ -1,6 +1,8 @@
 package io.mrnateriver.smsproxy.relay.layout.drawer
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
@@ -10,7 +12,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
-@Preview
 @Composable
 fun AppDrawerEntry(
     modifier: Modifier = Modifier,
@@ -30,4 +31,22 @@ fun AppDrawerEntry(
         selected = selected,
         onClick = onClick,
     )
+}
+
+@Preview("selected == false")
+@Composable
+private fun AppDrawerEntryPreview_NotSelected() {
+    AppDrawerEntry(icon = Icons.Rounded.AccountCircle, label = "Drawer Entry", selected = false)
+}
+
+@Preview("selected == true")
+@Composable
+private fun AppDrawerEntryPreview_Selected() {
+    AppDrawerEntry(icon = Icons.Rounded.AccountCircle, label = "Drawer Entry", selected = true)
+}
+
+@Preview("no icon")
+@Composable
+private fun AppDrawerEntryPreview_NoIcon() {
+    AppDrawerEntry(label = "Drawer Entry", selected = false)
 }

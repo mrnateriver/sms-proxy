@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 
 private val appBarViewModel = AppBarViewModel()
 
+/**
+ * Singleton `ViewModel` for managing action buttons in the app bar.
+ */
 class AppBarViewModel : ViewModel() {
     private val actionsFlow: MutableStateFlow<@Composable RowScope.() -> Unit> =
         MutableStateFlow { }

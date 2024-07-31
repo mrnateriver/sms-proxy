@@ -27,22 +27,8 @@ import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-@Preview
 @Composable
-fun MessageStats(
-    modifier: Modifier = Modifier,
-    // TODO: move this to a preview definition
-    data: MessageStatsData = MessageStatsData(
-        123,
-        456,
-        42,
-        0,
-        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-        null
-    ),
-) {
+fun MessageStats(modifier: Modifier = Modifier, data: MessageStatsData) {
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
 
     fun formatDate(date: LocalDateTime?): String {
@@ -99,13 +85,12 @@ fun MessageStats(
     }
 }
 
-@Preview
 @Composable
 private fun StatsCard(
     modifier: Modifier = Modifier,
-    title: String = "Sent",
-    value: String = "123",
-    lastEvent: String = "Last event: 1 minute ago",
+    title: String,
+    value: String,
+    lastEvent: String,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Surface(
@@ -137,3 +122,39 @@ private fun StatsCard(
         }
     }
 }
+
+@Preview
+@Composable
+private fun MessageStatsPreview() {
+    MessageStats(
+        data = previewMessageStatsData,
+    )
+}
+
+@Preview
+@Composable
+private fun MessageStatsPreview_NoData() {
+    MessageStats(data = MessageStatsData())
+}
+
+@Preview
+@Composable
+private fun StatsCardPreview() {
+    StatsCard(
+        title = "Sent",
+        value = "123",
+        lastEvent = "Last event: 1 minute ago",
+        textColor = MaterialTheme.colorScheme.onSurface,
+    )
+}
+
+val previewMessageStatsData = MessageStatsData(
+    123,
+    456,
+    42,
+    0,
+    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+)

@@ -1,0 +1,8 @@
+<resources>
+    <string name="about_page_entry_author_title">Author</string>
+    <string name="about_page_entry_licenses_title">Open Source Licenses</string>
+    <string name="about_page_entry_licenses_text">Third-party software licenses</string>
+    <string name="about_page_entry_version_title">Version</string>
+    <string name="page_title_about">About</string>
+    <string name="page_title_licenses">Licenses</string>
+</resources>

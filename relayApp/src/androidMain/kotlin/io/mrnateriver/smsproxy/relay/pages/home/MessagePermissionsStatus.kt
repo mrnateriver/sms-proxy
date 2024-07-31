@@ -1,6 +1,8 @@
 package io.mrnateriver.smsproxy.relay.pages.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,7 +23,6 @@ import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
-@Preview
 @Composable
 fun MessagePermissionsStatus(
     modifier: Modifier = Modifier,
@@ -58,7 +60,6 @@ fun MessagePermissionsStatus(
     }
 }
 
-@Preview
 @Composable
 private fun PermissionStatusCard(
     modifier: Modifier = Modifier,
@@ -71,4 +72,40 @@ private fun PermissionStatusCard(
         color = if (error) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
         content = content,
     )
+}
+
+@Preview
+@Composable
+fun MessagePermissionsStatusPreview_Unknown() {
+    Box(
+        modifier = Modifier
+            .background(Color.Black)
+            .padding(8.dp)
+    ) {
+        MessagePermissionsStatus(status = PermissionStatus.UNKNOWN)
+    }
+}
+
+@Preview
+@Composable
+fun MessagePermissionsStatusPreview_Denied() {
+    Box(
+        modifier = Modifier
+            .background(Color.Black)
+            .padding(8.dp)
+    ) {
+        MessagePermissionsStatus(status = PermissionStatus.DENIED)
+    }
+}
+
+@Preview
+@Composable
+fun MessagePermissionsStatusPreview_Granted() {
+    Box(
+        modifier = Modifier
+            .background(Color.Black)
+            .padding(8.dp)
+    ) {
+        MessagePermissionsStatus(status = PermissionStatus.GRANTED)
+    }
 }

@@ -13,10 +13,11 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import io.mrnateriver.smsproxy.relay.AppViewModel
-import io.mrnateriver.smsproxy.relay.pages.about.aboutPage
+import io.mrnateriver.smsproxy.relay.BuildConfig
 import io.mrnateriver.smsproxy.relay.pages.home.HomePageRoute
 import io.mrnateriver.smsproxy.relay.pages.home.homePage
 import io.mrnateriver.smsproxy.relay.pages.settings.settingsPage
+import io.mrnateriver.smsproxy.shared.pages.about.aboutPage
 
 @Composable
 fun AppNavHost(
@@ -35,7 +36,12 @@ fun AppNavHost(
     ) {
         homePage(navController, viewModel)
         settingsPage(navController, viewModel)
-        aboutPage(navController)
+
+        aboutPage(
+            navController,
+            versionString = "${BuildConfig.VERSION_NAME}+${BuildConfig.VERSION_CODE}",
+            pageContentWrapper = { AppContentSurface { it() } }
+        )
     }
 }
 

@@ -10,9 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
+@Preview
 @Composable
 fun ApiKeyStatus(modifier: Modifier = Modifier) {
     // TODO: refactor into an "ErrorCard" or something

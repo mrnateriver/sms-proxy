@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay
+package io.mrnateriver.smsproxy.relay.services
 
 import dagger.Module
 import dagger.Provides
@@ -7,7 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.auth.HttpBearerAuth
 import io.mrnateriver.smsproxy.infrastructure.ApiClient
-import io.mrnateriver.smsproxy.relay.services.MessageRelayApiClientFactory
+import io.mrnateriver.smsproxy.relay.BuildConfig
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit

@@ -11,7 +11,6 @@ import io.mrnateriver.smsproxy.relay.services.MessageStatsData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
-@Preview
 @Composable
 fun Dashboard(
     modifier: Modifier = Modifier,
@@ -36,4 +35,28 @@ fun Dashboard(
         MessageStats(data = messageStatsData)
         MessageRecordsRecent(entries = messageRecordsRecent)
     }
+}
+
+@Preview
+@Composable
+private fun DashboardPreview_Minimal() {
+    Dashboard(
+        showApiKeyError = false,
+        showApiSettingsHint = false,
+        messagePermissionStatus = PermissionStatus.GRANTED,
+        messageStatsData = MessageStatsData(),
+        messageRecordsRecent = listOf(),
+    )
+}
+
+@Preview(heightDp = 1240)
+@Composable
+private fun DashboardPreview_Full() {
+    Dashboard(
+        showApiKeyError = true,
+        showApiSettingsHint = true,
+        messagePermissionStatus = PermissionStatus.DENIED,
+        messageStatsData = previewMessageStatsData,
+        messageRecordsRecent = previewMessageRecords,
+    )
 }

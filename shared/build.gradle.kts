@@ -1,5 +1,7 @@
+import org.gradle.tooling.BuildException
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.net.URI
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -19,6 +21,8 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            api(libs.compose.preferences)
+            implementation(libs.about.libraries)
         }
         jvmMain.dependencies {
         }
@@ -50,10 +54,49 @@ android {
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        // FIXME: deduplicate with relayApp!
+
+        fun validateNonEmpty(prop: String): String {
+            val value =
+                project.properties.get("${rootProject.ext["basePackageName"]}.$prop")?.toString()
+            if (value.isNullOrBlank()) {
+                throw RuntimeException("Project property '$prop' must be non-empty before build.")
+            }
+            return value
+        }
+
+        fun validateUrl(prop: String): String {
+            val nonEmptyUrl = validateNonEmpty(prop)
+            try {
+                URI(nonEmptyUrl).toURL()
+            } catch (e: Exception) {
+                throw BuildException(
+                    "Project property '$prop' must be set to a valid URL before build.",
+                    e,
+                )
+            }
+            return nonEmptyUrl
+        }
+
+        buildConfigField("String", "AUTHOR_WEB_PAGE_URL", "\"${validateUrl("authorWebPageUrl")}\"")
+    }
+    buildFeatures {
+        compose = true
+        buildConfig = true
     }
     dependencies {
-        implementation(platform(libs.androidx.compose.bom))
+        val composeBom = platform(libs.androidx.compose.bom)
+
+        implementation(composeBom)
+
+        // Compose BOM is not supported in KMP, so the dependencies are declared in android {} block
         implementation(libs.androidx.material3)
         implementation(libs.androidx.ui.text.google.fonts)
+        implementation(libs.androidx.ui.tooling.preview)
+        implementation(libs.androidx.navigation.compose)
+
+        androidTestImplementation(composeBom)
+        debugImplementation(libs.androidx.ui.tooling)
     }
 }

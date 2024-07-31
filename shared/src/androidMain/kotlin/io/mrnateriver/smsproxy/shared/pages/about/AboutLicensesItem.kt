@@ -1,11 +1,11 @@
-package io.mrnateriver.smsproxy.relay.pages.about
+package io.mrnateriver.smsproxy.shared.pages.about
 
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import io.mrnateriver.smsproxy.relay.R
+import io.mrnateriver.smsproxy.shared.R
 
 @Preview
 @Composable

@@ -14,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import io.mrnateriver.smsproxy.shared.AppPreferencesProvider
 import me.zhanghai.compose.preference.TextFieldPreference
 
 @Composable
@@ -75,3 +77,26 @@ fun ValidatedStringFieldPreference(
     )
 }
 
+@Preview
+@Composable
+private fun ValidatedStringFieldPreferencePreview_ValidationError() {
+    AppPreferencesProvider {
+        ValidatedStringFieldPreference(
+            title = "Validated Field",
+            state = remember { mutableStateOf("") },
+            validate = { "Failed Validation" },
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ValidatedStringFieldPreferencePreview_Value() {
+    AppPreferencesProvider {
+        ValidatedStringFieldPreference(
+            title = "Validated Field",
+            state = remember { mutableStateOf("Some Value") },
+            validate = { null },
+        )
+    }
+}
