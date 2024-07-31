@@ -42,7 +42,7 @@ fun MessageStats(modifier: Modifier = Modifier, data: MessageStatsData) {
         Text(
             modifier = Modifier.padding(start = AppSpacings.medium),
             text = stringResource(R.string.dashboard_stats_title),
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
         )
 
         Row(
@@ -111,12 +111,12 @@ private fun StatsCard(
             )
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleSmall,
                 color = textColor,
             )
             Text(
                 text = lastEvent,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.tertiary,
             )
         }

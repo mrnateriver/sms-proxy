@@ -26,8 +26,8 @@ fun AboutListItem(
 ) {
     ListItem(
         leadingContent = { Box(modifier = Modifier.size(48.dp)) { image?.invoke() } },
-        overlineContent = { Text(title, style = MaterialTheme.typography.titleMedium) },
-        headlineContent = { Text(text, style = MaterialTheme.typography.bodyMedium) },
+        overlineContent = { Text(title, style = MaterialTheme.typography.titleSmall) },
+        headlineContent = { Text(text, style = MaterialTheme.typography.bodySmall) },
         modifier = if (onClick != null) modifier.clickable { onClick() } else modifier,
         trailingContent = if (onClick != null) {
             {

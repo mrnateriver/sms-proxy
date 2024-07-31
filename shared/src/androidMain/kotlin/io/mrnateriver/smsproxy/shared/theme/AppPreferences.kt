@@ -9,7 +9,8 @@ import me.zhanghai.compose.preference.preferenceTheme
 @Composable
 fun appPreferencesTheme(): PreferenceTheme {
     return preferenceTheme(
-        titleTextStyle = MaterialTheme.typography.titleMedium.copy(
+        summaryTextStyle = MaterialTheme.typography.bodySmall,
+        titleTextStyle = MaterialTheme.typography.titleSmall.copy(
             color = ListItemDefaults.colors().overlineColor, // To match "About" page styles
         ),
     )

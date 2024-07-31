@@ -27,7 +27,7 @@ fun ApiSettingsStatus(modifier: Modifier = Modifier, onGoToSettingsClick: () -> 
     ) {
         Column(
             modifier = Modifier.padding(AppSpacings.medium),
-            verticalArrangement = Arrangement.spacedBy(AppSpacings.medium),
+            verticalArrangement = Arrangement.spacedBy(AppSpacings.small),
         ) {
             Text(
                 text = stringResource(R.string.home_page_api_settings_card_title),

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,13 +22,11 @@ fun AppDrawerEntry(
     onClick: () -> Unit = {},
 ) {
     NavigationDrawerItem(
-        modifier = Modifier
-            .padding(horizontal = AppSpacings.small)
-            .padding(bottom = AppSpacings.tiny),
+        modifier = Modifier.padding(horizontal = AppSpacings.small),
         icon = if (icon != null) {
             { Icon(imageVector = icon, contentDescription = null) }
         } else null,
-        label = { Text(label) },
+        label = { Text(label, style = MaterialTheme.typography.bodyLarge) },
         selected = selected,
         onClick = onClick,
     )
