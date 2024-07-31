@@ -106,15 +106,15 @@ class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTe
             val msgEntry = createTestMessageEntry(
                 msgData,
                 MessageRelayStatus.PENDING,
-                mockProcessingConfig.maxRetries.inc()
+                mockProcessingConfig.maxRetries.dec()
             )
 
             whenever(mockRepository.getAll(anyVararg(MessageRelayStatus::class)))
                 .thenReturn(listOf(msgEntry))
+            whenever(mockRelayService.relay(any())).thenThrow(RuntimeException("test"))
 
             subject.handleUnprocessedMessages()
 
-            verify(mockRelayService, never()).relay(msgEntry)
             verify(mockRepository).update(argThat { sendStatus == MessageRelayStatus.FAILED })
         }
 
@@ -144,7 +144,7 @@ class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTe
         }
 
     @Test
-    fun `when handling unprocessed entries should processed entries with final status`() =
+    fun `when handling unprocessed entries should process entries with final status`() =
         runTest {
             val msgData = createTestMessageData()
             val msgEntries = listOf(

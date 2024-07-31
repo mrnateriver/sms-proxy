@@ -59,7 +59,6 @@ class MessageProcessingService(
                 try {
                     checkStatus(updated) { return@runSpan it to null }
                     checkTimeout(updated) { return@runSpan it to null }
-                    checkRetries(updated) { return@runSpan it to null }
 
                     updated = startProcessing(updated)
                     relay.relay(updated)
@@ -73,16 +72,6 @@ class MessageProcessingService(
 
     private suspend fun recordProcessingSuccess(entry: MessageEntry): MessageEntry {
         return repository.update(entry.copy(sendStatus = MessageRelayStatus.SUCCESS))
-    }
-
-    private suspend fun recordProcessingError(
-        entry: MessageEntry,
-        e: Exception,
-    ): MessageEntry {
-        observability.log(Level.WARNING, "Failed to process entry ${entry.guid}: $e")
-        return repository.update(
-            entry.copy(sendStatus = MessageRelayStatus.ERROR, sendFailureReason = e.toString()),
-        )
     }
 
     private suspend fun startProcessing(entry: MessageEntry): MessageEntry {
@@ -112,19 +101,26 @@ class MessageProcessingService(
         }
     }
 
-    private suspend inline fun checkRetries(
+    private suspend fun recordProcessingError(
         entry: MessageEntry,
-        cont: (entry: MessageEntry) -> Unit,
-    ) {
+        exception: Exception,
+    ): MessageEntry {
+        observability.log(Level.WARNING, "Failed to process entry ${entry.guid}: $exception")
+
         val retries = entry.sendRetries
         if (retries >= config.maxRetries) {
             observability.log(Level.WARNING, "Entry ${entry.guid} reached max retries")
-            cont(
-                repository.update(
-                    entry.copy(
-                        sendStatus = MessageRelayStatus.FAILED,
-                        sendFailureReason = "Reached max retries",
-                    ),
+            return repository.update(
+                entry.copy(
+                    sendStatus = MessageRelayStatus.FAILED,
+                    sendFailureReason = "Reached max retries",
+                ),
+            )
+        } else {
+            return repository.update(
+                entry.copy(
+                    sendStatus = MessageRelayStatus.ERROR,
+                    sendFailureReason = exception.toString()
                 ),
             )
         }
