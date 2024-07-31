@@ -11,7 +11,7 @@ class AndroidObservabilityService : ObservabilityService {
     }
 
     override fun reportException(exception: Throwable) {
-        log(Level.SEVERE, "Exception: $exception")
+        log(Level.SEVERE, exception.stackTraceToString())
     }
 
     override suspend fun <T> runSpan(name: String, body: suspend () -> T): T {
