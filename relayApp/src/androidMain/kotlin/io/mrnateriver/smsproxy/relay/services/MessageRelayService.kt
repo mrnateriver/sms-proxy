@@ -10,17 +10,19 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.timeout
+import java.util.logging.Level
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 private const val API_SETTINGS_TIMEOUT_SECONDS = 1
 
@@ -28,6 +30,7 @@ private const val API_SETTINGS_TIMEOUT_SECONDS = 1
 class MessageRelayService @Inject constructor(
     private val apiClientFactory: MessageRelayApiClientFactory,
     private val settingsService: SettingsService,
+    private val observabilityService: ObservabilityServiceContract,
 ) : MessageRelayServiceContract {
     private lateinit var apiClient: Flow<Pair<String, DefaultApi>>
 
@@ -53,21 +56,34 @@ class MessageRelayService @Inject constructor(
     private suspend fun getApiClient(): Pair<String, DefaultApi> = coroutineScope {
         if (!::apiClient.isInitialized) {
             apiClient = combine(
-                settingsService.receiverKey.distinctUntilChanged().onEach {
-                    if (it.isBlank()) {
-                        throw IllegalStateException("Receiver key is not set")
-                    }
-                },
-
+                settingsService.receiverKey.distinctUntilChanged(),
                 settingsService.baseApiUrl.distinctUntilChanged().map {
                     if (it.isBlank()) {
-                        throw IllegalStateException("Base API URL is not set")
+                        return@map null
                     }
+
                     apiClientFactory.create(it)
                 },
 
                 { key, api -> key to api },
-            ).shareIn(CoroutineScope(Dispatchers.IO), SharingStarted.Lazily, 1)
+            )
+                .catch {
+                    // This `catch` is necessary to prevent app crashing on errors, since the subscription is run in a separate global coroutine
+                    observabilityService.log(
+                        Level.SEVERE,
+                        "Unexpected error occurred when reading receiver key or base API URL settings: $it"
+                    )
+                    observabilityService.reportException(it)
+                }
+                .shareIn(CoroutineScope(Dispatchers.IO), SharingStarted.Lazily, 1)
+                .map { (key, api) ->
+                    // Throwing errors on the upstream flow would not result in relay error, as
+                    // we'd want it - the upstream coroutine would just be aborted, and the
+                    // downstream flow will timeout on any subsequent operation
+                    if (key.isBlank()) throw IllegalStateException("Receiver key is not set")
+                    if (api == null) throw IllegalStateException("Base API URL is not set")
+                    key to api
+                }
         }
 
         apiClient.timeout(API_SETTINGS_TIMEOUT_SECONDS.seconds).first()
