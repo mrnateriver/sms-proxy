@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
 import android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION
-import android.telephony.SmsMessage
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.mrnateriver.smsproxy.shared.MessageProcessingService
@@ -13,8 +12,6 @@ import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import java.util.logging.Level
@@ -40,20 +37,26 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
         if (intent.action == SMS_RECEIVED_ACTION) {
             runBlocking(Dispatchers.IO) {
                 observabilityService.runSpan("SmsBroadcastReceiver.onReceive") {
-                    Telephony.Sms.Intents.getMessagesFromIntent(intent)
-                        .map { message -> launch { processMessage(message) } }
-                        .joinAll()
+                    val msgs = Telephony.Sms.Intents.getMessagesFromIntent(intent)
+                    if (msgs.isEmpty()) {
+                        return@runSpan
+                    }
+
+                    val msgText = msgs.joinToString { it.displayMessageBody }
+                    val msgSender = msgs.first().originatingAddress ?: ""
+
+                    processMessage(msgSender, msgText)
                 }
             }
         }
     }
 
-    private suspend fun processMessage(message: SmsMessage) = coroutineScope {
+    private suspend fun processMessage(sender: String, message: String) = coroutineScope {
         try {
             smsProcessingService.process(
                 MessageData(
-                    sender = message.displayOriginatingAddress ?: "",
-                    message = message.displayMessageBody,
+                    sender = sender,
+                    message = message,
 
                     // We have to use our own record creation timestamp, because timestampMillis in
                     // SMS messages is parsed from the PDU and reported by the network, which can

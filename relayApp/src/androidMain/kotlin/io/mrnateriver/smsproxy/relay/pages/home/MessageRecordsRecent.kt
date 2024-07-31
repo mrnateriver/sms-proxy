@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.models.MessageData
@@ -58,6 +59,8 @@ fun MessageRecordsRecent(
     }
 }
 
+private const val MESSAGE_RECORD_TEXT_MAX_LINES = 5
+
 @Composable
 private fun MessageRecord(
     modifier: Modifier = Modifier,
@@ -92,7 +95,11 @@ private fun MessageRecord(
                 )
             }
 
-            Text(text = message)
+            Text(
+                text = message,
+                maxLines = MESSAGE_RECORD_TEXT_MAX_LINES,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
@@ -154,7 +161,7 @@ val previewMessageRecords = listOf(
         updatedAt = null,
         messageData = MessageData(
             sender = "+993742732",
-            message = "Test",
+            message = "Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. ",
             receivedAt = Clock.System.now(),
         )
     ),
