@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.mrnateriver.smsproxy.relay.layout.drawer.HandleAppDrawerBackButton
 
 @Composable
 fun AppContentSurface(
@@ -25,14 +26,21 @@ fun AppContentSurface(
         ),
         color = MaterialTheme.colorScheme.background,
         modifier = modifier.fillMaxSize(),
-        content = content,
+        content = {
+            content()
+            HandleAppDrawerBackButton()
+        },
     )
 }
 
 @Preview
 @Composable
 private fun AppContentSurfacePreview() {
-    Box(Modifier.background(Color.Black).padding(16.dp)) {
+    Box(
+        Modifier
+            .background(Color.Black)
+            .padding(16.dp)
+    ) {
         AppContentSurface()
     }
 }

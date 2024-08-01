@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay.layout.drawer
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,8 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -48,11 +51,34 @@ fun AppDrawer(
         val fraction =
             1f + (drawerState.currentOffset / density.density) / DrawerDefaults.MaximumDrawerWidth.value
 
-        content(
-            if (fraction.isNaN()) 0f else fraction,
-            toggleDrawerState,
+        CompositionLocalProvider(
+            LocalAppDrawerState provides drawerState,
+            content = {
+                content(
+                    if (fraction.isNaN()) 0f else fraction,
+                    toggleDrawerState,
+                )
+            },
         )
     }
+}
+
+val LocalAppDrawerState =
+    compositionLocalOf<DrawerState> { error("CompositionLocal LocalAppDrawerState not present") }
+
+@Composable
+fun HandleAppDrawerBackButton() {
+    val drawerState = LocalAppDrawerState.current
+    val scope = rememberCoroutineScope()
+
+    BackHandler(
+        enabled = drawerState.isOpen,
+        onBack = {
+            scope.launch {
+                drawerState.close()
+            }
+        },
+    )
 }
 
 @Preview(heightDp = 350)
