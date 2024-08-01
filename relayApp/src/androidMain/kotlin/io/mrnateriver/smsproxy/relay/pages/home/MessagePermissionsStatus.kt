@@ -21,6 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
+import io.mrnateriver.smsproxy.shared.AlertMessage
+import io.mrnateriver.smsproxy.shared.AlertMessageType
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
 @Composable
@@ -29,7 +31,11 @@ fun MessagePermissionsStatus(
     status: PermissionStatus = PermissionStatus.UNKNOWN,
 ) {
     if (status == PermissionStatus.UNKNOWN) {
-        PermissionStatusCard {
+        Surface(
+            modifier = modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.primaryContainer,
+        ) {
             Row(
                 modifier = Modifier.padding(AppSpacings.medium),
                 horizontalArrangement = Arrangement.spacedBy(AppSpacings.medium),
@@ -44,34 +50,13 @@ fun MessagePermissionsStatus(
             }
         }
     } else if (status == PermissionStatus.DENIED) {
-        // TODO: refactor into an "ErrorCard" or something
-        PermissionStatusCard(error = true) {
-            Column(
-                modifier = Modifier.padding(AppSpacings.medium),
-                verticalArrangement = Arrangement.spacedBy(AppSpacings.small),
-            ) {
-                Text(
-                    text = stringResource(R.string.dashboard_permissions_status_denied_title),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(text = stringResource(R.string.dashboard_permissions_status_denied_text))
-            }
-        }
+        AlertMessage(
+            modifier = modifier,
+            type = AlertMessageType.ERROR,
+            text = stringResource(R.string.dashboard_permissions_status_denied_text),
+            title = stringResource(R.string.dashboard_permissions_status_denied_title),
+        )
     }
-}
-
-@Composable
-private fun PermissionStatusCard(
-    modifier: Modifier = Modifier,
-    error: Boolean = false,
-    content: @Composable () -> Unit = {},
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = if (error) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
-        content = content,
-    )
 }
 
 @Preview
