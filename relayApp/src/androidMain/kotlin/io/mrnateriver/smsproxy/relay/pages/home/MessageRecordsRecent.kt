@@ -3,9 +3,15 @@ package io.mrnateriver.smsproxy.relay.pages.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LocalTextStyle
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -15,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
@@ -47,10 +54,10 @@ fun MessageRecordsRecent(
             style = MaterialTheme.typography.headlineMedium,
         )
         entries.forEach { entry ->
-            // TODO: show a processing status indicator based on entry.sendStatus
             MessageRecord(
                 from = entry.messageData.sender,
                 message = entry.messageData.message,
+                status = entry.sendStatus,
                 timestamp = dateFormatter.format(
                     entry.messageData.receivedAt.toLocalDateTime(timeZone)
                         .toJavaLocalDateTime()
@@ -68,6 +75,7 @@ private fun MessageRecord(
     from: String,
     message: String,
     timestamp: String,
+    status: MessageRelayStatus,
 ) {
     Surface(
         modifier = modifier,
@@ -80,20 +88,23 @@ private fun MessageRecord(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(AppSpacings.small),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = from,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+
+                Spacer(modifier = Modifier.weight(1f))
+
                 Text(
+                    modifier = Modifier.padding(end = AppSpacings.small),
                     text = timestamp,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+
+                MessageRecordStatusIndicator(status = status)
             }
 
             Text(
@@ -105,21 +116,69 @@ private fun MessageRecord(
     }
 }
 
+@Composable
+fun MessageRecordStatusIndicator(modifier: Modifier = Modifier, status: MessageRelayStatus) {
+    val mod = modifier.size(AppSpacings.small * 2)
+    when (status) {
+        MessageRelayStatus.ERROR, MessageRelayStatus.FAILED -> Icon(
+            modifier = mod,
+            imageVector = Icons.Outlined.Clear,
+            tint = MaterialTheme.colorScheme.error,
+            contentDescription = stringResource(R.string.dashboard_recent_messages_status_error)
+        )
+
+        MessageRelayStatus.SUCCESS -> Icon(
+            modifier = mod,
+            imageVector = Icons.Outlined.CheckCircle,
+            tint = MaterialTheme.colorScheme.primary,
+            contentDescription = stringResource(R.string.dashboard_recent_messages_status_success)
+        )
+
+        MessageRelayStatus.IN_PROGRESS -> CircularProgressIndicator(modifier = mod)
+
+        else -> Unit
+    }
+}
+
 @Preview
 @Composable
-fun MessageRecordsRecentPreview() {
+private fun MessageRecordsRecentPreview() {
     MessageRecordsRecent(entries = previewMessageRecords)
 }
 
 @Preview
 @Composable
-private fun MessageRecordPreview(
-) {
+private fun MessageRecordPreview_Success() {
     MessageRecord(
         modifier = Modifier,
         from = "+12223334455",
         message = "Hello World",
         timestamp = "24.06.2024 15:36:23 UTC+2",
+        status = MessageRelayStatus.SUCCESS,
+    )
+}
+
+@Preview
+@Composable
+private fun MessageRecordPreview_Error() {
+    MessageRecord(
+        modifier = Modifier,
+        from = "+12223334455",
+        message = "Hello World",
+        timestamp = "24.06.2024 15:36:23 UTC+2",
+        status = MessageRelayStatus.ERROR,
+    )
+}
+
+@Preview
+@Composable
+private fun MessageRecordPreview_Progress() {
+    MessageRecord(
+        modifier = Modifier,
+        from = "+12223334455",
+        message = "Hello World",
+        timestamp = "24.06.2024 15:36:23 UTC+2",
+        status = MessageRelayStatus.IN_PROGRESS,
     )
 }
 

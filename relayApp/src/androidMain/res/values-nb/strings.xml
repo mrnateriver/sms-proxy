@@ -21,6 +21,8 @@
     <string name="dashboard_stats_card_title_errors">Feil</string>
     <string name="dashboard_stats_card_title_failures">Avbryte</string>
     <string name="dashboard_recent_messages_title">Siste meldinger</string>
+    <string name="dashboard_recent_messages_status_success">Et ikon som indikerer at meldingen har blitt behandlet</string>
+    <string name="dashboard_recent_messages_status_error">Et ikon som indikerer at meldingen ikke har blitt behandlet på grunn av en feil</string>
     <string name="dashboard_permissions_status_text_pending">Venter på tillatelser…</string>
     <string name="dashboard_permissions_status_denied_title">Tillatelse nektet</string>
     <string name="dashboard_permissions_status_denied_text">Vennligst gi de nødvendige tillatelsene for at appen skal fungere.</string>
