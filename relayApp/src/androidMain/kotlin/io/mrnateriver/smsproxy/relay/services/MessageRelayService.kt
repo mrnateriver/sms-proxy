@@ -3,6 +3,8 @@ package io.mrnateriver.smsproxy.relay.services
 import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.models.MessageProxyRequest
 import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
+import io.mrnateriver.smsproxy.shared.ProxyApi
+import io.mrnateriver.smsproxy.shared.ProxyApiClientFactory
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,12 +30,13 @@ private const val API_SETTINGS_TIMEOUT_SECONDS = 1
 
 @Singleton
 class MessageRelayService @Inject constructor(
-    private val apiClientFactory: MessageRelayApiClientFactory,
+    private val apiClientFactory: ProxyApiClientFactory,
     private val settingsService: SettingsService,
     private val observabilityService: ObservabilityServiceContract,
 ) : MessageRelayServiceContract {
-    private lateinit var apiClient: Flow<Pair<String, DefaultApi>>
+    private lateinit var apiClient: Flow<Pair<String, ProxyApi>>
 
+    @kotlin.time.ExperimentalTime
     override suspend fun relay(entry: MessageEntry) = coroutineScope {
         val (receiverKey, proxyApiService) = getApiClient()
 
@@ -53,6 +56,7 @@ class MessageRelayService @Inject constructor(
     }
 
     @OptIn(FlowPreview::class)
+    @kotlin.time.ExperimentalTime
     private suspend fun getApiClient(): Pair<String, DefaultApi> = coroutineScope {
         if (!::apiClient.isInitialized) {
             apiClient = combine(

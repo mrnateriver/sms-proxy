@@ -42,10 +42,6 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
-
-        buildConfigField("String", "API_BASE_URL", "\"${validateUrl("apiBaseUrl")}\"")
-        buildConfigField("String", "API_KEY", "\"${validateNonEmpty("apiKey")}\"")
-        buildConfigField("long", "API_TIMEOUT_MS", "${validateNonEmpty("apiTimeoutMs")}L")
     }
     packaging {
         resources {
@@ -80,7 +76,6 @@ android {
         val composeBom = platform(libs.androidx.compose.bom)
 
         implementation(projects.shared)
-        implementation(projects.proxyApiClient)
 
         implementation(libs.android.hilt)
         implementation(libs.androidx.hilt.work)

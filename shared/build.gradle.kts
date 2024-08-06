@@ -19,8 +19,12 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            api(projects.proxyApiClient)
             api(libs.compose.preferences)
+
             implementation(libs.about.libraries)
+            implementation(libs.okhttp.loggingInterceptor)
+            implementation(libs.okhttp.tls)
         }
         jvmMain.dependencies {
         }
@@ -53,6 +57,10 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
 
+
+        buildConfigField("long", "API_TIMEOUT_MS", "${validateNonEmpty("apiTimeoutMs")}L")
+        buildConfigField("String", "API_BASE_URL", "\"${validateUrl("apiBaseUrl")}\"")
+        buildConfigField("String", "API_KEY", "\"${validateNonEmpty("apiKey")}\"")
         buildConfigField("String", "AUTHOR_WEB_PAGE_URL", "\"${validateUrl("authorWebPageUrl")}\"")
     }
     buildFeatures {

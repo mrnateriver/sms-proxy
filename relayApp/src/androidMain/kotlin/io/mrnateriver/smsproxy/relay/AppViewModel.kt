@@ -5,6 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.mrnateriver.smsproxy.relay.services.MessageStatsData
 import io.mrnateriver.smsproxy.relay.services.MessageStatsService
 import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
+import io.mrnateriver.smsproxy.shared.API_KEY
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +23,7 @@ class AppViewModel @Inject constructor(
     statsService: MessageStatsService,
     messagesRepository: MessageRepositoryContract,
 ) : ViewModel() {
-    val showApiKeyError = BuildConfig.API_KEY.isBlank()
+    val showApiKeyError = API_KEY.isBlank()
 
     val showServerSettingsHint = settingsService.isApiConfigured.map { !it }
 
