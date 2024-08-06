@@ -1,7 +1,5 @@
-import org.gradle.tooling.BuildException
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.net.URI
 
 plugins {
     alias(libs.plugins.ksp)
@@ -45,29 +43,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        fun validateNonEmpty(prop: String): String {
-            val value =
-                project.properties.get("${rootProject.ext["basePackageName"]}.$prop")?.toString()
-            if (value.isNullOrBlank()) {
-                throw RuntimeException("Project property '$prop' must be non-empty before build.")
-            }
-            return value
-        }
-
-        fun validateUrl(prop: String): String {
-            val nonEmptyUrl = validateNonEmpty(prop)
-            try {
-                URI(nonEmptyUrl).toURL()
-            } catch (e: Exception) {
-                throw BuildException(
-                    "Project property '$prop' must be set to a valid URL before build.",
-                    e,
-                )
-            }
-            return nonEmptyUrl
-        }
-
-        buildConfigField("String", "AUTHOR_WEB_PAGE_URL", "\"${validateUrl("authorWebPageUrl")}\"")
         buildConfigField("String", "API_BASE_URL", "\"${validateUrl("apiBaseUrl")}\"")
         buildConfigField("String", "API_KEY", "\"${validateNonEmpty("apiKey")}\"")
         buildConfigField("long", "API_TIMEOUT_MS", "${validateNonEmpty("apiTimeoutMs")}L")
