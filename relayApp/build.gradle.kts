@@ -25,6 +25,19 @@ kotlin {
     }
 }
 
+tasks {
+    register("generateProxyApiCertificate") {
+        val pubKey = generateCertificate(
+            "src/androidMain/assets/proxy-api-certificate.pem",
+            "src/androidMain/assets/proxy-api-certificate-private-key.pem",
+            CertificateRequest("relayApp")
+        )
+
+        // TODO: put somewhere so that server build script can access it
+        print("PUB KEY: $pubKey")
+    }
+}
+
 android {
     val basePackageName = "${rootProject.ext["basePackageName"]}.relay"
     namespace = basePackageName

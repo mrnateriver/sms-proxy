@@ -16,30 +16,64 @@ val proxyApiSpecPath =
 
 val buildTypeSpecApiGenImageName = "buildTypeSpecApiGenImage"
 val typeSpecApiGenContainerTag = "${rootGroupId.replace('.', '-')}-api-gen:latest"
-tasks.register<DockerBuildImage>(buildTypeSpecApiGenImageName) {
-    inputDir = proxyApiSpecDir
-    images.add(typeSpecApiGenContainerTag)
+
+tasks {
+    register<DockerBuildImage>(buildTypeSpecApiGenImageName) {
+        inputDir = proxyApiSpecDir
+        images.add(typeSpecApiGenContainerTag)
+    }
+
+    val createTypeSpecApiGenContainer =
+        register<DockerCreateContainer>("createTypeSpecApiGenContainer") {
+            dependsOn(buildTypeSpecApiGenImageName)
+
+            imageId = typeSpecApiGenContainerTag
+            workingDir = "/app"
+            hostConfig.run {
+                autoRemove = true
+                binds.put("$proxyApiSpecDir/tsp-output", "/app/tsp-output")
+            }
+        }
+
+    val startTypeSpecApiGenContainer =
+        register<DockerStartContainer>("startTypeSpecApiGenContainer") {
+            dependsOn(createTypeSpecApiGenContainer)
+            containerId = createTypeSpecApiGenContainer.get().containerId
+        }
+
+    val clearServerDirectory = register<Delete>("clearApiServerOutputDirectory") {
+        clearCodegenOutput("proxy-api-server")
+    }
+
+    register<OpenApiGenerateTask>("generateApiServer") {
+        dependsOn(listOf(startTypeSpecApiGenContainer, clearServerDirectory))
+
+        // FIXME: not workable yet
+        generatorName = "kotlin-server"
+        library = "jaxrs-spec"
+
+        configureCommon("proxy-api-server")
+    }
+
+    register<Delete>("clearApiClientOutputDirectory") {
+        clearCodegenOutput("proxy-api-client")
+    }
+
+    register<OpenApiGenerateTask>("generateApiClient") {
+        dependsOn(listOf(startTypeSpecApiGenContainer, clearServerDirectory))
+
+        generatorName = "kotlin"
+        library = "jvm-retrofit2"
+
+        configureCommon("proxy-api-client", "src/androidMain/kotlin")
+    }
+
+    register("generateApi") {
+        dependsOn("generateApiServer", "generateApiClient")
+    }
 }
 
-val createTypeSpecApiGenContainer =
-    tasks.register<DockerCreateContainer>("createTypeSpecApiGenContainer") {
-        dependsOn(buildTypeSpecApiGenImageName)
-
-        imageId = typeSpecApiGenContainerTag
-        workingDir = "/app"
-        hostConfig.run {
-            autoRemove = true
-            binds.put("$proxyApiSpecDir/tsp-output", "/app/tsp-output")
-        }
-    }
-
-val startTypeSpecApiGenContainer =
-    tasks.register<DockerStartContainer>("startTypeSpecApiGenContainer") {
-        dependsOn(createTypeSpecApiGenContainer)
-        containerId = createTypeSpecApiGenContainer.get().containerId
-    }
-
-fun OpenApiGenerateTask.configureCommon(
+private fun OpenApiGenerateTask.configureCommon(
     outputDirSuffix: String,
     sourceFolder: String = "src/main/kotlin",
 ) {
@@ -79,36 +113,8 @@ fun OpenApiGenerateTask.configureCommon(
     generateModelDocumentation = false
 }
 
-fun Delete.clearCodegenOutput(outputDir: String) {
+private fun Delete.clearCodegenOutput(outputDir: String) {
     val rootDir = rootProject.layout.projectDirectory
     delete(fileTree(rootDir.dir(outputDir).dir("src")) { include("**/*") })
 }
 
-val clearServerDirectory = tasks.register<Delete>("clearApiServerOutputDirectory") {
-    clearCodegenOutput("proxy-api-server")
-}
-tasks.register<OpenApiGenerateTask>("generateApiServer") {
-    dependsOn(listOf(startTypeSpecApiGenContainer, clearServerDirectory))
-
-    // FIXME: not workable yet
-    generatorName = "kotlin-server"
-    library = "jaxrs-spec"
-
-    configureCommon("proxy-api-server")
-}
-
-val clearClientDirectory = tasks.register<Delete>("clearApiClientOutputDirectory") {
-    clearCodegenOutput("proxy-api-client")
-}
-tasks.register<OpenApiGenerateTask>("generateApiClient") {
-    dependsOn(listOf(startTypeSpecApiGenContainer, clearServerDirectory))
-
-    generatorName = "kotlin"
-    library = "jvm-retrofit2"
-
-    configureCommon("proxy-api-client", "src/androidMain/kotlin")
-}
-
-tasks.register("generateApi") {
-    dependsOn("generateApiServer", "generateApiClient")
-}

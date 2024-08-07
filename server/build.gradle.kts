@@ -13,6 +13,21 @@ application {
         listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
 }
 
+tasks {
+    register("generateProxyApiCertificate") {
+        val pubKey = generateCertificateStore(
+            "src/main/resources/proxy-api-certificate.jks",
+            CertificateRequest("proxyApi"),
+            "proxyApiKey",
+            "super-secret-key-password", // FIXME: obviously replace
+            "super-secret-store-password", // FIXME: obviously replace
+        )
+
+        // TODO: somehow add to relayApp and receiverApp to pin the certificate
+        print("PUB KEY: $pubKey")
+    }
+}
+
 dependencies {
     implementation(projects.shared)
 

@@ -18,3 +18,6 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 release.keystore
+**/proxy-api-certificate.pem
+**/proxy-api-certificate.jks
+**/proxy-api-certificate-private-key.pem

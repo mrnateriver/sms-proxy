@@ -1,3 +1,5 @@
+rootProject.name = "SmsProxyBuildSrc"
+
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
