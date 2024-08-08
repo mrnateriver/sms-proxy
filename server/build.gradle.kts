@@ -14,20 +14,15 @@ application {
 }
 
 tasks {
-    register("generateProxyApiCertificate") {
-        doFirst {
-            val pubKey = generateCertificateStore(
-                "src/main/resources/proxy-api-server-certificate.jks",
-                CertificateRequest("proxyApi"),
-                System.getenv("CERT_KEY_ALIAS") ?: "proxyApiKey",
-                System.getenv("CERT_KEY_PASSWORD") ?: "",
-                System.getenv("CERT_KEY_STORE_PASSWORD") ?: ""
-            )
+    register<GenerateCertificatesTask>("generateProxyApiCertificate") {
+        applicationName = "proxyApi"
+        format = CertificateStorageFormat.JKS
 
-            val apiServerPubKeyPath = "src/androidMain/assets/proxy-api-server.pubkey"
-            savePublicKeySha256InProject("relayApp", apiServerPubKeyPath, pubKey)
-            savePublicKeySha256InProject("receiverApp", apiServerPubKeyPath, pubKey)
-        }
+        val apiServerPubKeyPath = "src/androidMain/assets/proxy-api-server.pubkey"
+        outputPublicKeySha256Files = listOf(
+            resolveProjectFilePath("relayApp", apiServerPubKeyPath),
+            resolveProjectFilePath("receiverApp", apiServerPubKeyPath),
+        )
     }
 }
 

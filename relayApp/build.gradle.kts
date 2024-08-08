@@ -26,15 +26,15 @@ kotlin {
 }
 
 tasks {
-    register("generateProxyApiCertificate") {
-        doFirst {
-            val pubKey = generateCertificate(CertificateRequest("relayApp"))
-            savePublicKeySha256InProject(
-                "server",
-                "src/main/resources/clients/proxy-api-relay-app.pubkey",
-                pubKey
+    register<GenerateCertificatesTask>("generateProxyApiCertificate") {
+        applicationName = "relayApp"
+        outputPublicKeySha256Files =
+            listOf(
+                resolveProjectFilePath(
+                    "server",
+                    "src/main/resources/clients/proxy-api-relay-app.pubkey"
+                )
             )
-        }
     }
 }
 
