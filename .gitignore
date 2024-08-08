@@ -18,6 +18,7 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 release.keystore
-**/proxy-api-certificate.pem
-**/proxy-api-certificate.jks
-**/proxy-api-certificate-private-key.pem
+**/proxy-api-client-certificate-private-key.pem
+**/proxy-api-client-certificate.pem
+**/proxy-api-server-certificate.jks
+**/proxy-api-*.pubkey

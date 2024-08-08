@@ -27,14 +27,14 @@ kotlin {
 
 tasks {
     register("generateProxyApiCertificate") {
-        val pubKey = generateCertificate(
-            "src/androidMain/assets/proxy-api-certificate.pem",
-            "src/androidMain/assets/proxy-api-certificate-private-key.pem",
-            CertificateRequest("relayApp")
-        )
-
-        // TODO: put somewhere so that server build script can access it
-        print("PUB KEY: $pubKey")
+        doFirst {
+            val pubKey = generateCertificate(CertificateRequest("relayApp"))
+            savePublicKeySha256InProject(
+                "server",
+                "src/main/resources/clients/proxy-api-relay-app.pubkey",
+                pubKey
+            )
+        }
     }
 }
 

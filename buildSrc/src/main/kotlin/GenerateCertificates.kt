@@ -64,9 +64,9 @@ fun Project.generateCertificateStore(
 }
 
 fun Project.generateCertificate(
-    certificateFilePath: String,
-    privateKeyFilePath: String,
     csr: CertificateRequest,
+    certificateFilePath: String = "src/androidMain/assets/proxy-api-client-certificate.pem",
+    privateKeyFilePath: String = "src/androidMain/assets/proxy-api-client-certificate-private-key.pem",
     validForDays: Long = 365 * 10,
 ): PublicKeySha256 {
     val keyPair = generateKeys()
@@ -89,6 +89,16 @@ fun Project.generateCertificate(
     }
 
     return keyPair.publicKeySha256()
+}
+
+fun Project.savePublicKeySha256InProject(
+    projectName: String,
+    destinationFilePath: String,
+    publicKeySha256: PublicKeySha256,
+) {
+    rootProject.childProjects.get(projectName)
+        ?.file(destinationFilePath)
+        ?.writeText(publicKeySha256)
 }
 
 private fun generateCertificate(
