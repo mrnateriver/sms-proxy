@@ -130,7 +130,7 @@ ksp {
 }
 
 dependencies {
-    ksp(libs.androidx.hilt.compiler)
-    ksp(libs.android.hilt.compiler)
-    ksp(libs.room.compiler)
+    add("kspAndroid", libs.androidx.hilt.compiler)
+    add("kspAndroid", libs.android.hilt.compiler)
+    add("kspAndroid", libs.room.compiler)
 }
