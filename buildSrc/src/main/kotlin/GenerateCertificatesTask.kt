@@ -4,6 +4,9 @@ import io.ktor.util.toCharArray
 import org.bouncycastle.asn1.x500.RDN
 import org.bouncycastle.asn1.x500.X500Name
 import org.bouncycastle.asn1.x500.style.BCStyle
+import org.bouncycastle.asn1.x509.Extension
+import org.bouncycastle.asn1.x509.GeneralName
+import org.bouncycastle.asn1.x509.GeneralNames
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo
 import org.bouncycastle.cert.X509CertificateHolder
 import org.bouncycastle.cert.X509v3CertificateBuilder
@@ -98,22 +101,16 @@ open class GenerateCertificatesTask : DefaultTask() {
 
     @Input
     @Optional
-    val outputPublicKeySha256Files = project.objects.listProperty<FilePath>()
-
-    @Input
-    @Optional
     val outputKeyStoreFile: Property<FilePath> = project.objects.property<FilePath>()
         .convention("src/main/resources/proxy-api-server-certificate.jks")
 
     @Input
     @Optional
-    val outputCertificateFile: Property<FilePath> = project.objects.property<FilePath>()
-        .convention("src/androidMain/assets/proxy-api-client-certificate.pem")
+    val outputPrivateKeyFile: Property<FilePath> = project.objects.property<FilePath>()
 
     @Input
     @Optional
-    val outputPrivateKeyFile: Property<FilePath> = project.objects.property<FilePath>()
-        .convention("src/androidMain/assets/proxy-api-client-certificate-private-key.pem")
+    val outputCertificatesFiles = project.objects.listProperty<FilePath>()
 
     @TaskAction
     fun run() {
@@ -124,31 +121,26 @@ open class GenerateCertificatesTask : DefaultTask() {
 
         @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
         when (format.get()) {
-            CertificateStorageFormat.PEM -> createCertificatePem(cert, keyPair)
+            CertificateStorageFormat.PEM -> createPrivateKeyPem(keyPair)
             CertificateStorageFormat.JKS -> createJavaKeyStore(cert, keyPair)
         }
 
-        createPublicKeySha256Files(keyPair)
+        createCertificatesPem(cert)
     }
 
-    private fun createPublicKeySha256Files(keyPair: KeyPair) {
-        outputPublicKeySha256Files.get().forEach { filePath ->
-            val file = File(filePath)
-
-            file.parentFile?.mkdirs()
-            file.writeText(keyPair.publicKeySha256())
-        }
-    }
-
-    private fun createCertificatePem(cert: X509CertificateHolder, keyPair: KeyPair) {
-        val outputCertificateFile = project.file(outputCertificateFile)
-        outputCertificateFile.parentFile?.mkdirs()
-        outputCertificateFile.writer().use {
-            PemWriter(it).use { pem ->
-                pem.writeObject(PemObject("CERTIFICATE", cert.encoded))
+    private fun createCertificatesPem(cert: X509CertificateHolder) {
+        for (file in outputCertificatesFiles.get()) {
+            val outputCertificateFile = File(file)
+            outputCertificateFile.parentFile?.mkdirs()
+            outputCertificateFile.writer().use {
+                PemWriter(it).use { pem ->
+                    pem.writeObject(PemObject("CERTIFICATE", cert.encoded))
+                }
             }
         }
+    }
 
+    private fun createPrivateKeyPem(keyPair: KeyPair) {
         val outputPrivateKeyFile = project.file(outputPrivateKeyFile)
         outputPrivateKeyFile.parentFile?.mkdirs()
         outputPrivateKeyFile.writer().use {
