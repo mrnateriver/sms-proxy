@@ -175,8 +175,9 @@ open class GenerateCertificatesTask : DefaultTask() {
         val validFrom = Date.from(now)
         val validTo = Date.from(now.plusSeconds(60L * 60 * 24 * validForDays.get()))
 
+        val serverCN = applicationName.get()
         val validRdns = listOf(
-            BCStyle.CN to applicationName.get(),
+            BCStyle.CN to serverCN,
             BCStyle.O to organization.get(),
             BCStyle.L to city.get(),
             BCStyle.C to country.get(),
@@ -193,6 +194,9 @@ open class GenerateCertificatesTask : DefaultTask() {
             x500Name,
             subPubKeyInfo
         )
+
+        val generalNames = GeneralNames(arrayOf(GeneralName(GeneralName.dNSName, serverCN)))
+        certBuilder.addExtension(Extension.subjectAlternativeName, false, generalNames)
 
         val signer = JcaContentSignerBuilder("SHA256WithRSA")
             .setProvider(BouncyCastleProvider())
