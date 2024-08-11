@@ -19,6 +19,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -68,7 +69,8 @@ val LocalAppDrawerState =
 
 @Composable
 fun HandleAppDrawerBackButton() {
-    val drawerState = LocalAppDrawerState.current
+    val drawerState =
+        if (LocalInspectionMode.current) DrawerState(DrawerValue.Closed) else LocalAppDrawerState.current
     val scope = rememberCoroutineScope()
 
     BackHandler(

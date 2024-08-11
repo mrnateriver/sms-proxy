@@ -29,4 +29,6 @@
     <string name="page_title_settings">Innstillinger</string>
     <string name="home_page_invalid_api_key_card_title">Ugyldig API-nøkkel</string>
     <string name="home_page_invalid_api_key_card_text">Applikasjonen ble bygget med en tom eller ugyldig API-nøkkel. API-nøkkel er nødvendig for å videresende meldinger.</string>
+    <string name="home_page_missing_api_certificates_card_title">Usikker konfigurasjon</string>
+    <string name="home_page_missing_api_certificates_card_text">API-serverens TLS-sertifikater mangler eller applikasjonen klarte ikke å lese dem fra filsystemet. Serverens autoritet vil bli vurdert basert på offentlig betrodde CAs.</string>
 </resources>

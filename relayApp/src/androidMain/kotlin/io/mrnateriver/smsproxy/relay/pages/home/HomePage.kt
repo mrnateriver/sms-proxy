@@ -37,6 +37,7 @@ fun NavGraphBuilder.homePage(
 ) {
     composable(HomePageRoute) {
         val showApiKeyError = viewModel.showApiKeyError
+        val showMissingApiCertificatesError = viewModel.showMissingCertificatesError
         val messagePermissionsStatus by rememberMessagePermissions()
         val showSettingsHint by viewModel.showServerSettingsHint.collectAsStateWithLifecycle(false)
         val messageRecent by viewModel.messageRecordsRecent.collectAsStateWithLifecycle(listOf())
@@ -45,6 +46,7 @@ fun NavGraphBuilder.homePage(
         HomePage(
             showApiKeyError = showApiKeyError,
             showApiSettingsHint = showSettingsHint,
+            showMissingApiCertificatesError = showMissingApiCertificatesError,
             messagePermissionsStatus = messagePermissionsStatus,
             messageStatsData = messageStats,
             messageRecordsRecent = messageRecent,
@@ -65,19 +67,21 @@ fun HomePage(
     onGoToSettingsClick: () -> Unit = {},
     showApiKeyError: Boolean = true,
     showApiSettingsHint: Boolean = true,
+    showMissingApiCertificatesError: Boolean = true,
     messagePermissionsStatus: PermissionStatus = PermissionStatus.UNKNOWN,
     messageStatsData: MessageStatsData = MessageStatsData(),
     messageRecordsRecent: List<MessageEntry> = listOf(),
 ) {
     AppContentSurface {
         Dashboard(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.navigationBars),
             onGoToSettingsClick = onGoToSettingsClick,
             showApiKeyError = showApiKeyError,
             showApiSettingsHint = showApiSettingsHint,
+            showMissingApiCertificatesError = showMissingApiCertificatesError,
             messagePermissionStatus = messagePermissionsStatus,
             messageStatsData = messageStatsData,
             messageRecordsRecent = messageRecordsRecent,

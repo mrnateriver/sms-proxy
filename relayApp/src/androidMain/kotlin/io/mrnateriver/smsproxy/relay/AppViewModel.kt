@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.mrnateriver.smsproxy.relay.services.MessageStatsData
 import io.mrnateriver.smsproxy.relay.services.MessageStatsService
+import io.mrnateriver.smsproxy.relay.services.ProxyApiCertificates
 import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
 import io.mrnateriver.smsproxy.shared.API_KEY
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
@@ -22,8 +23,13 @@ class AppViewModel @Inject constructor(
     val settingsService: SettingsService,
     statsService: MessageStatsService,
     messagesRepository: MessageRepositoryContract,
+    apiCertificates: ProxyApiCertificates,
 ) : ViewModel() {
     val showApiKeyError = API_KEY.isBlank()
+
+    val showMissingCertificatesError = apiCertificates.serverCertificatePem == null ||
+            apiCertificates.clientCertificatePem == null ||
+            apiCertificates.clientPrivateKeyPem == null
 
     val showServerSettingsHint = settingsService.isApiConfigured.map { !it }
 

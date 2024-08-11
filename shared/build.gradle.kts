@@ -62,6 +62,7 @@ android {
         buildConfigField("String", "API_BASE_URL", "\"${validateUrl("apiBaseUrl")}\"")
         buildConfigField("String", "API_KEY", "\"${validateNonEmpty("apiKey")}\"")
         buildConfigField("String", "AUTHOR_WEB_PAGE_URL", "\"${validateUrl("authorWebPageUrl")}\"")
+        buildConfigField("String", "API_SERVER_CN", "\"${validateNonEmpty("serverCN")}\"")
     }
     buildFeatures {
         compose = true

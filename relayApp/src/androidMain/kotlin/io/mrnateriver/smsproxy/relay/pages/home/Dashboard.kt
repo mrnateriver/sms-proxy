@@ -17,6 +17,7 @@ fun Dashboard(
     onGoToSettingsClick: () -> Unit = {},
     showApiKeyError: Boolean = true,
     showApiSettingsHint: Boolean = true,
+    showMissingApiCertificatesError: Boolean = true,
     messagePermissionStatus: PermissionStatus = PermissionStatus.UNKNOWN,
     messageStatsData: MessageStatsData = MessageStatsData(),
     messageRecordsRecent: List<MessageEntry> = listOf(),
@@ -31,6 +32,9 @@ fun Dashboard(
         if (showApiSettingsHint) {
             ApiSettingsStatus(onGoToSettingsClick = onGoToSettingsClick)
         }
+        if (showMissingApiCertificatesError) {
+            ApiCertificatesStatus()
+        }
         MessagePermissionsStatus(status = messagePermissionStatus)
         MessageStats(data = messageStatsData)
         MessageRecordsRecent(entries = messageRecordsRecent)
@@ -43,6 +47,7 @@ private fun DashboardPreview_Minimal() {
     Dashboard(
         showApiKeyError = false,
         showApiSettingsHint = false,
+        showMissingApiCertificatesError = false,
         messagePermissionStatus = PermissionStatus.GRANTED,
         messageStatsData = MessageStatsData(),
         messageRecordsRecent = listOf(),
@@ -55,6 +60,7 @@ private fun DashboardPreview_Full() {
     Dashboard(
         showApiKeyError = true,
         showApiSettingsHint = true,
+        showMissingApiCertificatesError = true,
         messagePermissionStatus = PermissionStatus.DENIED,
         messageStatsData = previewMessageStatsData,
         messageRecordsRecent = previewMessageRecords,

@@ -30,4 +30,6 @@
     <string name="page_title_settings">Настройки</string>
     <string name="home_page_invalid_api_key_card_title">Некорректный ключ API</string>
     <string name="home_page_invalid_api_key_card_text">Приложение собрано с пустым или некорректным ключом API. Ключ необходим для ретрансляции сообщений.</string>
+    <string name="home_page_missing_api_certificates_card_title">Небезопасная конфигурация</string>
+    <string name="home_page_missing_api_certificates_card_text">TLS-сертификаты для соединения с сервером API не найдены, или не удалось прочитать их из файловой системы. Доверенность сервера будет определена на основе публично-доверенных сертификационных центров.</string>
 </resources>

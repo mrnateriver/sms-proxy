@@ -28,11 +28,16 @@ kotlin {
 tasks {
     register<GenerateCertificatesTask>("generateProxyApiCertificate") {
         applicationName = "relayApp"
-        outputPublicKeySha256Files =
+        outputPrivateKeyFile = "src/androidMain/assets/proxy-api-client-certificate-private-key.pem"
+        outputCertificatesFiles =
             listOf(
                 resolveProjectFilePath(
+                    "relayApp",
+                    "src/androidMain/assets/proxy-api-client-certificate.pem"
+                ),
+                resolveProjectFilePath(
                     "server",
-                    "src/main/resources/clients/proxy-api-relay-app.pubkey"
+                    "src/main/resources/clients/proxy-api-relay-app.pem"
                 )
             )
     }
