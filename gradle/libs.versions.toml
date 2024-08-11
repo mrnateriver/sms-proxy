@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.1"
+agp = "8.5.2"
 bcpkixJdk18on = "1.77"
 kotlin = "2.0.0"
 kotlin-ksp = "2.0.0-1.0.21"
@@ -14,7 +14,7 @@ androidx-coreKtx = "1.13.1"
 androidx-core = "1.13.1"
 androidx-junit = "1.2.1"
 androidx-navigationCompose = "2.7.7"
-androidx-workRuntimeKtx = "2.9.0"
+androidx-workRuntimeKtx = "2.9.1"
 androidx-hiltWork = "1.2.0"
 androidx-datastorePreferences = "1.1.1"
 androidx-lifecycleRuntimeComposeAndroid = "2.8.4"
@@ -38,7 +38,8 @@ openapi = "7.7.0"
 docker = "9.4.0"
 retrofitVersion = "2.11.0"
 sqldelight = "2.0.2"
-room = "2.7.0-alpha05"
+room = "2.7.0-alpha06"
+jetty = "9.4.55.v20240627" # Ktor only supports Jetty 9.x
 
 [libraries]
 # Android Runtime
@@ -93,6 +94,8 @@ ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "kto
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 sqldelight-dialect-postgresql = { module = "app.cash.sqldelight:postgresql-dialect", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { group = "app.cash.sqldelight", name = "jdbc-driver", version.ref = "sqldelight" }
+jetty-http = { group = "org.eclipse.jetty", name = "jetty-http", version.ref = "jetty" }
+jetty-util = { group = "org.eclipse.jetty", name = "jetty-util", version.ref = "jetty" }
 
 # Server Tests
 ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }

@@ -15,11 +15,12 @@ application {
 
 tasks {
     register<GenerateCertificatesTask>("generateProxyApiCertificate") {
-        applicationName = "proxyApi"
+        applicationName = validateNonEmpty("serverCN")
         format = CertificateStorageFormat.JKS
 
-        val apiServerPubKeyPath = "src/androidMain/assets/proxy-api-server.pubkey"
-        outputPublicKeySha256Files = listOf(
+        outputKeyStoreFile = "src/main/resources/proxy-api-server-certificate.jks"
+        val apiServerPubKeyPath = "src/androidMain/assets/proxy-api-server-certificate.pem"
+        outputCertificatesFiles = listOf(
             resolveProjectFilePath("relayApp", apiServerPubKeyPath),
             resolveProjectFilePath("receiverApp", apiServerPubKeyPath),
         )
@@ -35,6 +36,8 @@ dependencies {
     implementation(libs.sqldelight.driver.jdbc)
     implementation(libs.moshi.kotlin)
     implementation(libs.moshi.adapters)
+    implementation(libs.jetty.http)
+    implementation(libs.jetty.util)
 
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)
