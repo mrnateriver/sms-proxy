@@ -46,6 +46,7 @@ fun AppBar(
     val actions by appBarViewModel.actions.collectAsState()
 
     TopAppBar(
+        modifier = modifier,
         colors = colors,
         navigationIcon = {
             IconButton(onClick = onNavigationButtonClick) {

@@ -11,15 +11,10 @@ import kotlinx.datetime.Instant
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.reset
 import java.util.UUID
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.time.Duration.Companion.seconds
 
 abstract class MessageProcessingServiceTestBase {
-    protected lateinit var subject: MessageProcessingService
-
     protected val mockProcessingConfig = MessageProcessingConfig(7, 48.seconds)
     protected val mockRelayService = mock<MessageRelayService>()
     protected val mockRepository = mock<MessageRepository> {
@@ -33,24 +28,15 @@ abstract class MessageProcessingServiceTestBase {
                 it.getArgument<suspend () -> Any>(1)()
             }
         }
-
     protected val mockClock = mock<Clock> { on(it.now()).thenReturn(Clock.System.now()) }
 
-    @BeforeTest
-    fun setup() {
-        subject = MessageProcessingService(
-            mockRepository,
-            mockRelayService,
-            mockObservabilityService,
-            mockProcessingConfig,
-            mockClock,
-        )
-    }
-
-    @AfterTest
-    fun tearDown() {
-        reset(mockRepository, mockRelayService, mockObservabilityService)
-    }
+    protected val subject = MessageProcessingService(
+        mockRepository,
+        mockRelayService,
+        mockObservabilityService,
+        mockProcessingConfig,
+        mockClock,
+    )
 
     protected fun createTestMessageData(receivedAt: Instant = mockClock.now()) =
         MessageData("123", receivedAt, "Hello, World!")
