@@ -43,6 +43,7 @@ fun AlertMessage(
     type: AlertMessageType = AlertMessageType.INFO,
     text: String,
     textIconVector: ImageVector? = null,
+    textIconContentDescription: String? = null,
     title: String? = null,
     action: AlertMessageAction? = null,
 ) {
@@ -67,7 +68,10 @@ fun AlertMessage(
                 Row(modifier = Modifier.padding()) {
                     var offsetText by remember { mutableStateOf(false) }
 
-                    Icon(imageVector = textIconVector, contentDescription = null)
+                    Icon(
+                        imageVector = textIconVector,
+                        contentDescription = textIconContentDescription,
+                    )
                     Spacer(modifier = Modifier.width(AppSpacings.small))
                     Text(
                         text = text,

@@ -11,6 +11,7 @@ import okhttp3.tls.HeldCertificate
 import okhttp3.tls.decodeCertificatePem
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
+import javax.net.ssl.SSLSession
 
 typealias ProxyApi = DefaultApi
 
@@ -51,26 +52,38 @@ private fun createOkHttpClientBuilder(
         .connectTimeout(BuildConfig.API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
         .writeTimeout(BuildConfig.API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
         .apply {
-            val clientCertificatesBuilder = HandshakeCertificates.Builder()
+            val clientCertificates = createHandshakeCertificates(
+                serverCertificatePem,
+                clientCertificatePem,
+                clientPrivateKeyPem
+            )
 
-            if (!serverCertificatePem.isNullOrBlank()) {
-                val serverCertificate = serverCertificatePem.decodeCertificatePem()
-                clientCertificatesBuilder.addTrustedCertificate(serverCertificate)
-            }
-
-            if (!clientCertificatePem.isNullOrBlank() && !clientPrivateKeyPem.isNullOrBlank()) {
-                val heldCertificate =
-                    HeldCertificate.decode("$clientCertificatePem\n$clientPrivateKeyPem")
-                clientCertificatesBuilder.heldCertificate(heldCertificate)
-            }
-
-            val clientCertificates = clientCertificatesBuilder.build()
             sslSocketFactory(clientCertificates.sslSocketFactory(), clientCertificates.trustManager)
-            hostnameVerifier { _, session ->
-                OkHostnameVerifier.verify(
-                    BuildConfig.API_SERVER_CN,
-                    session
-                )
-            }
+            hostnameVerifier(::verifySelfSignedCertificateHost)
         }
+}
+
+internal fun createHandshakeCertificates(
+    serverCertificatePem: String?,
+    clientCertificatePem: String?,
+    clientPrivateKeyPem: String?,
+): HandshakeCertificates {
+    val clientCertificatesBuilder = HandshakeCertificates.Builder()
+
+    if (!serverCertificatePem.isNullOrBlank()) {
+        val serverCertificate = serverCertificatePem.decodeCertificatePem()
+        clientCertificatesBuilder.addTrustedCertificate(serverCertificate)
+    }
+
+    if (!clientCertificatePem.isNullOrBlank() && !clientPrivateKeyPem.isNullOrBlank()) {
+        val heldCertificate =
+            HeldCertificate.decode("$clientCertificatePem\n$clientPrivateKeyPem")
+        clientCertificatesBuilder.heldCertificate(heldCertificate)
+    }
+
+    return clientCertificatesBuilder.build()
+}
+
+internal fun verifySelfSignedCertificateHost(hostname: String, session: SSLSession): Boolean {
+    return OkHostnameVerifier.verify(BuildConfig.API_SERVER_CN, session)
 }

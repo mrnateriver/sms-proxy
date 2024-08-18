@@ -7,5 +7,9 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun rememberRootBackgroundColor(): Color {
-    return if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceContainerLowest else MaterialTheme.colorScheme.primary
+    return if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.surfaceContainerLowest
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
 }

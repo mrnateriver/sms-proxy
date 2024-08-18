@@ -57,12 +57,13 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
 
-
         buildConfigField("long", "API_TIMEOUT_MS", "${validateNonEmpty("apiTimeoutMs")}L")
         buildConfigField("String", "API_BASE_URL", "\"${validateUrl("apiBaseUrl")}\"")
         buildConfigField("String", "API_KEY", "\"${validateNonEmpty("apiKey")}\"")
         buildConfigField("String", "AUTHOR_WEB_PAGE_URL", "\"${validateUrl("authorWebPageUrl")}\"")
         buildConfigField("String", "API_SERVER_CN", "\"${validateNonEmpty("serverCN")}\"")
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures {
         compose = true
@@ -79,7 +80,14 @@ android {
         implementation(libs.androidx.ui.tooling.preview)
         implementation(libs.androidx.navigation.compose)
 
-        androidTestImplementation(composeBom)
         debugImplementation(libs.androidx.ui.tooling)
+        debugImplementation(libs.androidx.ui.test.manifest)
+
+        testImplementation(libs.junit)
+        androidTestImplementation(composeBom)
+        androidTestImplementation(libs.androidx.junit)
+        androidTestImplementation(libs.androidx.ui.test.junit4)
+        androidTestImplementation(libs.mockito.kotlin)
+        androidTestImplementation(libs.mockito.android)
     }
 }
