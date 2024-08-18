@@ -24,27 +24,39 @@ private val PREF_KEY_API_BASE_API_URL = stringPreferencesKey("api-base-url")
 private val PREF_KEY_API_RECEIVER_KEY = stringPreferencesKey("api-receiver-key")
 private val PREF_KEY_SHOW_RECENT_MESSAGES = booleanPreferencesKey("show-recent-messages")
 
-class SettingsService @Inject constructor(@ApplicationContext private val context: Context) {
+interface SettingsServiceContract {
+    val baseApiUrl: Flow<String>
+    val receiverKey: Flow<String>
+    val showRecentMessages: Flow<Boolean>
+    val isApiConfigured: Flow<Boolean>
+
+    suspend fun setBaseApiUrl(value: String)
+    suspend fun setReceiverKey(value: String)
+    suspend fun setShowRecentMessages(value: Boolean)
+}
+
+class SettingsService @Inject constructor(@ApplicationContext private val context: Context) :
+    SettingsServiceContract {
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    val baseApiUrl = getSetting(PREF_KEY_API_BASE_API_URL, "")
-    val receiverKey = getSetting(PREF_KEY_API_RECEIVER_KEY, "")
-    val showRecentMessages = getSetting(PREF_KEY_SHOW_RECENT_MESSAGES, true)
+    override val baseApiUrl = getSetting(PREF_KEY_API_BASE_API_URL, "")
+    override val receiverKey = getSetting(PREF_KEY_API_RECEIVER_KEY, "")
+    override val showRecentMessages = getSetting(PREF_KEY_SHOW_RECENT_MESSAGES, true)
 
-    val isApiConfigured: Flow<Boolean> =
+    override val isApiConfigured: Flow<Boolean> =
         combine(baseApiUrl, receiverKey) { baseApiUrl, receiverKey ->
             baseApiUrl.isNotEmpty() && receiverKey.isNotEmpty()
         }
 
-    suspend fun setBaseApiUrl(value: String) {
+    override suspend fun setBaseApiUrl(value: String) {
         context.settingsStore.edit { it[PREF_KEY_API_BASE_API_URL] = value }
     }
 
-    suspend fun setReceiverKey(value: String) {
+    override suspend fun setReceiverKey(value: String) {
         context.settingsStore.edit { it[PREF_KEY_API_RECEIVER_KEY] = value }
     }
 
-    suspend fun setShowRecentMessages(value: Boolean) {
+    override suspend fun setShowRecentMessages(value: Boolean) {
         context.settingsStore.edit { it[PREF_KEY_SHOW_RECENT_MESSAGES] = value }
     }
 

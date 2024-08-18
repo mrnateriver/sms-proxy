@@ -1,16 +1,16 @@
 package io.mrnateriver.smsproxy.relay.services.storage
 
-import io.mrnateriver.smsproxy.shared.contracts.MessageRepository
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
 import kotlinx.datetime.Clock
 import java.util.UUID
 import javax.inject.Inject
+import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 class MessageRepository @Inject constructor(
     private val messagesDao: MessagesDao,
-) : MessageRepository {
+) : MessageRepositoryContract {
     override suspend fun insert(entry: MessageData): MessageEntry {
         val now = Clock.System.now()
         val result = MessageEntry(

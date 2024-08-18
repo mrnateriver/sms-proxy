@@ -9,8 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.relay.composables.rememberMutableCoroutineState
-import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
 import io.mrnateriver.smsproxy.shared.AppPreferencesProvider
 import me.zhanghai.compose.preference.CheckboxPreference
 

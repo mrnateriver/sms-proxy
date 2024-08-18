@@ -14,9 +14,9 @@ import java.io.InputStreamReader
 import java.util.logging.Level
 
 data class ProxyApiCertificates(
-    val serverCertificatePem: String?,
-    val clientCertificatePem: String?,
-    val clientPrivateKeyPem: String?,
+    val serverCertificatePem: String? = null,
+    val clientCertificatePem: String? = null,
+    val clientPrivateKeyPem: String? = null,
 )
 
 @Module

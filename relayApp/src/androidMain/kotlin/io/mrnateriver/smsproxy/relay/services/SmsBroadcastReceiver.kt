@@ -21,7 +21,7 @@ import javax.inject.Inject
 class SmsBroadcastReceiver @Inject constructor(
     @ApplicationContext private val context: Context,
     private val smsProcessingService: MessageProcessingService,
-    private val statsService: MessageStatsService,
+    private val statsService: MessageStatsServiceContract,
     private val observabilityService: ObservabilityService,
 ) :
     BroadcastReceiver() {

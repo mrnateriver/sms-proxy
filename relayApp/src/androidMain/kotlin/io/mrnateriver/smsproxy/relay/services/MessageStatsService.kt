@@ -40,21 +40,38 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 private val KEY_PROCESSING_FAILURES = intPreferencesKey(METRICS_NAME_PROCESSING_FAILURES)
 private val KEY_PROCESSING_FAILURE_TIMESTAMP = longPreferencesKey("processing_failure_timestamp")
 
+interface MessageStatsServiceContract {
+    val statsUpdates: Flow<Unit>
+
+    fun triggerUpdate()
+    suspend fun incrementProcessingFailures()
+    fun getStats(): Flow<MessageStatsData>
+    fun getProcessingErrors(): Flow<MessageStatsEntry>
+    fun getProcessingFailures(): Flow<MessageStatsEntry>
+    fun getProcessedMessages(): Flow<MessageStatsEntry>
+    fun getRelayedMessages(): Flow<MessageStatsEntry>
+}
+
+data class MessageStatsEntry(
+    val value: Int,
+    val lastEvent: LocalDateTime?,
+)
+
 @Singleton
 class MessageStatsService @Inject constructor(
     @ApplicationContext private val context: Context,
     private val observabilityService: ObservabilityService,
     private val messagesRepository: MessageRepositoryContract,
-) {
+) : MessageStatsServiceContract {
     private val updateTrigger = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
 
-    val statsUpdates = updateTrigger.asSharedFlow()
+    override val statsUpdates: Flow<Unit> = updateTrigger.asSharedFlow()
 
-    fun triggerUpdate() {
+    override fun triggerUpdate() {
         updateTrigger.tryEmit(Unit)
     }
 
-    suspend fun incrementProcessingFailures() = supervisorScope {
+    override suspend fun incrementProcessingFailures(): Unit = supervisorScope {
         // We don't want to fail storage operation if observability fails, hence the supervisorScope
         launch { observabilityService.incrementCounter(METRICS_NAME_PROCESSING_FAILURES) }
 
@@ -72,7 +89,7 @@ class MessageStatsService @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getStats(): Flow<MessageStatsData> {
+    override fun getStats(): Flow<MessageStatsData> {
         return updateTrigger.flatMapLatest {
             combine(
                 getProcessingErrors(),
@@ -94,7 +111,7 @@ class MessageStatsService @Inject constructor(
         }
     }
 
-    fun getProcessingErrors(): Flow<StatsEntry> {
+    override fun getProcessingErrors(): Flow<MessageStatsEntry> {
         return context.dataStore.data.map { preferences ->
             val value = preferences[KEY_PROCESSING_FAILURES] ?: 0
             val tsValue = preferences[KEY_PROCESSING_FAILURE_TIMESTAMP]
@@ -105,15 +122,15 @@ class MessageStatsService @Inject constructor(
                 null
             }
 
-            StatsEntry(value, ts)
+            MessageStatsEntry(value, ts)
         }
     }
 
-    fun getProcessingFailures(): Flow<StatsEntry> {
+    override fun getProcessingFailures(): Flow<MessageStatsEntry> {
         return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.FAILED) }
     }
 
-    fun getProcessedMessages(): Flow<StatsEntry> {
+    override fun getProcessedMessages(): Flow<MessageStatsEntry> {
         return updateTrigger.map {
             coroutineScope {
                 val (count, lastEntries) = listOf(
@@ -122,7 +139,7 @@ class MessageStatsService @Inject constructor(
                 ).awaitAll()
 
                 val lastEntry = (lastEntries as Iterable<*>).firstOrNull() as MessageEntry?
-                StatsEntry(
+                MessageStatsEntry(
                     count as Int,
                     lastEntry?.updatedAt?.toLocalDateTime(TimeZone.currentSystemDefault())
                 )
@@ -130,26 +147,21 @@ class MessageStatsService @Inject constructor(
         }
     }
 
-    fun getRelayedMessages(): Flow<StatsEntry> {
+    override fun getRelayedMessages(): Flow<MessageStatsEntry> {
         return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.SUCCESS) }
     }
 
-    private suspend fun getMessageEntryCountByStatus(vararg status: MessageRelayStatus): StatsEntry =
+    private suspend fun getMessageEntryCountByStatus(vararg status: MessageRelayStatus): MessageStatsEntry =
         coroutineScope {
             val (count, entry) = listOf(
                 async { messagesRepository.getCountByStatus(*status) },
                 async { messagesRepository.getLastEntryByStatus(*status) },
             ).awaitAll()
 
-            StatsEntry(
+            MessageStatsEntry(
                 count as Int,
                 (entry as MessageEntry?)?.updatedAt?.toLocalDateTime(TimeZone.currentSystemDefault())
             )
         }
-
-    data class StatsEntry(
-        val value: Int,
-        val lastEvent: LocalDateTime?,
-    )
 }
 

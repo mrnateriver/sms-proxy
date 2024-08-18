@@ -27,7 +27,7 @@ import io.mrnateriver.smsproxy.relay.AppViewModel
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.composables.rememberMutableCoroutineState
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
-import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
+import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
 import io.mrnateriver.smsproxy.shared.AppPreferencesProvider
 import io.mrnateriver.smsproxy.shared.pages.PageDescriptor
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
@@ -58,7 +58,7 @@ private const val SettingsPageRoute = "settings"
 private fun isSettingsPageRoute(dest: NavDestination?): Boolean = dest?.route == SettingsPageRoute
 
 @Composable
-fun SettingsPage(navController: NavController, settingsService: SettingsService) {
+fun SettingsPage(navController: NavController, settingsService: SettingsServiceContract) {
     SettingsPageAppBarActions(navController)
 
     val apiConfigured by settingsService.isApiConfigured.collectAsStateWithLifecycle(false)

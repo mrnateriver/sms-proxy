@@ -10,23 +10,22 @@ import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.mrnateriver.smsproxy.shared.MessageProcessingService
-import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.util.logging.Level
+import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 @HiltWorker
 class MessageProcessingWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val processingService: MessageProcessingService,
-    private val statsService: MessageStatsService,
-    private val observabilityService: ObservabilityService,
+    private val processingService: MessageProcessingServiceContract,
+    private val statsService: MessageStatsServiceContract,
+    private val observabilityService: ObservabilityServiceContract,
 ) : CoroutineWorker(appContext, workerParams) {
-
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
             observabilityService.runSpan("MessageProcessingWorker.doWork") {

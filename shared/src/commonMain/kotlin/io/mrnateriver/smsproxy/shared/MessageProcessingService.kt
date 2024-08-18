@@ -15,6 +15,7 @@ import kotlinx.datetime.Clock
 import java.util.logging.Level
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 
 data class MessageProcessingConfig(
     val maxRetries: Int,
@@ -27,8 +28,8 @@ class MessageProcessingService(
     private val observability: ObservabilityService,
     private val config: MessageProcessingConfig = MessageProcessingConfig(3),
     private val clock: Clock = Clock.System,
-) {
-    suspend fun process(msg: MessageData): MessageEntry {
+) : MessageProcessingServiceContract {
+    override suspend fun process(msg: MessageData): MessageEntry {
         return observability.runSpan("MessageProcessingService.process") {
             val entry = repository.insert(msg)
             val (result, exception) = processEntry(entry)
@@ -39,7 +40,7 @@ class MessageProcessingService(
         }
     }
 
-    suspend fun handleUnprocessedMessages(): Iterable<MessageEntry> = coroutineScope {
+    override suspend fun handleUnprocessedMessages(): Iterable<MessageEntry> = coroutineScope {
         observability.runSpan("MessageProcessingService.handleUnprocessedMessages") {
             val entries = repository.getAll(
                 MessageRelayStatus.ERROR,

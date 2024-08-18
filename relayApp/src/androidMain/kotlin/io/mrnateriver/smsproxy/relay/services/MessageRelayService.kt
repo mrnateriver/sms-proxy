@@ -2,7 +2,7 @@ package io.mrnateriver.smsproxy.relay.services
 
 import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.models.MessageProxyRequest
-import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
+import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
 import io.mrnateriver.smsproxy.shared.ProxyApi
 import io.mrnateriver.smsproxy.shared.ProxyApiClientFactory
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
@@ -31,7 +31,7 @@ private const val API_SETTINGS_TIMEOUT_SECONDS = 1
 @Singleton
 class MessageRelayService @Inject constructor(
     private val apiClientFactory: ProxyApiClientFactory,
-    private val settingsService: SettingsService,
+    private val settingsService: SettingsServiceContract,
     private val observabilityService: ObservabilityServiceContract,
 ) : MessageRelayServiceContract {
     private lateinit var apiClient: Flow<Pair<String, ProxyApi>>

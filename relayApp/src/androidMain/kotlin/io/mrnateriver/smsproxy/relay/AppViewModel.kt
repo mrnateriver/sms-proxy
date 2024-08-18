@@ -3,9 +3,9 @@ package io.mrnateriver.smsproxy.relay
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.mrnateriver.smsproxy.relay.services.MessageStatsData
-import io.mrnateriver.smsproxy.relay.services.MessageStatsService
+import io.mrnateriver.smsproxy.relay.services.MessageStatsServiceContract
 import io.mrnateriver.smsproxy.relay.services.ProxyApiCertificates
-import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
+import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
 import io.mrnateriver.smsproxy.shared.API_KEY
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,12 +20,15 @@ private const val MESSAGE_RECORDS_RECENT_COUNT = 5
 
 @HiltViewModel
 class AppViewModel @Inject constructor(
-    val settingsService: SettingsService,
-    statsService: MessageStatsService,
+    val settingsService: SettingsServiceContract,
+    statsService: MessageStatsServiceContract,
     messagesRepository: MessageRepositoryContract,
     apiCertificates: ProxyApiCertificates,
 ) : ViewModel() {
-    val showApiKeyError = API_KEY.isBlank()
+    // Used in tests
+    internal var apiKey: String = API_KEY
+
+    val showApiKeyError get() = apiKey.isBlank()
 
     val showMissingCertificatesError = apiCertificates.serverCertificatePem == null ||
             apiCertificates.clientCertificatePem == null ||
