@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
 import io.mrnateriver.smsproxy.relay.services.MessageStatsData
@@ -27,13 +30,18 @@ fun Dashboard(
         verticalArrangement = Arrangement.spacedBy(AppSpacings.medium),
     ) {
         if (showApiKeyError) {
-            ApiKeyStatus()
+            ApiKeyStatus(modifier = Modifier.semantics { testTag = "card-error-api-key" })
         }
         if (showApiSettingsHint) {
-            ApiSettingsStatus(onGoToSettingsClick = onGoToSettingsClick)
+            ApiSettingsStatus(
+                modifier = Modifier.semantics { testTag = "card-settings-hint" },
+                onGoToSettingsClick = onGoToSettingsClick,
+            )
         }
         if (showMissingApiCertificatesError) {
-            ApiCertificatesStatus()
+            ApiCertificatesStatus(
+                modifier = Modifier.semantics { testTag = "card-error-certificates" },
+            )
         }
         MessagePermissionsStatus(status = messagePermissionStatus)
         MessageStats(data = messageStatsData)

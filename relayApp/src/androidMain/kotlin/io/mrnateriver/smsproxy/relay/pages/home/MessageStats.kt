@@ -14,6 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
@@ -108,6 +110,7 @@ private fun StatsCard(
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.ExtraBold,
                 color = textColor,
+                modifier = Modifier.semantics { testTag = "entry-value" },
             )
             Text(
                 text = title,
@@ -118,6 +121,7 @@ private fun StatsCard(
                 text = lastEvent,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier.semantics { testTag = "entry-date" },
             )
         }
     }

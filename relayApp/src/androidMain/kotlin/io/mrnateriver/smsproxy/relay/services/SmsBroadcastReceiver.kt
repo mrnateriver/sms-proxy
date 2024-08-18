@@ -18,19 +18,13 @@ import java.util.logging.Level
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SmsBroadcastReceiver : BroadcastReceiver() {
-    @Inject
-    @ApplicationContext
-    lateinit var context: Context
-
-    @Inject
-    lateinit var smsProcessingService: MessageProcessingService
-
-    @Inject
-    lateinit var statsService: MessageStatsService
-
-    @Inject
-    lateinit var observabilityService: ObservabilityService
+class SmsBroadcastReceiver @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val smsProcessingService: MessageProcessingService,
+    private val statsService: MessageStatsService,
+    private val observabilityService: ObservabilityService,
+) :
+    BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         observabilityService.log(Level.INFO, "Received intent broadcast: $intent")

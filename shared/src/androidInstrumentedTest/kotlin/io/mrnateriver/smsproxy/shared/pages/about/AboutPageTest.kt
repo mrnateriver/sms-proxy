@@ -18,10 +18,10 @@ class AboutPageTest {
     fun aboutPage_shouldRenderContentInTheProvidedWrapper() {
         rule.setContent {
             AboutPage { _ ->
-                Box(modifier = Modifier.semantics { testTag = "Test Wrapper" })
+                Box(modifier = Modifier.semantics { testTag = "test-wrapper" })
             }
         }
 
-        rule.onNodeWithTag("Test Wrapper").assertExists()
+        rule.onNodeWithTag("test-wrapper").assertExists()
     }
 }
