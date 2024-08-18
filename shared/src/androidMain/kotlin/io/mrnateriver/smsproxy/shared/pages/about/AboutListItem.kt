@@ -23,6 +23,7 @@ fun AboutListItem(
     text: String,
     title: String,
     onClick: (() -> Unit)? = null,
+    trailingContentIconContentDescription: String? = null,
 ) {
     ListItem(
         leadingContent = { Box(modifier = Modifier.size(48.dp)) { image?.invoke() } },
@@ -33,7 +34,7 @@ fun AboutListItem(
             {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                    contentDescription = null
+                    contentDescription = trailingContentIconContentDescription,
                 )
             }
         } else null
@@ -53,5 +54,22 @@ fun AboutListItemPreview() {
         },
         text = "List Item Text",
         title = "List Item Title",
+    )
+}
+
+@Preview
+@Composable
+fun AboutListItemPreview_Clickable() {
+    AboutListItem(
+        image = {
+            Icon(
+                imageVector = Icons.Outlined.Face,
+                contentDescription = "Face Icon",
+                modifier = Modifier.fillMaxSize()
+            )
+        },
+        text = "List Item Text",
+        title = "List Item Title",
+        onClick = {},
     )
 }

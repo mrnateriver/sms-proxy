@@ -3,7 +3,6 @@ package io.mrnateriver.smsproxy.shared.theme
 import org.junit.Test
 
 class AppSpacingsTest {
-
     @Test
     fun appSpacings_multiplesOfTheSmallestSpacing_shouldBeConsistent() {
         val tiny = AppSpacings.tiny.value.toInt()
@@ -23,5 +22,4 @@ class AppSpacingsTest {
             }
         }
     }
-
 }

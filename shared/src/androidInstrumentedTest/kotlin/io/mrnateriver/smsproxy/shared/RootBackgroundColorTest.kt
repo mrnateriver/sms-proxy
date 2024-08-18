@@ -12,7 +12,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class RootBackgroundColorTest {
-
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
@@ -44,5 +43,4 @@ class RootBackgroundColorTest {
 
         assertTrue(color == expected)
     }
-
 }

@@ -11,7 +11,6 @@ import java.util.Base64
 import javax.net.ssl.SSLSession
 
 class ProxyApiClientFactoryTest {
-
     @Test
     fun createHandshakeCertificates_shouldDecodeServerPem() {
         val certs = createHandshakeCertificates(

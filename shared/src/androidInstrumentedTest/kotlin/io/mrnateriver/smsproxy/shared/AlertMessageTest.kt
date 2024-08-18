@@ -12,7 +12,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class AlertMessageTest {
-
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
@@ -57,5 +56,4 @@ class AlertMessageTest {
 
         assertTrue(called)
     }
-
 }
