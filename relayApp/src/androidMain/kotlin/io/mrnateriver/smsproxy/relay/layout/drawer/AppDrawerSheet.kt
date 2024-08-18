@@ -27,7 +27,7 @@ fun AppDrawerSheet(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit = {},
 ) {
-    ModalDrawerSheet(modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)) {
+    ModalDrawerSheet(modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)) {
         Text(
             stringResource(R.string.app_name),
             modifier = Modifier.padding(AppSpacings.large),

@@ -15,18 +15,19 @@ import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
 @Composable
 fun AppDrawerEntry(
+    label: String,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    label: String = "About",
+    iconContentDescription: String? = null,
     selected: Boolean = false,
     onClick: () -> Unit = {},
 ) {
     NavigationDrawerItem(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = AppSpacings.small)
             .padding(bottom = AppSpacings.tiny),
         icon = if (icon != null) {
-            { Icon(imageVector = icon, contentDescription = null) }
+            { Icon(imageVector = icon, contentDescription = iconContentDescription) }
         } else null,
         label = { Text(label, style = MaterialTheme.typography.bodyLarge) },
         selected = selected,

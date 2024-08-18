@@ -124,6 +124,8 @@ android {
         androidTestImplementation(composeBom)
         androidTestImplementation(libs.androidx.junit)
         androidTestImplementation(libs.androidx.ui.test.junit4)
+        androidTestImplementation(libs.mockito.kotlin)
+        androidTestImplementation(libs.mockito.android)
     }
 }
 

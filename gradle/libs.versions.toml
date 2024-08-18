@@ -34,6 +34,7 @@ hilt = "2.51.1"
 moshi = "1.15.1"
 okhttp = "4.12.0"
 mockito-kotlin = "5.3.1"
+mockito-android = "5.12.0"
 openapi = "7.7.0"
 docker = "9.4.0"
 retrofitVersion = "2.11.0"
@@ -87,6 +88,7 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" } # Version is determined by compose-bom
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockito-android" }
 
 # Server Runtime
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }

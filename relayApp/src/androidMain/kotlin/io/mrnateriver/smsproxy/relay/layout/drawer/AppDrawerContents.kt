@@ -2,7 +2,11 @@ package io.mrnateriver.smsproxy.relay.layout.drawer
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.AppPages
 
@@ -13,11 +17,22 @@ fun AppDrawerContents(
     onNavigateClick: (route: AppPages) -> Unit = {},
 ) {
     for (page in listOf(AppPages.SETTINGS, AppPages.ABOUT)) {
+        val label = stringResource(page.descriptor.titleResId)
         AppDrawerEntry(
+            modifier = Modifier.semantics {
+                testTag = "entry-${page.name}"
+                contentDescription = "Link to $label page"
+            },
             icon = page.descriptor.icon,
-            label = stringResource(page.descriptor.titleResId),
+            label = label,
             selected = page == activePage,
-            onClick = { if (page == activePage) toggleDrawer() else onNavigateClick(page) },
+            onClick = {
+                if (page == activePage) {
+                    toggleDrawer()
+                } else {
+                    onNavigateClick(page)
+                }
+            },
         )
     }
 }

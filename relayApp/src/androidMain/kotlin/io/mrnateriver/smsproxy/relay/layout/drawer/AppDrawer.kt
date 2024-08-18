@@ -37,7 +37,11 @@ fun AppDrawer(
         {
             scope.launch {
                 drawerState.apply {
-                    if (isClosed) open() else close()
+                    if (isClosed) {
+                        open()
+                    } else {
+                        close()
+                    }
                 }
             }
         }
