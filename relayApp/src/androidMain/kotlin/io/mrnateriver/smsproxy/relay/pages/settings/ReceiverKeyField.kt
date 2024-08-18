@@ -9,8 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.relay.composables.rememberMutableCoroutineState
-import io.mrnateriver.smsproxy.relay.services.settings.SettingsService
 import io.mrnateriver.smsproxy.relay.services.settings.validateReceiverKey
 
 fun LazyListScope.receiverKeyPreference(state: MutableState<String>) {

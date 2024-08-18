@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 private const val PERMISSION_RECEIVE_MESSAGES = Manifest.permission.RECEIVE_SMS
@@ -21,8 +22,8 @@ enum class PermissionStatus {
     DENIED
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
+@OptIn(ExperimentalPermissionsApi::class)
 fun rememberMessagePermissions(): State<PermissionStatus> {
     var gotUserResponse by remember { mutableStateOf(false) }
     val state = rememberMultiplePermissionsState(
@@ -36,6 +37,15 @@ fun rememberMessagePermissions(): State<PermissionStatus> {
         state.launchMultiplePermissionRequest()
     }
 
+    return rememberDerivedPermissionsState(gotUserResponse, state)
+}
+
+@Composable
+@OptIn(ExperimentalPermissionsApi::class)
+internal fun rememberDerivedPermissionsState(
+    gotUserResponse: Boolean,
+    state: MultiplePermissionsState,
+): State<PermissionStatus> {
     return remember {
         derivedStateOf {
             when {
