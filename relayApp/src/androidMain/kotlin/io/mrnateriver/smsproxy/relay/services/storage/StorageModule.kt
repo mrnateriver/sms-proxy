@@ -15,7 +15,7 @@ import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepo
 
 @Module
 @InstallIn(SingletonComponent::class)
-class StorageModule {
+object StorageModule {
     @Provides
     fun providesMessagesDatabase(
         @ApplicationContext context: Context,

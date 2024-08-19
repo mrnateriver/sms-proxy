@@ -21,7 +21,7 @@ data class ProxyApiCertificates(
 
 @Module
 @InstallIn(SingletonComponent::class)
-class ProxyApiModule {
+object ProxyApiModule {
     @Provides
     fun providesApiCertificates(
         observabilityService: ObservabilityService,

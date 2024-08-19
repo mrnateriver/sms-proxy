@@ -23,7 +23,7 @@ abstract class ServicesModule {
 
     @Module
     @InstallIn(SingletonComponent::class)
-    class MessageProcessingModule {
+    object MessageProcessingModule {
         @Provides
         fun providesObservabilityService(): ObservabilityServiceContract =
             AndroidObservabilityService()
