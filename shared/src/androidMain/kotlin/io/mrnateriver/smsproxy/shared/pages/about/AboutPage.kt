@@ -22,7 +22,7 @@ import io.mrnateriver.smsproxy.shared.R
 import io.mrnateriver.smsproxy.shared.pages.PageDescriptor
 
 fun NavGraphBuilder.aboutPage(
-    navController: NavController,
+    onNavigateToLicensesPageClick: () -> Unit = {},
     versionString: String? = null,
     pageContentWrapper: @Composable (content: @Composable () -> Unit) -> Unit = { it() },
 ) {
@@ -33,7 +33,7 @@ fun NavGraphBuilder.aboutPage(
         composable(AboutPageInfo) {
             AboutPage(
                 versionString = versionString,
-                navigateToLicensesPage = { navController.navigateToLicensesPage() },
+                navigateToLicensesPage = onNavigateToLicensesPageClick,
                 pageContentWrapper = pageContentWrapper,
             )
         }

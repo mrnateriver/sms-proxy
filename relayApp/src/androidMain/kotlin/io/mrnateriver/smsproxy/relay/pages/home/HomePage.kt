@@ -25,14 +25,13 @@ import io.mrnateriver.smsproxy.relay.AppViewModel
 import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
 import io.mrnateriver.smsproxy.relay.composables.rememberMessagePermissions
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
-import io.mrnateriver.smsproxy.relay.pages.settings.navigateToSettingsPage
 import io.mrnateriver.smsproxy.relay.services.MessageStatsData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 
 const val HomePageRoute = "/"
 
 fun NavGraphBuilder.homePage(
-    navController: NavController,
+    onGoToSettingsClick: () -> Unit,
     viewModel: AppViewModel,
 ) {
     composable(HomePageRoute) {
@@ -50,7 +49,7 @@ fun NavGraphBuilder.homePage(
             messagePermissionsStatus = messagePermissionsStatus,
             messageStatsData = messageStats,
             messageRecordsRecent = messageRecent,
-            onGoToSettingsClick = { navController.navigateToSettingsPage() },
+            onGoToSettingsClick = onGoToSettingsClick,
         )
     }
 }

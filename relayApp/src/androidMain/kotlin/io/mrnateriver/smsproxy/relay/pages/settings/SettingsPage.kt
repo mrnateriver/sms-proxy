@@ -33,11 +33,11 @@ import io.mrnateriver.smsproxy.shared.pages.PageDescriptor
 import io.mrnateriver.smsproxy.shared.theme.AppSpacings
 
 fun NavGraphBuilder.settingsPage(
-    navController: NavController,
+    onBackClick: () -> Unit = {},
     viewModel: AppViewModel,
 ) {
     composable(SettingsPageRoute) {
-        SettingsPage(navController, viewModel.settingsService)
+        SettingsPage(onBackClick, viewModel.settingsService)
     }
 }
 
@@ -58,8 +58,8 @@ private const val SettingsPageRoute = "settings"
 private fun isSettingsPageRoute(dest: NavDestination?): Boolean = dest?.route == SettingsPageRoute
 
 @Composable
-fun SettingsPage(navController: NavController, settingsService: SettingsServiceContract) {
-    SettingsPageAppBarActions(navController)
+fun SettingsPage(onBackClick: () -> Unit = {}, settingsService: SettingsServiceContract) {
+    SettingsPageAppBarActions(onBackClick)
 
     val apiConfigured by settingsService.isApiConfigured.collectAsStateWithLifecycle(false)
     val baseApiUrlState = rememberMutableCoroutineState(

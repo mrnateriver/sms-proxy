@@ -16,8 +16,10 @@ import io.mrnateriver.smsproxy.relay.AppViewModel
 import io.mrnateriver.smsproxy.relay.BuildConfig
 import io.mrnateriver.smsproxy.relay.pages.home.HomePageRoute
 import io.mrnateriver.smsproxy.relay.pages.home.homePage
+import io.mrnateriver.smsproxy.relay.pages.settings.navigateToSettingsPage
 import io.mrnateriver.smsproxy.relay.pages.settings.settingsPage
 import io.mrnateriver.smsproxy.shared.pages.about.aboutPage
+import io.mrnateriver.smsproxy.shared.pages.about.navigateToLicensesPage
 
 @Composable
 fun AppNavHost(
@@ -34,11 +36,18 @@ fun AppNavHost(
         popEnterTransition = { navPopEnterTransitionBuilder() },
         popExitTransition = { navPopExitTransitionBuilder() },
     ) {
-        homePage(navController, viewModel)
-        settingsPage(navController, viewModel)
+        homePage(
+            onGoToSettingsClick = { navController.navigateToSettingsPage() },
+            viewModel = viewModel,
+        )
+
+        settingsPage(
+            onBackClick = { navController.popBackStack() },
+            viewModel = viewModel,
+        )
 
         aboutPage(
-            navController,
+            onNavigateToLicensesPageClick = { navController.navigateToLicensesPage() },
             versionString = "${BuildConfig.VERSION_NAME}+${BuildConfig.VERSION_CODE}",
             pageContentWrapper = { AppContentSurface { it() } }
         )
