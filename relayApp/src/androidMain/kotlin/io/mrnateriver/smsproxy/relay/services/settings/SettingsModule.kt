@@ -1,32 +1,22 @@
 package io.mrnateriver.smsproxy.relay.services.settings
 
 import android.content.Context
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+
+private val Context.settingsStore: DataStore<Preferences> by preferencesDataStore(name = "app_settings")
 
 @Module
 @InstallIn(SingletonComponent::class)
 object SettingsModule {
     @Provides
-    fun providesSettingsDataStore(@ApplicationContext context: Context): SettingsDataStore {
-        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        return PreferenceDataStoreFactory.create(migrations = listOf(), scope = scope) {
-            context.preferencesDataStoreFile("app_settings")
-        }
-    }
-
-    @Provides
-    fun providesSettingsService(settingsDataStore: SettingsDataStore): SettingsServiceContract {
-        // Scope is provided by the SettingsService itself by default, but Dagger cannot inject
-        // the rest of the constructor arguments, hence this provision function
-        return SettingsService(settingsDataStore)
+    fun providesSettingsService(@ApplicationContext context: Context): SettingsServiceContract {
+        return SettingsService(context.settingsStore)
     }
 }

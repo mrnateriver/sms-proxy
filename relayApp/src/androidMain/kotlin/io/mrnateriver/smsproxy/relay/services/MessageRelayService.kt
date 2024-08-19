@@ -9,7 +9,6 @@ import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -37,7 +36,7 @@ class MessageRelayService @Inject constructor(
     private lateinit var apiClient: Flow<Pair<String, ProxyApi>>
 
     @kotlin.time.ExperimentalTime
-    override suspend fun relay(entry: MessageEntry) = coroutineScope {
+    override suspend fun relay(entry: MessageEntry) {
         val (receiverKey, proxyApiService) = getApiClient()
 
         val response = proxyApiService.messagesProxy(
@@ -57,7 +56,7 @@ class MessageRelayService @Inject constructor(
 
     @OptIn(FlowPreview::class)
     @kotlin.time.ExperimentalTime
-    private suspend fun getApiClient(): Pair<String, DefaultApi> = coroutineScope {
+    private suspend fun getApiClient(): Pair<String, DefaultApi> {
         if (!::apiClient.isInitialized) {
             apiClient = combine(
                 settingsService.receiverKey.distinctUntilChanged(),
@@ -90,7 +89,7 @@ class MessageRelayService @Inject constructor(
                 }
         }
 
-        apiClient.timeout(API_SETTINGS_TIMEOUT_SECONDS.seconds).first()
+        return apiClient.timeout(API_SETTINGS_TIMEOUT_SECONDS.seconds).first()
     }
 
 }
