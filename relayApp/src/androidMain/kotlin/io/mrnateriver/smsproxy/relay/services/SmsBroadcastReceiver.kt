@@ -7,8 +7,6 @@ import android.provider.Telephony
 import android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.mrnateriver.smsproxy.shared.MessageProcessingService
-import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -16,15 +14,23 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import java.util.logging.Level
 import javax.inject.Inject
+import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 @AndroidEntryPoint
-class SmsBroadcastReceiver @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val smsProcessingService: MessageProcessingService,
-    private val statsService: MessageStatsServiceContract,
-    private val observabilityService: ObservabilityService,
-) :
-    BroadcastReceiver() {
+class SmsBroadcastReceiver : BroadcastReceiver() {
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var smsProcessingService: MessageProcessingServiceContract
+
+    @Inject
+    lateinit var statsService: MessageStatsServiceContract
+
+    @Inject
+    lateinit var observabilityService: ObservabilityServiceContract
 
     override fun onReceive(context: Context, intent: Intent) {
         observabilityService.log(Level.INFO, "Received intent broadcast: $intent")
