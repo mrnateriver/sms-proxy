@@ -35,7 +35,6 @@ class MessageRelayService @Inject constructor(
 ) : MessageRelayServiceContract {
     private lateinit var apiClient: Flow<Pair<String, ProxyApi>>
 
-    @kotlin.time.ExperimentalTime
     override suspend fun relay(entry: MessageEntry) {
         val (receiverKey, proxyApiService) = getApiClient()
 
@@ -55,7 +54,6 @@ class MessageRelayService @Inject constructor(
     }
 
     @OptIn(FlowPreview::class)
-    @kotlin.time.ExperimentalTime
     private suspend fun getApiClient(): Pair<String, DefaultApi> {
         if (!::apiClient.isInitialized) {
             apiClient = combine(

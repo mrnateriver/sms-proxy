@@ -21,9 +21,16 @@ abstract class ServicesModule {
     @Binds
     abstract fun bindsMessageStatsService(impl: MessageStatsService): MessageStatsServiceContract
 
+    @Binds
+    abstract fun bindsMessageProcessingWorkerService(impl: MessageProcessingWorkerService): MessageProcessingWorkerServiceContract
+
     @Module
     @InstallIn(SingletonComponent::class)
     object MessageProcessingModule {
+        @Provides
+        fun providesSmsIntentParserService(): SmsIntentParserServiceContract =
+            SmsIntentParserService()
+
         @Provides
         fun providesObservabilityService(): ObservabilityServiceContract =
             AndroidObservabilityService()
