@@ -9,6 +9,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 private val Context.settingsStore: DataStore<Preferences> by preferencesDataStore(name = "app_settings")
 
@@ -16,6 +17,7 @@ private val Context.settingsStore: DataStore<Preferences> by preferencesDataStor
 @InstallIn(SingletonComponent::class)
 object SettingsModule {
     @Provides
+    @Singleton
     fun providesSettingsService(@ApplicationContext context: Context): SettingsServiceContract {
         return SettingsService(context.settingsStore)
     }

@@ -14,6 +14,7 @@ import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
 import io.mrnateriver.smsproxy.shared.AndroidObservabilityService
 import io.mrnateriver.smsproxy.shared.MessageProcessingService
 import io.mrnateriver.smsproxy.shared.ProxyApiClientFactory
+import javax.inject.Singleton
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
@@ -25,12 +26,14 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 @InstallIn(SingletonComponent::class)
 abstract class ServicesModule {
     @Binds
+    @Singleton
     abstract fun bindsMessageProcessingWorkerService(impl: MessageProcessingWorkerService): MessageProcessingWorkerServiceContract
 
     @Module
     @InstallIn(SingletonComponent::class)
     object MessageProcessingModule {
         @Provides
+        @Singleton
         fun providesMessageRelayService(
             apiClientFactory: ProxyApiClientFactory,
             settingsService: SettingsServiceContract,
@@ -40,14 +43,17 @@ abstract class ServicesModule {
         }
 
         @Provides
+        @Singleton
         fun providesSmsIntentParserService(): SmsIntentParserServiceContract =
             SmsIntentParserService()
 
         @Provides
+        @Singleton
         fun providesObservabilityService(): ObservabilityServiceContract =
             AndroidObservabilityService()
 
         @Provides
+        @Singleton
         fun providesMessageProcessingService(
             repository: MessageRepositoryContract,
             relay: MessageRelayServiceContract,
@@ -59,6 +65,7 @@ abstract class ServicesModule {
         )
 
         @Provides
+        @Singleton
         fun providesMessageStatsService(
             @ApplicationContext context: Context,
             observabilityService: ObservabilityServiceContract,

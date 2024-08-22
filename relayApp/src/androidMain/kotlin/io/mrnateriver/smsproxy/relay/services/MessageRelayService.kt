@@ -21,14 +21,12 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.timeout
 import java.util.logging.Level
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 private const val API_SETTINGS_TIMEOUT_SECONDS = 1
 
-@Singleton
 class MessageRelayService @Inject constructor(
     private val apiClientFactory: ProxyApiClientFactory,
     private val settingsService: SettingsServiceContract,

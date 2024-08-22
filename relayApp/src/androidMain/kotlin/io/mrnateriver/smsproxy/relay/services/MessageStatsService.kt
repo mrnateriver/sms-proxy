@@ -27,7 +27,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import java.util.logging.Level
 import javax.inject.Inject
-import javax.inject.Singleton
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 private const val METRICS_NAME_PROCESSING_ERRORS = "processing_failures"
@@ -48,7 +47,6 @@ data class MessageStatsEntry(
     val lastEvent: LocalDateTime?,
 )
 
-@Singleton
 class MessageStatsService @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val observabilityService: ObservabilityService,

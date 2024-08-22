@@ -5,9 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import kotlinx.datetime.Instant
-import javax.inject.Singleton
 
-@Singleton
 @Database(entities = [MessageEntity::class], version = 2)
 @TypeConverters(InstantTypeConverter::class)
 abstract class MessagesDatabase : RoomDatabase() {

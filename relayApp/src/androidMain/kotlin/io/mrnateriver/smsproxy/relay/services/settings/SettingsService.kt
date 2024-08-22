@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
-import javax.inject.Singleton
 
 private val PREF_KEY_API_BASE_API_URL = stringPreferencesKey("api-base-url")
 private val PREF_KEY_API_RECEIVER_KEY = stringPreferencesKey("api-receiver-key")
@@ -30,7 +29,6 @@ interface SettingsServiceContract {
     suspend fun setShowRecentMessages(value: Boolean)
 }
 
-@Singleton
 class SettingsService(
     private val settingsStore: DataStore<Preferences>,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),

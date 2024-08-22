@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.util.logging.Level
 import javax.inject.Inject
-import javax.inject.Singleton
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
@@ -26,7 +25,6 @@ interface MessageProcessingWorkerServiceContract {
     fun scheduleBackgroundWork(context: Context)
 }
 
-@Singleton
 class MessageProcessingWorkerService @Inject constructor(
     private val processingService: MessageProcessingServiceContract,
     private val statsService: MessageStatsServiceContract,
