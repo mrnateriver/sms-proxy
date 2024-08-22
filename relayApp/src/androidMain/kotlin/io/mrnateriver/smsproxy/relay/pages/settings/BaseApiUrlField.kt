@@ -6,9 +6,9 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import io.mrnateriver.smsproxy.relay.R
+import io.mrnateriver.smsproxy.relay.services.settings.ApiBaseUrlValidationResult
 import io.mrnateriver.smsproxy.relay.services.settings.validateBaseApiUrl
 
 fun LazyListScope.baseApiUrlPreference(state: MutableState<String>) {
@@ -17,12 +17,20 @@ fun LazyListScope.baseApiUrlPreference(state: MutableState<String>) {
         contentType = "ValidatedStringFieldPreference"
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            val resources = LocalContext.current.resources
+            val errorEmpty = stringResource(R.string.settings_page_entry_api_base_url_error_empty)
+            val errorInvalid =
+                stringResource(R.string.settings_page_entry_api_base_url_error_invalid_format)
 
             ValidatedStringFieldPreference(
                 state = state,
                 title = stringResource(R.string.settings_page_entry_api_base_url_title),
-                validate = { validateBaseApiUrl(it, resources) },
+                validate = {
+                    when (validateBaseApiUrl(it)) {
+                        ApiBaseUrlValidationResult.VALID -> null
+                        ApiBaseUrlValidationResult.INVALID_EMPTY -> errorEmpty
+                        ApiBaseUrlValidationResult.INVALID_FORMAT -> errorInvalid
+                    }
+                },
             )
         }
 

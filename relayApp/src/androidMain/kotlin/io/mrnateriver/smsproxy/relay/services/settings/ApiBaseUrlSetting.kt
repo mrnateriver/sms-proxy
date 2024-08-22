@@ -1,19 +1,23 @@
 package io.mrnateriver.smsproxy.relay.services.settings
 
-import android.content.res.Resources
-import io.mrnateriver.smsproxy.relay.R
 import java.net.MalformedURLException
 import java.net.URL
 
-fun validateBaseApiUrl(value: String, context: Resources): String? {
+enum class ApiBaseUrlValidationResult {
+    VALID,
+    INVALID_EMPTY,
+    INVALID_FORMAT,
+}
+
+fun validateBaseApiUrl(value: String): ApiBaseUrlValidationResult {
     return if (value.isEmpty()) {
-        context.getString(R.string.settings_page_entry_api_base_url_error_empty)
+        ApiBaseUrlValidationResult.INVALID_EMPTY
     } else {
         try {
             URL(value)
-            return null
+            return ApiBaseUrlValidationResult.VALID
         } catch (e: MalformedURLException) {
-            return context.getString(R.string.settings_page_entry_api_base_url_error_invalid_format)
+            return ApiBaseUrlValidationResult.INVALID_FORMAT
         }
     }
 }
