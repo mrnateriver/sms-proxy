@@ -50,7 +50,7 @@ class SmsBroadcastReceiverService @Inject constructor(
                     )
                 )
             } catch (e: Exception) {
-                statsService.incrementProcessingFailures()
+                statsService.incrementProcessingErrors()
 
                 observabilityService.log(
                     Level.WARNING,

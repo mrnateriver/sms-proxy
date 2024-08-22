@@ -103,7 +103,7 @@ class MessageProcessingWorkerServiceTest {
         )
 
         subject.handleUnprocessedMessages()
-        verify(statsService, times(2)).incrementProcessingFailures()
+        verify(statsService, times(2)).incrementProcessingErrors()
     }
 
     @Test

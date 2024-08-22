@@ -1,32 +1,44 @@
 package io.mrnateriver.smsproxy.relay.services
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
 import io.mrnateriver.smsproxy.shared.AndroidObservabilityService
 import io.mrnateriver.smsproxy.shared.MessageProcessingService
+import io.mrnateriver.smsproxy.shared.ProxyApiClientFactory
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "messages_stats")
+
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ServicesModule {
-    @Binds
-    abstract fun bindsMessageRelayService(impl: MessageRelayService): MessageRelayServiceContract
-
-    @Binds
-    abstract fun bindsMessageStatsService(impl: MessageStatsService): MessageStatsServiceContract
-
     @Binds
     abstract fun bindsMessageProcessingWorkerService(impl: MessageProcessingWorkerService): MessageProcessingWorkerServiceContract
 
     @Module
     @InstallIn(SingletonComponent::class)
     object MessageProcessingModule {
+        @Provides
+        fun providesMessageRelayService(
+            apiClientFactory: ProxyApiClientFactory,
+            settingsService: SettingsServiceContract,
+            observabilityService: ObservabilityServiceContract,
+        ): MessageRelayServiceContract {
+            return MessageRelayService(apiClientFactory, settingsService, observabilityService)
+        }
+
         @Provides
         fun providesSmsIntentParserService(): SmsIntentParserServiceContract =
             SmsIntentParserService()
@@ -45,5 +57,14 @@ abstract class ServicesModule {
             relay = relay,
             observability = observability,
         )
+
+        @Provides
+        fun providesMessageStatsService(
+            @ApplicationContext context: Context,
+            observabilityService: ObservabilityServiceContract,
+            messagesRepository: MessageRepositoryContract,
+        ): MessageStatsServiceContract {
+            return MessageStatsService(context.dataStore, observabilityService, messagesRepository)
+        }
     }
 }

@@ -1,13 +1,10 @@
 package io.mrnateriver.smsproxy.relay.services
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
@@ -33,23 +30,17 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
-private const val METRICS_NAME_PROCESSING_FAILURES = "processing_failures"
+private const val METRICS_NAME_PROCESSING_ERRORS = "processing_failures"
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "messages_stats")
-
-private val KEY_PROCESSING_FAILURES = intPreferencesKey(METRICS_NAME_PROCESSING_FAILURES)
-private val KEY_PROCESSING_FAILURE_TIMESTAMP = longPreferencesKey("processing_failure_timestamp")
+private val KEY_PROCESSING_ERRORS = intPreferencesKey(METRICS_NAME_PROCESSING_ERRORS)
+private val KEY_PROCESSING_ERROR_TIMESTAMP = longPreferencesKey("processing_failure_timestamp")
 
 interface MessageStatsServiceContract {
     val statsUpdates: Flow<Unit>
 
     fun triggerUpdate()
-    suspend fun incrementProcessingFailures()
+    suspend fun incrementProcessingErrors()
     fun getStats(): Flow<MessageStatsData>
-    fun getProcessingErrors(): Flow<MessageStatsEntry>
-    fun getProcessingFailures(): Flow<MessageStatsEntry>
-    fun getProcessedMessages(): Flow<MessageStatsEntry>
-    fun getRelayedMessages(): Flow<MessageStatsEntry>
 }
 
 data class MessageStatsEntry(
@@ -59,9 +50,10 @@ data class MessageStatsEntry(
 
 @Singleton
 class MessageStatsService @Inject constructor(
-    @ApplicationContext private val context: Context,
+    private val dataStore: DataStore<Preferences>,
     private val observabilityService: ObservabilityService,
     private val messagesRepository: MessageRepositoryContract,
+    private val clock: Clock = Clock.System,
 ) : MessageStatsServiceContract {
     private val updateTrigger = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
 
@@ -71,20 +63,20 @@ class MessageStatsService @Inject constructor(
         updateTrigger.tryEmit(Unit)
     }
 
-    override suspend fun incrementProcessingFailures(): Unit = supervisorScope {
+    override suspend fun incrementProcessingErrors(): Unit = supervisorScope {
         // We don't want to fail storage operation if observability fails, hence the supervisorScope
-        launch { observabilityService.incrementCounter(METRICS_NAME_PROCESSING_FAILURES) }
+        launch { observabilityService.incrementCounter(METRICS_NAME_PROCESSING_ERRORS) }
 
-        context.dataStore.edit { preferences ->
-            val currentFailures = preferences[KEY_PROCESSING_FAILURES] ?: 0
-            val now = Clock.System.now()
+        dataStore.edit { preferences ->
+            val currentFailures = preferences[KEY_PROCESSING_ERRORS] ?: 0
+            val now = clock.now()
 
             observabilityService.log(
                 Level.FINEST,
                 "Updating failure count: ${currentFailures + 1} at $now"
             )
-            preferences[KEY_PROCESSING_FAILURES] = currentFailures + 1
-            preferences[KEY_PROCESSING_FAILURE_TIMESTAMP] = now.toEpochMilliseconds()
+            preferences[KEY_PROCESSING_ERRORS] = currentFailures + 1
+            preferences[KEY_PROCESSING_ERROR_TIMESTAMP] = now.toEpochMilliseconds()
         }
     }
 
@@ -111,10 +103,10 @@ class MessageStatsService @Inject constructor(
         }
     }
 
-    override fun getProcessingErrors(): Flow<MessageStatsEntry> {
-        return context.dataStore.data.map { preferences ->
-            val value = preferences[KEY_PROCESSING_FAILURES] ?: 0
-            val tsValue = preferences[KEY_PROCESSING_FAILURE_TIMESTAMP]
+    internal fun getProcessingErrors(): Flow<MessageStatsEntry> {
+        return dataStore.data.map { preferences ->
+            val value = preferences[KEY_PROCESSING_ERRORS] ?: 0
+            val tsValue = preferences[KEY_PROCESSING_ERROR_TIMESTAMP]
             val ts = if (tsValue != null) {
                 Instant.fromEpochMilliseconds(tsValue)
                     .toLocalDateTime(TimeZone.currentSystemDefault())
@@ -126,11 +118,11 @@ class MessageStatsService @Inject constructor(
         }
     }
 
-    override fun getProcessingFailures(): Flow<MessageStatsEntry> {
+    internal fun getProcessingFailures(): Flow<MessageStatsEntry> {
         return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.FAILED) }
     }
 
-    override fun getProcessedMessages(): Flow<MessageStatsEntry> {
+    internal fun getProcessedMessages(): Flow<MessageStatsEntry> {
         return updateTrigger.map {
             coroutineScope {
                 val (count, lastEntries) = listOf(
@@ -147,7 +139,7 @@ class MessageStatsService @Inject constructor(
         }
     }
 
-    override fun getRelayedMessages(): Flow<MessageStatsEntry> {
+    internal fun getRelayedMessages(): Flow<MessageStatsEntry> {
         return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.SUCCESS) }
     }
 

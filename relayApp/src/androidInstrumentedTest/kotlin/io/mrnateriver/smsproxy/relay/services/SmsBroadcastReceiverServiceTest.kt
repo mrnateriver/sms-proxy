@@ -90,7 +90,7 @@ class SmsBroadcastReceiverServiceTest {
 
         subject.handleIncomingMessagesIntent(rule.activity.applicationContext, intent)
 
-        verify(statsService).incrementProcessingFailures()
+        verify(statsService).incrementProcessingErrors()
     }
 
     @Test

@@ -9,6 +9,7 @@ import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -32,6 +33,7 @@ class MessageRelayService @Inject constructor(
     private val apiClientFactory: ProxyApiClientFactory,
     private val settingsService: SettingsServiceContract,
     private val observabilityService: ObservabilityServiceContract,
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
 ) : MessageRelayServiceContract {
     private lateinit var apiClient: Flow<Pair<String, ProxyApi>>
 
@@ -76,7 +78,7 @@ class MessageRelayService @Inject constructor(
                     )
                     observabilityService.reportException(it)
                 }
-                .shareIn(CoroutineScope(Dispatchers.IO), SharingStarted.Lazily, 1)
+                .shareIn(scope, SharingStarted.Lazily, 1)
                 .map { (key, api) ->
                     // Throwing errors on the upstream flow would not result in relay error, as
                     // we'd want it - the upstream coroutine would just be aborted, and the

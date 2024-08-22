@@ -46,7 +46,7 @@ class MessageProcessingWorkerService @Inject constructor(
                 }
 
                 for (i in 0 until results.count { it == MessageRelayStatus.ERROR }) {
-                    statsService.incrementProcessingFailures()
+                    statsService.incrementProcessingErrors()
                 }
 
                 statsService.triggerUpdate()

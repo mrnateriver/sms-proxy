@@ -6,6 +6,8 @@ import io.mrnateriver.smsproxy.shared.ProxyApi
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
@@ -38,7 +40,12 @@ class MessageRelayServiceTest {
     private val observabilityService = mock<ObservabilityServiceContract> { }
 
     private val subject =
-        MessageRelayService(apiClientFactory, settingsService, observabilityService)
+        MessageRelayService(
+            apiClientFactory,
+            settingsService,
+            observabilityService,
+            CoroutineScope(Dispatchers.Unconfined),
+        )
 
     private val now = Instant.fromEpochMilliseconds(1723996071981)
 
