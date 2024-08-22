@@ -1,7 +1,6 @@
 package io.mrnateriver.smsproxy.relay.layout.drawer
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,12 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.shared.theme.AppSpacings
+import io.mrnateriver.smsproxy.shared.composables.theme.AppSpacings
 
 @Composable
 fun AppDrawerSheet(

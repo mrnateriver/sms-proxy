@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.shared.theme
 
+import io.mrnateriver.smsproxy.shared.composables.theme.AppSpacings
 import org.junit.Test
 
 class AppSpacingsTest {

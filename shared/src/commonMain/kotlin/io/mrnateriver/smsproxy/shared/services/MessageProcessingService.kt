@@ -1,8 +1,5 @@
-package io.mrnateriver.smsproxy.shared
+package io.mrnateriver.smsproxy.shared.services
 
-import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService
-import io.mrnateriver.smsproxy.shared.contracts.MessageRepository
-import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
@@ -16,6 +13,9 @@ import java.util.logging.Level
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
+import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
+import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 data class MessageProcessingConfig(
     val maxRetries: Int,
@@ -23,9 +23,9 @@ data class MessageProcessingConfig(
 )
 
 class MessageProcessingService(
-    private val repository: MessageRepository,
-    private val relay: MessageRelayService,
-    private val observability: ObservabilityService,
+    private val repository: MessageRepositoryContract,
+    private val relay: MessageRelayServiceContract,
+    private val observability: ObservabilityServiceContract,
     private val config: MessageProcessingConfig = MessageProcessingConfig(3),
     private val clock: Clock = Clock.System,
 ) : MessageProcessingServiceContract {

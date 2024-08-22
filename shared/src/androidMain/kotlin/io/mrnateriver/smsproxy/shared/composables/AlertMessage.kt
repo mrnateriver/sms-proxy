@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.shared
+package io.mrnateriver.smsproxy.shared.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.mrnateriver.smsproxy.shared.theme.AppSpacings
+import io.mrnateriver.smsproxy.shared.composables.theme.AppSpacings
 
 enum class AlertMessageType {
     INFO,

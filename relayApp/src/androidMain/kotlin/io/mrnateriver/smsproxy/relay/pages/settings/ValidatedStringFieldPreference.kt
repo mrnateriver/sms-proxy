@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import io.mrnateriver.smsproxy.shared.AppPreferencesProvider
+import io.mrnateriver.smsproxy.shared.composables.AppPreferencesProvider
 import me.zhanghai.compose.preference.TextFieldPreference
 
 @Composable
@@ -64,7 +64,8 @@ fun ValidatedStringFieldPreference(
                     shouldShowPopupError = true
                     onValueChange(it)
                 },
-                modifier = Modifier.fillMaxWidth().semantics { if (isInputInvalid) error(popupFieldError!!) },
+                modifier = Modifier.fillMaxWidth()
+                    .semantics { if (isInputInvalid) error(popupFieldError!!) },
                 keyboardOptions = KeyboardOptions(autoCorrect = false),
                 keyboardActions = KeyboardActions { onOk() },
                 singleLine = true,

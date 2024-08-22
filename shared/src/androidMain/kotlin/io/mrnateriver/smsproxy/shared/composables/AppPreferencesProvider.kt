@@ -1,7 +1,7 @@
-package io.mrnateriver.smsproxy.shared
+package io.mrnateriver.smsproxy.shared.composables
 
 import androidx.compose.runtime.Composable
-import io.mrnateriver.smsproxy.shared.theme.appPreferencesTheme
+import io.mrnateriver.smsproxy.shared.composables.theme.appPreferencesTheme
 import me.zhanghai.compose.preference.ProvidePreferenceLocals
 
 @Composable

@@ -1,5 +1,7 @@
 package io.mrnateriver.smsproxy.shared
 
+import io.mrnateriver.smsproxy.shared.services.createHandshakeCertificates
+import io.mrnateriver.smsproxy.shared.services.verifySelfSignedCertificateHost
 import okhttp3.tls.certificatePem
 import okhttp3.tls.decodeCertificatePem
 import org.junit.Assert.assertFalse

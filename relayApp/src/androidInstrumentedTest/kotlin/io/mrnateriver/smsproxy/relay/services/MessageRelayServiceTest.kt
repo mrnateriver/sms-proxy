@@ -2,10 +2,10 @@ package io.mrnateriver.smsproxy.relay.services
 
 import io.mrnateriver.smsproxy.models.MessageProxyRequest
 import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
-import io.mrnateriver.smsproxy.shared.ProxyApi
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
+import io.mrnateriver.smsproxy.shared.services.ProxyApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,8 +21,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import retrofit2.Response
 import java.util.UUID
-import io.mrnateriver.smsproxy.shared.ProxyApiClientFactory as ProxyApiClientFactoryContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
+import io.mrnateriver.smsproxy.shared.services.ProxyApiClientFactory as ProxyApiClientFactoryContract
 
 class MessageRelayServiceTest {
     private val apiClient = mock<ProxyApi> {

@@ -12,8 +12,8 @@ import io.mrnateriver.smsproxy.relay.layout.AppLayout
 import io.mrnateriver.smsproxy.relay.layout.AppNavHost
 import io.mrnateriver.smsproxy.relay.layout.drawer.AppDrawerContents
 import io.mrnateriver.smsproxy.relay.pages.home.isHomePageRoute
-import io.mrnateriver.smsproxy.shared.AppPreferencesProvider
-import io.mrnateriver.smsproxy.shared.theme.AppMaterialTheme
+import io.mrnateriver.smsproxy.shared.composables.AppPreferencesProvider
+import io.mrnateriver.smsproxy.shared.composables.theme.AppMaterialTheme
 
 @Composable
 fun App() {

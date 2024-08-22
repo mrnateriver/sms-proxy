@@ -1,8 +1,9 @@
-package io.mrnateriver.smsproxy.shared
+package io.mrnateriver.smsproxy.shared.services
 
 import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.auth.HttpBearerAuth
 import io.mrnateriver.smsproxy.infrastructure.ApiClient
+import io.mrnateriver.smsproxy.shared.BuildConfig
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import okhttp3.OkHttpClient
 import okhttp3.internal.tls.OkHostnameVerifier

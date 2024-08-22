@@ -7,6 +7,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import io.mrnateriver.smsproxy.shared.composables.rememberRootBackgroundColor
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test

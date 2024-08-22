@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.shared.AlertMessage
+import io.mrnateriver.smsproxy.shared.composables.AlertMessage
 
 @Preview
 @Composable

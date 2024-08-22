@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.shared
+package io.mrnateriver.smsproxy.shared.composables
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

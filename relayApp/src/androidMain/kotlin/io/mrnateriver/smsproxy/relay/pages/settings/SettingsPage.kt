@@ -28,9 +28,9 @@ import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.composables.rememberMutableCoroutineState
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
 import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
-import io.mrnateriver.smsproxy.shared.AppPreferencesProvider
+import io.mrnateriver.smsproxy.shared.composables.AppPreferencesProvider
 import io.mrnateriver.smsproxy.shared.pages.PageDescriptor
-import io.mrnateriver.smsproxy.shared.theme.AppSpacings
+import io.mrnateriver.smsproxy.shared.composables.theme.AppSpacings
 
 fun NavGraphBuilder.settingsPage(
     onBackClick: () -> Unit = {},

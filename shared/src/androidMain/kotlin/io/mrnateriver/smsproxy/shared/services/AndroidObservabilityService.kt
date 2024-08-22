@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.shared
+package io.mrnateriver.smsproxy.shared.services
 
 import android.util.Log
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService

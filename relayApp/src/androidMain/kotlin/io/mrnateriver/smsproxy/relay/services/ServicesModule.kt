@@ -11,9 +11,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
-import io.mrnateriver.smsproxy.shared.AndroidObservabilityService
-import io.mrnateriver.smsproxy.shared.MessageProcessingService
-import io.mrnateriver.smsproxy.shared.ProxyApiClientFactory
+import io.mrnateriver.smsproxy.shared.services.AndroidObservabilityService
+import io.mrnateriver.smsproxy.shared.services.MessageProcessingService
+import io.mrnateriver.smsproxy.shared.services.ProxyApiClientFactory
 import javax.inject.Singleton
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract

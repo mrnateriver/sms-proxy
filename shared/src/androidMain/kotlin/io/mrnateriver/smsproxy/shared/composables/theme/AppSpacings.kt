@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.shared.theme
+package io.mrnateriver.smsproxy.shared.composables.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp

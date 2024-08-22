@@ -6,9 +6,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.mrnateriver.smsproxy.shared.ProxyApiClientFactory
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
-import io.mrnateriver.smsproxy.shared.createProxyApiClient
+import io.mrnateriver.smsproxy.shared.services.ProxyApiClientFactory
+import io.mrnateriver.smsproxy.shared.services.createProxyApiClient
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.logging.Level

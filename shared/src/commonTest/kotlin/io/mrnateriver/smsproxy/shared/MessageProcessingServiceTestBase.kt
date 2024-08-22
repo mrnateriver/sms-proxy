@@ -6,6 +6,8 @@ import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
+import io.mrnateriver.smsproxy.shared.services.MessageProcessingConfig
+import io.mrnateriver.smsproxy.shared.services.MessageProcessingService
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.mockito.kotlin.any

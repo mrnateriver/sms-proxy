@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.shared.theme
+package io.mrnateriver.smsproxy.shared.composables.theme
 
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme

@@ -3,9 +3,9 @@ package io.mrnateriver.smsproxy.relay.services
 import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.models.MessageProxyRequest
 import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
-import io.mrnateriver.smsproxy.shared.ProxyApi
-import io.mrnateriver.smsproxy.shared.ProxyApiClientFactory
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
+import io.mrnateriver.smsproxy.shared.services.ProxyApi
+import io.mrnateriver.smsproxy.shared.services.ProxyApiClientFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview

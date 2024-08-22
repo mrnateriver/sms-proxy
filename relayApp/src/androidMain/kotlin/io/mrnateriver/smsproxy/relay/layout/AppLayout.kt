@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.layout.appbar.AppBar
 import io.mrnateriver.smsproxy.relay.layout.drawer.AppDrawer
-import io.mrnateriver.smsproxy.shared.rememberRootBackgroundColor
+import io.mrnateriver.smsproxy.shared.composables.rememberRootBackgroundColor
 
 @Composable
 fun AppLayout(
