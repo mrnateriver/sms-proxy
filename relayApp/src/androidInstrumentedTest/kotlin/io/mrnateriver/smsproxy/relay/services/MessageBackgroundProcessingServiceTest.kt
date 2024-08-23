@@ -1,5 +1,8 @@
 package io.mrnateriver.smsproxy.relay.services
 
+import io.mrnateriver.smsproxy.relay.services.usecases.MessageBackgroundProcessingResult
+import io.mrnateriver.smsproxy.relay.services.usecases.MessageBackgroundProcessingService
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
@@ -17,11 +20,11 @@ import java.util.UUID
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
-class MessageProcessingWorkerServiceTest {
+class MessageBackgroundProcessingServiceTest {
     private val processingService = mock<MessageProcessingServiceContract> {
         onBlocking { handleUnprocessedMessages() }.thenReturn(emptyList())
     }
-    private val statsService = mock<MessageStatsServiceContract> {}
+    private val statsService = mock<MessageStatsService> {}
     private val observabilityService =
         mock<ObservabilityServiceContract> {
             onBlocking<ObservabilityServiceContract, Any> {
@@ -32,7 +35,11 @@ class MessageProcessingWorkerServiceTest {
         }
 
     private val subject =
-        MessageProcessingWorkerService(processingService, statsService, observabilityService)
+        MessageBackgroundProcessingService(
+            processingService,
+            statsService,
+            observabilityService
+        )
 
     private val now = Instant.fromEpochMilliseconds(1723996071981)
 
@@ -60,7 +67,7 @@ class MessageProcessingWorkerServiceTest {
         )
 
         val result = subject.handleUnprocessedMessages()
-        assertEquals(MessageProcessingWorkerResult.RETRY, result)
+        assertEquals(MessageBackgroundProcessingResult.RETRY, result)
     }
 
     @Test
@@ -74,7 +81,7 @@ class MessageProcessingWorkerServiceTest {
         )
 
         val result = subject.handleUnprocessedMessages()
-        assertEquals(MessageProcessingWorkerResult.SUCCESS, result)
+        assertEquals(MessageBackgroundProcessingResult.SUCCESS, result)
     }
 
     @Test
@@ -88,7 +95,7 @@ class MessageProcessingWorkerServiceTest {
         )
 
         val result = subject.handleUnprocessedMessages()
-        assertEquals(MessageProcessingWorkerResult.FAILURE, result)
+        assertEquals(MessageBackgroundProcessingResult.FAILURE, result)
     }
 
     @Test

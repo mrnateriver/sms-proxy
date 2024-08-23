@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.test.core.app.ApplicationProvider
+import io.mrnateriver.smsproxy.relay.services.usecases.MessageStatsService
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus

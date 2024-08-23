@@ -25,7 +25,7 @@ import io.mrnateriver.smsproxy.relay.AppViewModel
 import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
 import io.mrnateriver.smsproxy.relay.composables.rememberMessagePermissions
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
-import io.mrnateriver.smsproxy.relay.services.MessageStatsData
+import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 
 const val HomePageRoute = "/"

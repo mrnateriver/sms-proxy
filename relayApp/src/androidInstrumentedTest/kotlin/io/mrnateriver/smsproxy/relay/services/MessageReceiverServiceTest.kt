@@ -4,6 +4,9 @@ import android.content.Intent
 import android.telephony.SmsMessage
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import io.mrnateriver.smsproxy.relay.services.usecases.MessageReceiverService
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageBackgroundProcessingService
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -17,9 +20,9 @@ import org.mockito.kotlin.whenever
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
-class SmsBroadcastReceiverServiceTest {
+class MessageReceiverServiceTest {
     private var smsProcessingService = mock<MessageProcessingServiceContract> {}
-    private var statsService = mock<MessageStatsServiceContract> {}
+    private var statsService = mock<MessageStatsService> {}
     private val observabilityService =
         mock<ObservabilityServiceContract> {
             onBlocking<ObservabilityServiceContract, Any> {
@@ -28,12 +31,12 @@ class SmsBroadcastReceiverServiceTest {
                 it.getArgument<suspend () -> Any>(1)()
             }
         }
-    private var workerService = mock<MessageProcessingWorkerServiceContract> {}
+    private var workerService = mock<MessageBackgroundProcessingService> {}
     private var smsIntentParserService = mock<SmsIntentParserServiceContract> {
         onBlocking { getMessagesFromIntent(any()) }.thenReturn(emptyArray())
     }
 
-    private val subject = SmsBroadcastReceiverService(
+    private val subject = MessageReceiverService(
         smsProcessingService,
         statsService,
         observabilityService,
@@ -45,21 +48,21 @@ class SmsBroadcastReceiverServiceTest {
     val rule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
-    fun handleIncomingMessagesIntent_shouldRunSpan() = runTest {
-        subject.handleIncomingMessagesIntent(rule.activity.applicationContext, Intent())
+    fun handleIncomingMessage_shouldRunSpan() = runTest {
+        subject.handleIncomingMessage(rule.activity.applicationContext, Intent())
         verify(observabilityService).runSpan(any<String>(), any())
     }
 
     @Test
-    fun handleIncomingMessagesIntent_shouldCallSmsIntentParserService() = runTest {
+    fun handleIncomingMessage_shouldCallSmsIntentParserService() = runTest {
         val intent = Intent()
-        subject.handleIncomingMessagesIntent(rule.activity.applicationContext, intent)
+        subject.handleIncomingMessage(rule.activity.applicationContext, intent)
         verify(smsIntentParserService).getMessagesFromIntent(intent)
     }
 
     @Test
     fun handleIncomingMessagesIntent_shouldNotProcessMessagesIfNone() = runTest {
-        subject.handleIncomingMessagesIntent(rule.activity.applicationContext, Intent())
+        subject.handleIncomingMessage(rule.activity.applicationContext, Intent())
         verify(smsProcessingService, never()).process(any())
     }
 
@@ -73,7 +76,7 @@ class SmsBroadcastReceiverServiceTest {
 
         whenever(smsIntentParserService.getMessagesFromIntent(intent)).thenReturn(messages)
 
-        subject.handleIncomingMessagesIntent(rule.activity.applicationContext, intent)
+        subject.handleIncomingMessage(rule.activity.applicationContext, intent)
 
         verify(smsProcessingService).process(
             argThat { sender == "sender1" && message == "message1message2" }
@@ -81,52 +84,52 @@ class SmsBroadcastReceiverServiceTest {
     }
 
     @Test
-    fun handleIncomingMessagesIntent_shouldIncrementFailuresOnException() = runTest {
+    fun handleIncomingMessage_shouldIncrementFailuresOnException() = runTest {
         val intent = Intent()
         val message = mockSmsMessage("message", "sender")
 
         whenever(smsIntentParserService.getMessagesFromIntent(intent)).thenReturn(arrayOf(message))
         whenever(smsProcessingService.process(any())).thenThrow(RuntimeException())
 
-        subject.handleIncomingMessagesIntent(rule.activity.applicationContext, intent)
+        subject.handleIncomingMessage(rule.activity.applicationContext, intent)
 
         verify(statsService).incrementProcessingErrors()
     }
 
     @Test
-    fun handleIncomingMessagesIntent_shouldScheduleBackgroundRetryOnException() = runTest {
+    fun handleIncomingMessage_shouldScheduleBackgroundRetryOnException() = runTest {
         val intent = Intent()
         val message = mockSmsMessage("message", "sender")
 
         whenever(smsIntentParserService.getMessagesFromIntent(intent)).thenReturn(arrayOf(message))
         whenever(smsProcessingService.process(any())).thenThrow(RuntimeException())
 
-        subject.handleIncomingMessagesIntent(rule.activity.applicationContext, intent)
+        subject.handleIncomingMessage(rule.activity.applicationContext, intent)
 
         verify(workerService).scheduleBackgroundWork(rule.activity.applicationContext)
     }
 
     @Test
-    fun handleIncomingMessagesIntent_shouldTriggerStatsUpdate() = runTest {
+    fun handleIncomingMessage_shouldTriggerStatsUpdate() = runTest {
         val intent = Intent()
         val message = mockSmsMessage("message", "sender")
 
         whenever(smsIntentParserService.getMessagesFromIntent(intent)).thenReturn(arrayOf(message))
 
-        subject.handleIncomingMessagesIntent(rule.activity.applicationContext, intent)
+        subject.handleIncomingMessage(rule.activity.applicationContext, intent)
 
         verify(statsService).triggerUpdate()
     }
 
     @Test
-    fun handleIncomingMessagesIntent_shouldTriggerStatsUpdateOnFailure() = runTest {
+    fun handleIncomingMessage_shouldTriggerStatsUpdateOnFailure() = runTest {
         val intent = Intent()
         val message = mockSmsMessage("message", "sender")
 
         whenever(smsIntentParserService.getMessagesFromIntent(intent)).thenReturn(arrayOf(message))
         whenever(smsProcessingService.process(any())).thenThrow(RuntimeException())
 
-        subject.handleIncomingMessagesIntent(rule.activity.applicationContext, intent)
+        subject.handleIncomingMessage(rule.activity.applicationContext, intent)
 
         verify(statsService).triggerUpdate()
     }

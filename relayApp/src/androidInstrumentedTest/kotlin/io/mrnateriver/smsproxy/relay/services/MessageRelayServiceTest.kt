@@ -1,7 +1,8 @@
 package io.mrnateriver.smsproxy.relay.services
 
 import io.mrnateriver.smsproxy.models.MessageProxyRequest
-import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
+import io.mrnateriver.smsproxy.relay.services.usecases.MessageRelayService
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
@@ -33,7 +34,7 @@ class MessageRelayServiceTest {
     private val apiClientFactory = mock<ProxyApiClientFactoryContract> {
         on { create(any()) }.thenReturn(apiClient)
     }
-    private val settingsService = mock<SettingsServiceContract> {
+    private val settingsService = mock<SettingsService> {
         onBlocking { receiverKey }.thenReturn(flow { emit("123") })
         onBlocking { baseApiUrl }.thenReturn(flow { emit("http://localhost") })
     }

@@ -1,9 +1,9 @@
 package io.mrnateriver.smsproxy.relay
 
-import io.mrnateriver.smsproxy.relay.services.MessageStatsData
-import io.mrnateriver.smsproxy.relay.services.MessageStatsServiceContract
-import io.mrnateriver.smsproxy.relay.services.ProxyApiCertificates
-import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
+import io.mrnateriver.smsproxy.relay.services.data.ProxyApiCertificates
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService
+import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
@@ -26,8 +26,8 @@ class AppViewModelTest {
     @Test
     fun appViewModel_shouldShowApiKeyErrorIfItsNotSet() {
         val viewModel = AppViewModel(
-            settingsService = mock<SettingsServiceContract>(),
-            statsService = mock<MessageStatsServiceContract>(),
+            settingsService = mock<SettingsService>(),
+            statsService = mock<MessageStatsService>(),
             messagesRepository = mock<MessageRepositoryContract>(),
             apiCertificates = ProxyApiCertificates(),
         )
@@ -42,8 +42,8 @@ class AppViewModelTest {
     fun appViewModel_shouldShowMissingCertificatesErrorIfAnyCertIsMissing() {
         assertTrue(
             AppViewModel(
-                settingsService = mock<SettingsServiceContract>(),
-                statsService = mock<MessageStatsServiceContract>(),
+                settingsService = mock<SettingsService>(),
+                statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(),
             ).showMissingCertificatesError
@@ -51,8 +51,8 @@ class AppViewModelTest {
 
         assertTrue(
             AppViewModel(
-                settingsService = mock<SettingsServiceContract>(),
-                statsService = mock<MessageStatsServiceContract>(),
+                settingsService = mock<SettingsService>(),
+                statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(serverCertificatePem = "test"),
             ).showMissingCertificatesError
@@ -60,8 +60,8 @@ class AppViewModelTest {
 
         assertTrue(
             AppViewModel(
-                settingsService = mock<SettingsServiceContract>(),
-                statsService = mock<MessageStatsServiceContract>(),
+                settingsService = mock<SettingsService>(),
+                statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(clientCertificatePem = "test"),
             ).showMissingCertificatesError
@@ -69,8 +69,8 @@ class AppViewModelTest {
 
         assertTrue(
             AppViewModel(
-                settingsService = mock<SettingsServiceContract>(),
-                statsService = mock<MessageStatsServiceContract>(),
+                settingsService = mock<SettingsService>(),
+                statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(clientPrivateKeyPem = "test"),
             ).showMissingCertificatesError
@@ -78,8 +78,8 @@ class AppViewModelTest {
 
         assertTrue(
             AppViewModel(
-                settingsService = mock<SettingsServiceContract>(),
-                statsService = mock<MessageStatsServiceContract>(),
+                settingsService = mock<SettingsService>(),
+                statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(
                     clientCertificatePem = "test",
@@ -90,8 +90,8 @@ class AppViewModelTest {
 
         assertFalse(
             AppViewModel(
-                settingsService = mock<SettingsServiceContract>(),
-                statsService = mock<MessageStatsServiceContract>(),
+                settingsService = mock<SettingsService>(),
+                statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(
                     serverCertificatePem = "test",
@@ -106,10 +106,10 @@ class AppViewModelTest {
     fun appViewModel_shouldShowServerSettingsHintIfApiIsNotConfigured() = runTest {
         assertTrue(
             AppViewModel(
-                settingsService = mock<SettingsServiceContract> {
+                settingsService = mock<SettingsService> {
                     on { isApiConfigured } doReturn flowOf(false)
                 },
-                statsService = mock<MessageStatsServiceContract>(),
+                statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(),
             ).showServerSettingsHint.first()
@@ -117,10 +117,10 @@ class AppViewModelTest {
 
         assertFalse(
             AppViewModel(
-                settingsService = mock<SettingsServiceContract> {
+                settingsService = mock<SettingsService> {
                     on { isApiConfigured } doReturn flowOf(true)
                 },
-                statsService = mock<MessageStatsServiceContract>(),
+                statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(),
             ).showServerSettingsHint.first()
@@ -130,13 +130,13 @@ class AppViewModelTest {
     @Test
     fun appViewModel_shouldEmitMessageStats() = runTest {
         val stubStatsData = MessageStatsData()
-        val statsService = mock<MessageStatsServiceContract> {
+        val statsService = mock<MessageStatsService> {
             on { getStats() } doReturn flowOf(stubStatsData)
         }
 
         assertTrue(
             AppViewModel(
-                settingsService = mock<SettingsServiceContract>(),
+                settingsService = mock<SettingsService>(),
                 statsService = statsService,
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(),
@@ -152,14 +152,14 @@ class AppViewModelTest {
             createMessageEntry("test 3", "test 3"),
         )
 
-        val settingsServiceMock = mock<SettingsServiceContract> {
+        val settingsServiceMock = mock<SettingsService> {
             on { showRecentMessages } doReturn flowOf(false)
         }
 
         assertTrue(
             AppViewModel(
                 settingsService = settingsServiceMock,
-                statsService = mock<MessageStatsServiceContract>(),
+                statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract> {
                     onBlocking { getLastEntries(any()) } doReturn stubMessageRecords
                 },
@@ -177,10 +177,10 @@ class AppViewModelTest {
         )
 
         val emittedRecords = AppViewModel(
-            settingsService = mock<SettingsServiceContract> {
+            settingsService = mock<SettingsService> {
                 on { showRecentMessages } doReturn flowOf(true)
             },
-            statsService = mock<MessageStatsServiceContract> {
+            statsService = mock<MessageStatsService> {
                 on { statsUpdates } doReturn flowOf(Unit)
             },
             messagesRepository = mock<MessageRepositoryContract> {

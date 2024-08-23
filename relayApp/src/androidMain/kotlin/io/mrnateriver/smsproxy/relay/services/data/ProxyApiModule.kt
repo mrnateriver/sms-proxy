@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.services
+package io.mrnateriver.smsproxy.relay.services.data
 
 import android.content.Context
 import dagger.Module
@@ -6,25 +6,21 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
+import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import io.mrnateriver.smsproxy.shared.services.ProxyApiClientFactory
 import io.mrnateriver.smsproxy.shared.services.createProxyApiClient
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.util.logging.Level
-
-data class ProxyApiCertificates(
-    val serverCertificatePem: String? = null,
-    val clientCertificatePem: String? = null,
-    val clientPrivateKeyPem: String? = null,
-)
+import javax.inject.Singleton
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 @Module
 @InstallIn(SingletonComponent::class)
 object ProxyApiModule {
     @Provides
+    @Singleton
     fun providesApiCertificates(
-        observabilityService: ObservabilityService,
+        observabilityService: ObservabilityServiceContract,
         @ApplicationContext context: Context,
     ): ProxyApiCertificates {
         val serverCertificatePem =
@@ -42,11 +38,11 @@ object ProxyApiModule {
     }
 
     @Provides
+    @Singleton
     fun providesProxyApiClientFactory(
-        observabilityService: ObservabilityService,
+        observabilityService: ObservabilityServiceContract,
         certificates: ProxyApiCertificates?,
     ): ProxyApiClientFactory {
-
         return ProxyApiClientFactory {
             createProxyApiClient(
                 serverCertificatePem = certificates?.serverCertificatePem,
@@ -61,7 +57,7 @@ object ProxyApiModule {
     private fun readAssetFile(
         fileName: String,
         context: Context,
-        observabilityService: ObservabilityService,
+        observabilityService: ObservabilityServiceContract,
     ): String? {
         return try {
             val assetManager = context.assets
@@ -73,11 +69,12 @@ object ProxyApiModule {
         } catch (e: Exception) {
             observabilityService.reportException(e)
             observabilityService.log(
-                Level.WARNING,
+                LogLevel.WARNING,
                 "Failed to read TLS certificate from assets: $fileName"
             )
 
             null
         }
     }
+
 }

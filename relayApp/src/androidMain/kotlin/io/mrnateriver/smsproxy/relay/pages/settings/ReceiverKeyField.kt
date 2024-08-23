@@ -8,8 +8,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.relay.services.settings.ReceiverKeyValidationResult
-import io.mrnateriver.smsproxy.relay.services.settings.validateReceiverKey
+import io.mrnateriver.smsproxy.relay.services.usecases.ReceiverKeyValidationResult
+import io.mrnateriver.smsproxy.relay.services.usecases.validateReceiverKey
 
 fun LazyListScope.receiverKeyPreference(state: MutableState<String>) {
     item(key = "api-receiver-key-preferences-key", contentType = "ValidatedStringFieldPreference") {

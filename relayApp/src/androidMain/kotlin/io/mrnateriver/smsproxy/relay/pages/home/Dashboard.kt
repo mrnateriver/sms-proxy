@@ -9,9 +9,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
-import io.mrnateriver.smsproxy.relay.services.MessageStatsData
-import io.mrnateriver.smsproxy.shared.models.MessageEntry
+import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import io.mrnateriver.smsproxy.shared.composables.theme.AppSpacings
+import io.mrnateriver.smsproxy.shared.models.MessageEntry
 
 @Composable
 fun Dashboard(

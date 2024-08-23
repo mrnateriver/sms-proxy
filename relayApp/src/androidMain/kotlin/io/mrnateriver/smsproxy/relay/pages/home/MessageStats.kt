@@ -19,7 +19,8 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.relay.services.MessageStatsData
+import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
+import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsEntry
 import io.mrnateriver.smsproxy.shared.composables.theme.AppSpacings
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
@@ -54,14 +55,14 @@ fun MessageStats(modifier: Modifier = Modifier, data: MessageStatsData) {
             StatsCard(
                 modifier = Modifier.weight(1f),
                 title = stringResource(R.string.dashboard_stats_card_title_processed),
-                value = data.processed.toString(),
-                lastEvent = formatDate(data.lastProcessedAt),
+                value = data.processed.value.toString(),
+                lastEvent = formatDate(data.processed.lastEvent),
             )
             StatsCard(
                 modifier = Modifier.weight(1f),
                 title = stringResource(R.string.dashboard_stats_card_title_relayed),
-                value = data.relayed.toString(),
-                lastEvent = formatDate(data.lastRelayedAt),
+                value = data.relayed.value.toString(),
+                lastEvent = formatDate(data.relayed.lastEvent),
             )
         }
 
@@ -72,15 +73,15 @@ fun MessageStats(modifier: Modifier = Modifier, data: MessageStatsData) {
             StatsCard(
                 modifier = Modifier.weight(1f),
                 title = stringResource(R.string.dashboard_stats_card_title_errors),
-                value = data.errors.toString(),
-                lastEvent = formatDate(data.lastErrorAt),
+                value = data.errors.value.toString(),
+                lastEvent = formatDate(data.errors.lastEvent),
                 textColor = MaterialTheme.colorScheme.error,
             )
             StatsCard(
                 modifier = Modifier.weight(1f),
                 title = stringResource(R.string.dashboard_stats_card_title_failures),
-                value = data.failures.toString(),
-                lastEvent = formatDate(data.lastFailureAt),
+                value = data.failures.value.toString(),
+                lastEvent = formatDate(data.failures.lastEvent),
                 textColor = MaterialTheme.colorScheme.error,
             )
         }
@@ -153,12 +154,8 @@ private fun StatsCardPreview() {
 }
 
 val previewMessageStatsData = MessageStatsData(
-    123,
-    456,
-    42,
-    0,
-    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    processed = MessageStatsEntry(123, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
+    relayed = MessageStatsEntry(456, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
+    errors = MessageStatsEntry(42, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
+    failures = MessageStatsEntry(0, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
 )

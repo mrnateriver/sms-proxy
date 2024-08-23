@@ -1,8 +1,8 @@
-package io.mrnateriver.smsproxy.relay.services
+package io.mrnateriver.smsproxy.relay.services.usecases
 
 import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.models.MessageProxyRequest
-import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
+import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.services.ProxyApi
 import io.mrnateriver.smsproxy.shared.services.ProxyApiClientFactory
@@ -19,9 +19,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.timeout
-import java.util.logging.Level
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService as SettingsServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
@@ -71,7 +71,7 @@ class MessageRelayService @Inject constructor(
                 .catch {
                     // This `catch` is necessary to prevent app crashing on errors, since the subscription is run in a separate global coroutine
                     observabilityService.log(
-                        Level.SEVERE,
+                        LogLevel.ERROR,
                         "Unexpected error occurred when reading receiver key or base API URL settings: $it"
                     )
                     observabilityService.reportException(it)
@@ -89,5 +89,4 @@ class MessageRelayService @Inject constructor(
 
         return apiClient.timeout(API_SETTINGS_TIMEOUT_SECONDS.seconds).first()
     }
-
 }

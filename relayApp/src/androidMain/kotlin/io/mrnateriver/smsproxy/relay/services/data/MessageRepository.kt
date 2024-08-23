@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.services.storage
+package io.mrnateriver.smsproxy.relay.services.data
 
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
@@ -9,7 +9,7 @@ import javax.inject.Inject
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 class MessageRepository @Inject constructor(
-    private val messagesDao: MessagesDao,
+    private val messageDao: MessageDao,
 ) : MessageRepositoryContract {
     override suspend fun insert(entry: MessageData): MessageEntry {
         val now = Clock.System.now()
@@ -23,35 +23,40 @@ class MessageRepository @Inject constructor(
             createdAt = now,
             updatedAt = now,
         )
-        return result.also { messagesDao.insert(it.toEntity()) }
+        return result.also { messageDao.insert(it.toDatabaseEntity()) }
     }
 
     override suspend fun update(entry: MessageEntry): MessageEntry {
-        return entry.also { messagesDao.update(it.toEntity().copy(updatedAt = Clock.System.now())) }
+        return entry.also {
+            messageDao.update(
+                it.toDatabaseEntity()
+                    .copy(updatedAt = Clock.System.now())
+            )
+        }
     }
 
     override suspend fun getAll(vararg statuses: MessageRelayStatus): List<MessageEntry> {
-        return messagesDao.getAll(*statuses).map { it.toEntry() }
+        return messageDao.getAll(*statuses).map { it.toDomainEntity() }
     }
 
     override suspend fun getLastEntries(limit: Int): List<MessageEntry> {
-        return messagesDao.getLastEntries(limit).map { it.toEntry() }
+        return messageDao.getLastEntries(limit).map { it.toDomainEntity() }
     }
 
     override suspend fun getLastEntryByStatus(vararg statuses: MessageRelayStatus): MessageEntry? {
-        return messagesDao.getLastEntryByStatus(*statuses)?.toEntry()
+        return messageDao.getLastEntryByStatus(*statuses)?.toDomainEntity()
     }
 
     override suspend fun getCountByStatus(vararg statuses: MessageRelayStatus): Int {
-        return messagesDao.getCountByStatuses(*statuses)
+        return messageDao.getCountByStatuses(*statuses)
     }
 
     override suspend fun getCount(): Int {
-        return messagesDao.getCount()
+        return messageDao.getCount()
     }
 }
 
-private fun MessageEntity.toEntry() = MessageEntry(
+private fun MessageDaoEntity.toDomainEntity() = MessageEntry(
     guid = guid,
     externalId = externalId,
     sendStatus = sendStatus,
@@ -62,7 +67,7 @@ private fun MessageEntity.toEntry() = MessageEntry(
     updatedAt = updatedAt,
 )
 
-private fun MessageEntry.toEntity() = MessageEntity(
+private fun MessageEntry.toDatabaseEntity() = MessageDaoEntity(
     guid = guid,
     externalId = externalId,
     sendStatus = sendStatus,

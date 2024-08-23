@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.shared.services
 
+import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
@@ -9,7 +10,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
-import java.util.logging.Level
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
@@ -47,7 +47,7 @@ class MessageProcessingService(
                 MessageRelayStatus.PENDING,
                 MessageRelayStatus.IN_PROGRESS
             )
-            observability.log(Level.INFO, "Processing ${entries.size} entries")
+            observability.log(LogLevel.INFO, "Processing ${entries.size} entries")
 
             entries.map { async { processEntry(it).component1() } }.awaitAll()
         }
@@ -76,7 +76,7 @@ class MessageProcessingService(
     }
 
     private suspend fun startProcessing(entry: MessageEntry): MessageEntry {
-        observability.log(Level.INFO, "Relaying entry ${entry.guid}")
+        observability.log(LogLevel.INFO, "Relaying entry ${entry.guid}")
         return repository.update(
             entry.copy(
                 sendStatus = MessageRelayStatus.IN_PROGRESS,
@@ -94,7 +94,7 @@ class MessageProcessingService(
     private inline fun checkTimeout(entry: MessageEntry, cont: (entry: MessageEntry) -> Unit) {
         if (entry.sendStatus == MessageRelayStatus.IN_PROGRESS) {
             if (entry.updatedAt != null && entry.updatedAt.plus(config.timeout) < clock.now()) {
-                observability.log(Level.WARNING, "Entry ${entry.guid} is stuck in progress")
+                observability.log(LogLevel.WARNING, "Entry ${entry.guid} is stuck in progress")
                 throw IllegalStateException("Entry is stuck in progress")
             } else {
                 cont(entry)
@@ -108,11 +108,11 @@ class MessageProcessingService(
     ): MessageEntry {
         observability.reportException(exception)
 
-        observability.log(Level.WARNING, "Failed to process entry ${entry.guid}: $exception")
+        observability.log(LogLevel.WARNING, "Failed to process entry ${entry.guid}: $exception")
 
         val retries = entry.sendRetries
         if (retries >= config.maxRetries) {
-            observability.log(Level.WARNING, "Entry ${entry.guid} reached max retries")
+            observability.log(LogLevel.WARNING, "Entry ${entry.guid} reached max retries")
             return repository.update(
                 entry.copy(
                     sendStatus = MessageRelayStatus.FAILED,

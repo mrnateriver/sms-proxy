@@ -7,7 +7,7 @@ import android.os.PowerManager
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
-import io.mrnateriver.smsproxy.relay.services.MessageProcessingWorkerService
+import io.mrnateriver.smsproxy.relay.services.framework.MessageProcessingScheduler
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -28,7 +28,7 @@ class MainApplication : Application(), Configuration.Provider {
         }
 
         // Process any forgotten messages on startup
-        MessageProcessingWorkerService.scheduleBackgroundWork(this)
+        MessageProcessingScheduler.scheduleBackgroundWork(this)
     }
 
     override fun onTerminate() {

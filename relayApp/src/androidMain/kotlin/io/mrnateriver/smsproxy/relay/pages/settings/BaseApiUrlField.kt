@@ -8,8 +8,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.relay.services.settings.ApiBaseUrlValidationResult
-import io.mrnateriver.smsproxy.relay.services.settings.validateBaseApiUrl
+import io.mrnateriver.smsproxy.relay.services.usecases.ApiBaseUrlValidationResult
+import io.mrnateriver.smsproxy.relay.services.usecases.validateBaseApiUrl
 
 fun LazyListScope.baseApiUrlPreference(state: MutableState<String>) {
     item(

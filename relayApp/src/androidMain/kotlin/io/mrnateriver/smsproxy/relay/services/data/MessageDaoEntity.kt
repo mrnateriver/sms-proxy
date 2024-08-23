@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.relay.services.storage
+package io.mrnateriver.smsproxy.relay.services.data
 
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -10,7 +10,7 @@ import kotlinx.datetime.Instant
 import java.util.UUID
 
 @Entity(indices = [Index(value = ["sendStatus"])])
-data class MessageEntity(
+data class MessageDaoEntity(
     @PrimaryKey val guid: UUID,
     val externalId: String?,
     val sendStatus: MessageRelayStatus,

@@ -4,15 +4,15 @@ import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.auth.HttpBearerAuth
 import io.mrnateriver.smsproxy.infrastructure.ApiClient
 import io.mrnateriver.smsproxy.shared.BuildConfig
-import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
+import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import okhttp3.OkHttpClient
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import okhttp3.tls.decodeCertificatePem
 import java.util.concurrent.TimeUnit
-import java.util.logging.Level
 import javax.net.ssl.SSLSession
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 typealias ProxyApi = DefaultApi
 
@@ -24,7 +24,7 @@ fun createProxyApiClient(
     serverCertificatePem: String?,
     clientCertificatePem: String?,
     clientPrivateKeyPem: String?,
-    observabilityService: ObservabilityService,
+    observabilityService: ObservabilityServiceContract,
     baseApiUrl: String = BuildConfig.API_BASE_URL,
     apiKey: String = BuildConfig.API_KEY,
     loggingEnabled: Boolean = BuildConfig.DEBUG,
@@ -36,7 +36,7 @@ fun createProxyApiClient(
         .addAuthorization("Bearer", HttpBearerAuth(apiKey))
         .apply {
             if (loggingEnabled) {
-                logger = { message -> observabilityService.log(Level.FINEST, message) }
+                logger = { message -> observabilityService.log(LogLevel.DEBUG, message) }
             }
         }
         .createService(ProxyApi::class.java)

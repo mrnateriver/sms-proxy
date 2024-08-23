@@ -9,7 +9,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onSiblings
 import io.mrnateriver.smsproxy.relay.R
-import io.mrnateriver.smsproxy.relay.services.MessageStatsData
+import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDateTime
 import org.junit.Before

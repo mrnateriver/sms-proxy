@@ -2,10 +2,8 @@ package io.mrnateriver.smsproxy.relay
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.mrnateriver.smsproxy.relay.services.MessageStatsData
-import io.mrnateriver.smsproxy.relay.services.MessageStatsServiceContract
-import io.mrnateriver.smsproxy.relay.services.ProxyApiCertificates
-import io.mrnateriver.smsproxy.relay.services.settings.SettingsServiceContract
+import io.mrnateriver.smsproxy.relay.services.data.ProxyApiCertificates
+import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import io.mrnateriver.smsproxy.shared.API_KEY
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,6 +12,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService as MessageStatsServiceContract
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService as SettingsServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 private const val MESSAGE_RECORDS_RECENT_COUNT = 5
