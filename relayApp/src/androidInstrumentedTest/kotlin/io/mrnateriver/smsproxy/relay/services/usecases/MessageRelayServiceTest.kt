@@ -1,8 +1,6 @@
-package io.mrnateriver.smsproxy.relay.services
+package io.mrnateriver.smsproxy.relay.services.usecases
 
 import io.mrnateriver.smsproxy.models.MessageProxyRequest
-import io.mrnateriver.smsproxy.relay.services.usecases.MessageRelayService
-import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
@@ -22,6 +20,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import retrofit2.Response
 import java.util.UUID
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService as SettingsServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 import io.mrnateriver.smsproxy.shared.services.ProxyApiClientFactory as ProxyApiClientFactoryContract
 
@@ -34,7 +33,7 @@ class MessageRelayServiceTest {
     private val apiClientFactory = mock<ProxyApiClientFactoryContract> {
         on { create(any()) }.thenReturn(apiClient)
     }
-    private val settingsService = mock<SettingsService> {
+    private val settingsService = mock<SettingsServiceContract> {
         onBlocking { receiverKey }.thenReturn(flow { emit("123") })
         onBlocking { baseApiUrl }.thenReturn(flow { emit("http://localhost") })
     }

@@ -2,11 +2,14 @@ package io.mrnateriver.smsproxy.relay.services.framework
 
 import android.content.Intent
 import android.provider.Telephony
+import android.telephony.SmsMessage
 
-class SmsIntentParserService {
+class SmsIntentParserService(
+    private val intentParser: (Intent) -> Array<SmsMessage>? = Telephony.Sms.Intents::getMessagesFromIntent,
+) {
     fun getMessagesFromIntent(intent: Intent): ParsedSmsMessage? {
-        val msgs = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-        if (msgs.isEmpty()) {
+        val msgs = intentParser(intent)
+        if (msgs.isNullOrEmpty()) {
             return null
         }
 

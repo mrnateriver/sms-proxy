@@ -1,8 +1,8 @@
-package io.mrnateriver.smsproxy.relay.services
+package io.mrnateriver.smsproxy.relay.services.usecases
 
-import io.mrnateriver.smsproxy.relay.services.usecases.MessageBackgroundProcessingResult
-import io.mrnateriver.smsproxy.relay.services.usecases.MessageBackgroundProcessingService
-import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageBackgroundProcessingService.MessageBackgroundProcessingResult.FAILURE
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageBackgroundProcessingService.MessageBackgroundProcessingResult.RETRY
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageBackgroundProcessingService.MessageBackgroundProcessingResult.SUCCESS
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
@@ -17,6 +17,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.UUID
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService as MessageStatsServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
@@ -24,7 +25,7 @@ class MessageBackgroundProcessingServiceTest {
     private val processingService = mock<MessageProcessingServiceContract> {
         onBlocking { handleUnprocessedMessages() }.thenReturn(emptyList())
     }
-    private val statsService = mock<MessageStatsService> {}
+    private val statsService = mock<MessageStatsServiceContract> {}
     private val observabilityService =
         mock<ObservabilityServiceContract> {
             onBlocking<ObservabilityServiceContract, Any> {
@@ -67,7 +68,7 @@ class MessageBackgroundProcessingServiceTest {
         )
 
         val result = subject.handleUnprocessedMessages()
-        assertEquals(MessageBackgroundProcessingResult.RETRY, result)
+        assertEquals(RETRY, result)
     }
 
     @Test
@@ -81,7 +82,7 @@ class MessageBackgroundProcessingServiceTest {
         )
 
         val result = subject.handleUnprocessedMessages()
-        assertEquals(MessageBackgroundProcessingResult.SUCCESS, result)
+        assertEquals(SUCCESS, result)
     }
 
     @Test
@@ -95,7 +96,7 @@ class MessageBackgroundProcessingServiceTest {
         )
 
         val result = subject.handleUnprocessedMessages()
-        assertEquals(MessageBackgroundProcessingResult.FAILURE, result)
+        assertEquals(FAILURE, result)
     }
 
     @Test

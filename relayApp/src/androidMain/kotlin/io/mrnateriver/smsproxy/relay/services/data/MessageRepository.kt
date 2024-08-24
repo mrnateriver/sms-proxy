@@ -10,9 +10,10 @@ import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepo
 
 class MessageRepository @Inject constructor(
     private val messageDao: MessageDao,
+    private val clock: Clock = Clock.System,
 ) : MessageRepositoryContract {
     override suspend fun insert(entry: MessageData): MessageEntry {
-        val now = Clock.System.now()
+        val now = clock.now()
         val result = MessageEntry(
             guid = UUID.randomUUID(),
             externalId = null,

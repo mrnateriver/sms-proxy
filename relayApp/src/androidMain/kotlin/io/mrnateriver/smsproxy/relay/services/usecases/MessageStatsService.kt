@@ -24,7 +24,7 @@ import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsSer
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
-private const val METRICS_NAME_PROCESSING_ERRORS = "processing_failures"
+internal const val METRICS_NAME_PROCESSING_ERRORS = "processing_failures"
 
 class MessageStatsService @Inject constructor(
     private val observabilityService: ObservabilityServiceContract,
@@ -49,7 +49,7 @@ class MessageStatsService @Inject constructor(
     override fun getStats(): Flow<MessageStatsData> {
         return updateTrigger.flatMapLatest {
             combine(
-                statsRepository.getStats(),
+                statsRepository.getProcessingErrors(),
                 getProcessingFailures(),
                 getProcessedMessages(),
                 getRelayedMessages(),

@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onSiblings
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
+import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsEntry
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDateTime
 import org.junit.Before
@@ -29,14 +30,10 @@ class MessageStatsTest {
         rule.setContent {
             MessageStats(
                 data = MessageStatsData(
-                    processed = 123456,
-                    errors = 123456,
-                    relayed = 123456,
-                    failures = 123456,
-                    lastProcessedAt = testDate,
-                    lastRelayedAt = testDate,
-                    lastFailureAt = testDate,
-                    lastErrorAt = testDate,
+                    processed = MessageStatsEntry(123456, testDate),
+                    relayed = MessageStatsEntry(123456, testDate),
+                    errors = MessageStatsEntry(123456, testDate),
+                    failures = MessageStatsEntry(123456, testDate),
                 )
             )
         }

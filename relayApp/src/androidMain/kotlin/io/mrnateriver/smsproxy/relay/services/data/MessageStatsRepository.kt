@@ -16,8 +16,8 @@ import kotlinx.datetime.toLocalDateTime
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsRepository as MessageStatsRepositoryContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
-private val KEY_PROCESSING_ERRORS = intPreferencesKey("processing_failures")
-private val KEY_PROCESSING_ERROR_TIMESTAMP = longPreferencesKey("processing_failure_timestamp")
+internal val KEY_PROCESSING_ERRORS = intPreferencesKey("processing_failures")
+internal val KEY_PROCESSING_ERROR_TIMESTAMP = longPreferencesKey("processing_failure_timestamp")
 
 class MessageStatsRepository(
     private val observabilityService: ObservabilityServiceContract,
@@ -39,7 +39,7 @@ class MessageStatsRepository(
         }
     }
 
-    override fun getStats(): Flow<MessageStatsEntry> {
+    override fun getProcessingErrors(): Flow<MessageStatsEntry> {
         return dataStore.data.map { preferences ->
             val value = preferences[KEY_PROCESSING_ERRORS] ?: 0
             val tsValue = preferences[KEY_PROCESSING_ERROR_TIMESTAMP]
