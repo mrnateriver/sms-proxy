@@ -42,7 +42,7 @@ tasks {
         }
 
     val clearServerDirectory = register<Delete>("clearApiServerOutputDirectory") {
-        clearCodegenOutput("proxy-api-server")
+        clearCodegenOutput("proxyApiServer")
     }
 
     register<OpenApiGenerateTask>("generateApiServer") {
@@ -52,11 +52,11 @@ tasks {
         generatorName = "kotlin-server"
         library = "jaxrs-spec"
 
-        configureCommon("proxy-api-server")
+        configureCommon("proxyApiServer")
     }
 
     register<Delete>("clearApiClientOutputDirectory") {
-        clearCodegenOutput("proxy-api-client")
+        clearCodegenOutput("proxyApiClient")
     }
 
     register<OpenApiGenerateTask>("generateApiClient") {
@@ -65,7 +65,7 @@ tasks {
         generatorName = "kotlin"
         library = "jvm-retrofit2"
 
-        configureCommon("proxy-api-client", "src/androidMain/kotlin")
+        configureCommon("proxyApiClient", "src/androidMain/kotlin")
     }
 
     register("generateApi") {
