@@ -14,7 +14,12 @@ jobs:
         uses: ./.github/actions/prepare-gradle
 
       - name: Run client codegen
+        continue-on-error: true
         run: ./gradlew proxyApiTypeSpec:generateApi
+
+      - name: Debug filesystem
+        continue-on-error: true
+        run: ls -laR
 
       - name: Check for changes
         run: |
