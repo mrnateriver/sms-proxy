@@ -4,6 +4,7 @@ on:
 
 jobs:
   sast:
+    name: Security Scan
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
@@ -14,6 +15,7 @@ jobs:
         run: echo "TODO"
 
   dependencies:
+    name: Dependencies Scan
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository

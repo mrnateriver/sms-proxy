@@ -9,6 +9,7 @@ on:
 
 jobs:
   build-relay:
+    name: Relay Build
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
@@ -28,6 +29,7 @@ jobs:
         run: ./gradlew relayApp:build
 
   build-receiver:
+    name: Receiver Build
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
@@ -47,6 +49,7 @@ jobs:
         run: ./gradlew relayApp:build
 
   build-server:
+    name: Server Build
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository

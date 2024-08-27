@@ -4,7 +4,7 @@ on:
 
 jobs:
   check-codegen:
-    name: Check codegen changes
+    name: Check Codegen
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
