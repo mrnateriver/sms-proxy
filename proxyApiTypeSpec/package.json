@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "tsp compile ."
+    "build": "tsp compile src"
   },
   "dependencies": {
     "@typespec/compiler": "latest",

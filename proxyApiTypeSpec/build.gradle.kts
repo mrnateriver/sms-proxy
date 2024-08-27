@@ -1,5 +1,6 @@
 import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
 import com.bmuschko.gradle.docker.tasks.container.DockerStartContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerWaitContainer
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask as OpenApiGenerateTask
 
@@ -41,12 +42,14 @@ tasks {
             containerId = createTypeSpecApiGenContainer.get().containerId
         }
 
-    val clearServerDirectory = register<Delete>("clearApiServerOutputDirectory") {
-        clearCodegenOutput("proxyApiServer")
-    }
+    val waitForTypeSpecApiGenContainer =
+        register<DockerWaitContainer>("waitForTypeSpecApiGenContainer") {
+            dependsOn(startTypeSpecApiGenContainer)
+            containerId = createTypeSpecApiGenContainer.get().containerId
+        }
 
     register<OpenApiGenerateTask>("generateApiServer") {
-        dependsOn(listOf(startTypeSpecApiGenContainer, clearServerDirectory))
+        dependsOn(waitForTypeSpecApiGenContainer)
 
         // FIXME: not workable yet
         generatorName = "kotlin-server"
@@ -55,12 +58,8 @@ tasks {
         configureCommon("proxyApiServer")
     }
 
-    register<Delete>("clearApiClientOutputDirectory") {
-        clearCodegenOutput("proxyApiClient")
-    }
-
     register<OpenApiGenerateTask>("generateApiClient") {
-        dependsOn(listOf(startTypeSpecApiGenContainer, clearServerDirectory))
+        dependsOn(waitForTypeSpecApiGenContainer)
 
         generatorName = "kotlin"
         library = "jvm-retrofit2"
