@@ -3,6 +3,20 @@ on:
   workflow_call:
 
 jobs:
+  prepare-avd:
+    name: Prepare AVD
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        api-level: [ '26', '30', '34' ]
+    steps:
+      - name: Setup AVD
+        uses: ./.github/actions/prepare-avd
+        with:
+          api-level: ${{ matrix.api-level }}
+
   tests-shared-jvm:
     name: Shared Unit Tests - JVM
     runs-on: ubuntu-latest
@@ -19,6 +33,7 @@ jobs:
 
   tests-shared-avd:
     name: Shared Unit Tests - AVD
+    needs: [ prepare-avd ]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -38,7 +53,12 @@ jobs:
 
       # TODO: publish HTML test reports
       - name: Run Android tests
-        run: ./gradlew shared:connectedAndroidTest
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          profile: Nexus 6
+          script: ./gradlew shared:connectedCheck
 
   tests-relay:
     name: Relay Unit Tests - AVD
@@ -55,14 +75,14 @@ jobs:
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
-      - name: Setup AVD
-        uses: ./.github/actions/prepare-avd
-        with:
-          api-level: ${{ matrix.api-level }}
-
       # TODO: publish HTML test reports
       - name: Run Android tests
-        run: ./gradlew relayApp:connectedAndroidTest
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          profile: Nexus 6
+          script: ./gradlew relayApp:connectedCheck
 
   tests-receiver:
     name: Receiver Unit Tests - AVD
@@ -86,7 +106,12 @@ jobs:
 
       # TODO: publish HTML test reports
       - name: Run Android tests
-        run: ./gradlew receiverApp:connectedAndroidTest
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          profile: Nexus 6
+          script: ./gradlew receiverApp:connectedCheck
 
   tests-server:
     name: Server Unit Tests - JVM
