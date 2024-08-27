@@ -1,0 +1,22 @@
+name: Check Codegen Changes
+on:
+  workflow_call:
+
+jobs:
+  check-codegen:
+    name: Check codegen changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      - name: Run client codegen
+        run: ./gradlew proxyApiTypeSpec:generateApi
+
+      - name: Check for changes
+        run: |
+          git diff --exit-code
+          if [ $? -ne 0 ]; then
+            echo "Codegen changes detected. Please run 'gradlew proxyApiTypeSpec:generateApi', then test and commit the changes."
+            exit 1
+          fi

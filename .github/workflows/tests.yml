@@ -1,0 +1,86 @@
+name: Unit Tests
+on:
+  workflow_call:
+
+jobs:
+  tests-shared-jvm:
+    name: Shared Unit Tests - JVM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      # TODO: publish HTML test reports
+      - name: Run JVM tests
+        run: ./gradlew shared:jvmTest
+
+  tests-shared-avd:
+    name: Shared Unit Tests - AVD
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        api-level: [ '26', '30', '34' ]
+    steps:
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      - name: Setup AVD
+        uses: ./.github/actions/prepare-avd
+        with:
+          api-level: ${{ matrix.api-level }}
+
+      # TODO: publish HTML test reports
+      - name: Run Android tests
+        run: ./gradlew shared:connectedAndroidTest
+
+  tests-relay:
+    runs-on: ubuntu-latest
+    needs: [ tests-shared ]
+    strategy:
+      fail-fast: true
+      matrix:
+        api-level: [ '26', '30', '34' ]
+    steps:
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      - name: Setup AVD
+        uses: ./.github/actions/prepare-avd
+        with:
+          api-level: ${{ matrix.api-level }}
+
+      # TODO: publish HTML test reports
+      - name: Run Android tests
+        run: ./gradlew relayApp:connectedAndroidTest
+
+  tests-receiver:
+    runs-on: ubuntu-latest
+    needs: [ tests-shared ]
+    strategy:
+      fail-fast: true
+      matrix:
+        api-level: [ '26', '30', '34' ]
+    steps:
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      - name: Setup AVD
+        uses: ./.github/actions/prepare-avd
+        with:
+          api-level: ${{ matrix.api-level }}
+
+      # TODO: publish HTML test reports
+      - name: Run Android tests
+        run: ./gradlew receiverApp:connectedAndroidTest
+
+  tests-server:
+    runs-on: ubuntu-latest
+    needs: [ tests-shared ]
+    steps:
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      # TODO: publish HTML test reports
+      - name: Run JVM tests
+        run: ./gradlew server:test

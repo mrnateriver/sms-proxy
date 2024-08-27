@@ -1,0 +1,57 @@
+name: Build
+on:
+  workflow_call:
+    inputs:
+      release:
+        description: 'Whether to build a signed release APK, or merely perform a build without assembling an APK.'
+        type: boolean
+        default: false
+
+jobs:
+  build-relay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      # TODO: export an artifact
+      # TODO: build signed release APK
+      - name: Build signed release APK
+        if: ${{ github.event.inputs.release }}
+        run: ./gradlew relayApp:build # FIXME: proper Gradle task name
+
+      - name: Check build
+        if: ${{ !github.event.inputs.release }}
+        run: ./gradlew relayApp:build
+
+  build-receiver:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      # TODO: export an artifact
+      # TODO: build signed release APK
+      - name: Build signed release APK
+        if: ${{ github.event.inputs.release }}
+        run: ./gradlew receiverApp:build # FIXME: proper Gradle task name
+
+      - name: Check build
+        if: ${{ !github.event.inputs.release }}
+        run: ./gradlew relayApp:build
+
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      # TODO: build K8S manifests
+      # TODO: build container image
+      - name: Build release image
+        if: ${{ github.event.inputs.release }}
+        run: ./gradlew server:build # FIXME: proper Gradle task name
+
+      - name: Check build
+        if: ${{ github.event.inputs.release }}
+        run: ./gradlew server:build

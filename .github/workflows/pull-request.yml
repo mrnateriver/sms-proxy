@@ -1,0 +1,23 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  security:
+    uses: ./.github/workflows/security.yml
+
+  check-codegen:
+    uses: ./.github/workflows/check-codegen.yml
+    needs: [ security ]
+
+  tests:
+    uses: ./.github/workflows/tests.yml
+    needs: [ check-codegen ]
+
+  build:
+    uses: ./.github/workflows/build.yml
+    needs: [ check-codegen ]
+    with:
+      release: false

@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  security:
+    uses: ./.github/workflows/security.yml
+
+  check-codegen:
+    uses: ./.github/workflows/check-codegen.yml
+    needs: [ security ]
+
+  tests:
+    uses: ./.github/workflows/tests.yml
+    needs: [ check-codegen ]
+
+  build:
+    uses: ./.github/workflows/build.yml
+    needs: [ tests ]
+    with:
+      release: true
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: [ build-relay ]
+    steps:
+      # TODO: deploy the server
+      # TODO: tag the commit
+      # TODO: create a GitHub release (+ semantic-release)
+      - name: Publish release
+        run: echo "TODO"
