@@ -12,6 +12,9 @@ jobs:
       matrix:
         api-level: [ '26', '30', '34' ]
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Setup AVD
         uses: ./.github/actions/prepare-avd
         with:
