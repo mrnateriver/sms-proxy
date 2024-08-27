@@ -11,6 +11,9 @@ jobs:
   build-relay:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
@@ -27,6 +30,9 @@ jobs:
   build-receiver:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
@@ -43,6 +49,9 @@ jobs:
   build-server:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 

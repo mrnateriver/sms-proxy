@@ -7,6 +7,9 @@ jobs:
     name: Shared Unit Tests - JVM
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
@@ -22,6 +25,9 @@ jobs:
       matrix:
         api-level: [ '26', '30', '34' ]
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
@@ -42,6 +48,9 @@ jobs:
       matrix:
         api-level: [ '26', '30', '34' ]
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
@@ -62,6 +71,9 @@ jobs:
       matrix:
         api-level: [ '26', '30', '34' ]
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
@@ -78,6 +90,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ tests-shared-jvm ]
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 

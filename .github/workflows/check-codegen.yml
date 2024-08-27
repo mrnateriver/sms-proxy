@@ -7,6 +7,9 @@ jobs:
     name: Check codegen changes
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
