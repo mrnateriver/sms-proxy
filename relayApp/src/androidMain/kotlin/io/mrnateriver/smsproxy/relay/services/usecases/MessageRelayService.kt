@@ -1,6 +1,5 @@
 package io.mrnateriver.smsproxy.relay.services.usecases
 
-import io.mrnateriver.smsproxy.api.DefaultApi
 import io.mrnateriver.smsproxy.models.MessageProxyRequest
 import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
@@ -21,6 +20,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.timeout
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
+import io.mrnateriver.smsproxy.api.DefaultApi as ProxyApiContract
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService as SettingsServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
@@ -54,7 +54,7 @@ class MessageRelayService @Inject constructor(
     }
 
     @OptIn(FlowPreview::class)
-    private suspend fun getApiClient(): Pair<String, DefaultApi> {
+    private suspend fun getApiClient(): Pair<String, ProxyApiContract> {
         if (!::apiClient.isInitialized) {
             apiClient = combine(
                 settingsService.receiverKey.distinctUntilChanged(),
