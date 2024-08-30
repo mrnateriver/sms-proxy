@@ -58,8 +58,7 @@ jobs:
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
-      # TODO: build K8S manifests
-      # TODO: build container image
+      # TODO: build container image, yield image hash
       - name: Build release image
         if: ${{ github.event.inputs.release }}
         run: ./gradlew server:build # FIXME: proper Gradle task name

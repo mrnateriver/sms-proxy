@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  security:
+    name: Security
+    uses: ./.github/workflows/reusable/security.yml
+
+  check-codegen:
+    name: Codegen
+    uses: ./.github/workflows/reusable/check-codegen.yml
+    needs: [ security ]
+
+  tests:
+    name: Tests
+    uses: ./.github/workflows/reusable/tests.yml
+    needs: [ check-codegen ]
+
+  build:
+    name: Builds
+    uses: ./.github/workflows/reusable/build.yml
+    needs: [ tests ]
+    with:
+      release: true
+
+  publish:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps:
+      # TODO: tag the commit (set release version in env vars for later steps)
+      # TODO: create a GitHub release (+ semantic-release)
+      # TODO: tag server container image with semantic version
+      # TODO: push server container image to registry
+      # TODO: update K8S manifest with new container image version (semantic)
+      # TODO: push K8S manifest to GitOps repo
+      - name: Publish release
+        run: echo "TODO"

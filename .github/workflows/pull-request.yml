@@ -7,23 +7,23 @@ on:
 jobs:
   security:
     name: Security
-    uses: ./.github/workflows/security.yml
+    uses: ./.github/workflows/reusable/security.yml
 
   check-codegen:
     name: Codegen
-    uses: ./.github/workflows/check-codegen.yml
+    uses: ./.github/workflows/reusable/check-codegen.yml
     needs: [ security ]
 
   tests:
     name: Tests
-    uses: ./.github/workflows/tests.yml
+    uses: ./.github/workflows/reusable/tests.yml
     needs: [ check-codegen ]
 
   # TODO: linting!
 
   build:
     name: Builds
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/reusable/build.yml
     needs: [ check-codegen ]
     with:
       release: false
