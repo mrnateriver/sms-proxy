@@ -69,16 +69,18 @@ android {
         }
     }
     signingConfigs {
-        create("release") {
-            storeFile = rootProject.file(System.getenv("RELEASE_STORE_PATH"))
-            storePassword = System.getenv("RELEASE_STORE_PASSWORD")
-            keyAlias = System.getenv("RELEASE_STORE_KEY_ALIAS")
-            keyPassword = System.getenv("RELEASE_STORE_KEY_PASSWORD")
+        if (!System.getenv("RELEASE_STORE_PATH").isNullOrBlank()) {
+            create("release") {
+                storeFile = rootProject.file(System.getenv("RELEASE_STORE_PATH"))
+                storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+                keyAlias = System.getenv("RELEASE_STORE_KEY_ALIAS")
+                keyPassword = System.getenv("RELEASE_STORE_KEY_PASSWORD")
+            }
         }
     }
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.findByName("release")
             manifestPlaceholders["networkSecurityConfig"] = "@xml/network_security_config"
             isMinifyEnabled = false
         }
