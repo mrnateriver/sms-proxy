@@ -7,26 +7,26 @@ on:
 jobs:
   security:
     name: Security
-    uses: ./.github/workflows/reusable/security.yml
+    uses: ./.github/workflows/security.yml
 
   check-codegen:
     name: Codegen
-    uses: ./.github/workflows/reusable/check-codegen.yml
+    uses: ./.github/workflows/check-codegen.yml
     needs: [ security ]
 
   tests:
     name: Tests
-    uses: ./.github/workflows/reusable/tests.yml
+    uses: ./.github/workflows/tests.yml
     needs: [ check-codegen ]
 
   build:
     name: Builds
-    uses: ./.github/workflows/reusable/build.yml
+    uses: ./.github/workflows/build.yml
     needs: [ tests ]
     with:
       release: true
 
   publish:
     name: Release
-    uses: ./.github/workflows/reusable/release.yml
+    uses: ./.github/workflows/release.yml
     needs: [ build ]
