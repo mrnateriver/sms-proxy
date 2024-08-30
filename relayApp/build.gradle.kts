@@ -68,8 +68,17 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file(System.getenv("RELEASE_STORE_PATH"))
+            storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+            keyAlias = System.getenv("RELEASE_STORE_KEY_ALIAS")
+            keyPassword = System.getenv("RELEASE_STORE_KEY_PASSWORD")
+        }
+    }
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             manifestPlaceholders["networkSecurityConfig"] = "@xml/network_security_config"
             isMinifyEnabled = false
         }
