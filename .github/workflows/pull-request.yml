@@ -19,6 +19,8 @@ jobs:
     uses: ./.github/workflows/tests.yml
     needs: [ check-codegen ]
 
+  # TODO: linting!
+
   build:
     name: Builds
     uses: ./.github/workflows/build.yml
