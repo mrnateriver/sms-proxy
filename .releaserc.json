@@ -1,0 +1,26 @@
+{
+  "branches": [
+    "main"
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/github",
+      {
+        "failComment": false,
+        "successComment": false,
+        "assets": [
+          {
+            "path": "relayApp/build/outputs/apk/release/relayApp-release.apk",
+            "label": "Relay App"
+          },
+          {
+            "path": "receiverApp/build/outputs/apk/release/receiverApp-release.apk",
+            "label": "Receiver App"
+          }
+        ]
+      }
+    ]
+  ]
+}

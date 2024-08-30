@@ -28,14 +28,5 @@ jobs:
 
   publish:
     name: Release
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/reusable/release.yml
     needs: [ build ]
-    steps:
-      # TODO: tag the commit (set release version in env vars for later steps)
-      # TODO: create a GitHub release (+ semantic-release)
-      # TODO: tag server container image with semantic version
-      # TODO: push server container image to registry
-      # TODO: update K8S manifest with new container image version (semantic)
-      # TODO: push K8S manifest to GitOps repo
-      - name: Publish release
-        run: echo "TODO"
