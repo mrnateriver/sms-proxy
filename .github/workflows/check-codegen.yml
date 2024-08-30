@@ -13,7 +13,12 @@ jobs:
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
-      - name: Run client codegen
+      - name: Prepare for codegen
+        run: |
+          mkdir -p proxyApiTypeSpec/tsp-output
+          chmod o+w proxyApiTypeSpec/tsp-output
+
+      - name: Run codegen
         run: ./gradlew proxyApiTypeSpec:generateApi
 
       - name: Check for changes
