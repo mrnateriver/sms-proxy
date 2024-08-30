@@ -12,11 +12,11 @@
         "successComment": false,
         "assets": [
           {
-            "path": "relayApp/build/outputs/apk/release/relayApp-release.apk",
+            "path": "release/relayApp-release.apk",
             "label": "Relay App"
           },
           {
-            "path": "receiverApp/build/outputs/apk/release/receiverApp-release.apk",
+            "path": "release/receiverApp-release.apk",
             "label": "Receiver App"
           }
         ]

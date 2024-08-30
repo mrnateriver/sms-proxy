@@ -35,6 +35,13 @@ jobs:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
         run: ./gradlew relayApp:assembleRelease
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        if: ${{ github.event.inputs.release }}
+        with:
+          name: release-apk-relay
+          path: relayApp/build/outputs/apk/release/relayApp-release.apk
+
       - name: Check build
         if: ${{ !github.event.inputs.release }}
         run: ./gradlew relayApp:build
@@ -65,6 +72,13 @@ jobs:
           RELEASE_STORE_KEY_PASSWORD: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
         run: ./gradlew receiverApp:assembleRelease
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        if: ${{ github.event.inputs.release }}
+        with:
+          name: release-apk-receiver
+          path: receiverApp/build/outputs/apk/release/receiverApp-release.apk
 
       - name: Check build
         if: ${{ !github.event.inputs.release }}
