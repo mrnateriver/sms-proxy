@@ -10,8 +10,7 @@ jobs:
       fail-fast: true
       max-parallel: 1
       matrix:
-        # api-level: [ '26', '30', '34' ] # Fails on GH Actions free tier due to lack of resources
-        api-level: [ '34' ]
+        api-level: [ '26', '30', '34' ]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -39,12 +38,13 @@ jobs:
     name: Shared Unit Tests - AVD
     needs: [ prepare-avd ]
     runs-on: ubuntu-latest
+    env:
+      ADB_INSTALL_TIMEOUT: 10 # minutes (2 minutes by default)
     strategy:
       fail-fast: true
       max-parallel: 1 # Looks like free tier of GH Actions cannot realistically run more than 1 AVD
       matrix:
-        # api-level: [ '26', '30', '34' ] # Fails on GH Actions free tier due to lack of resources
-        api-level: [ '34' ]
+        api-level: [ '26', '30', '34' ]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -70,12 +70,13 @@ jobs:
     name: Relay Unit Tests - AVD
     runs-on: ubuntu-latest
     needs: [ tests-shared-jvm, tests-shared-avd ]
+    env:
+      ADB_INSTALL_TIMEOUT: 10 # minutes (2 minutes by default)
     strategy:
       fail-fast: true
       max-parallel: 1
       matrix:
-        # api-level: [ '26', '30', '34' ] # Fails on GH Actions free tier due to lack of resources
-        api-level: [ '34' ]
+        api-level: [ '26', '30', '34' ]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -96,12 +97,13 @@ jobs:
     name: Receiver Unit Tests - AVD
     runs-on: ubuntu-latest
     needs: [ tests-shared-jvm, tests-shared-avd ]
+    env:
+      ADB_INSTALL_TIMEOUT: 10 # minutes (2 minutes by default)
     strategy:
       fail-fast: true
       max-parallel: 1
       matrix:
-        # api-level: [ '26', '30', '34' ] # Fails on GH Actions free tier due to lack of resources
-        api-level: [ '34' ]
+        api-level: [ '26', '30', '34' ]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
