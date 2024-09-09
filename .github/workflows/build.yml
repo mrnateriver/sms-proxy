@@ -25,7 +25,6 @@ jobs:
         run: |
           echo $ENCODED_STRING | base64 -di > release.keystore
 
-      # TODO: export an artifact
       - name: Build signed release APK
         if: ${{ github.event.inputs.release }}
         env:
@@ -63,7 +62,6 @@ jobs:
         run: |
           echo $ENCODED_STRING | base64 -di > release.keystore
 
-      # TODO: export an artifact
       - name: Build signed release APK
         if: ${{ github.event.inputs.release }}
         env:
