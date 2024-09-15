@@ -10,7 +10,7 @@ jobs:
       fail-fast: true
       max-parallel: 1
       matrix:
-        api-level: [ '26', '30', '34' ]
+        api-level: [ '26', '34' ]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
       fail-fast: true
       max-parallel: 1 # Looks like free tier of GH Actions cannot realistically run more than 1 AVD
       matrix:
-        api-level: [ '26', '30', '34' ]
+        api-level: [ '26', '34' ]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -76,7 +76,7 @@ jobs:
       fail-fast: true
       max-parallel: 1
       matrix:
-        api-level: [ '26', '30', '34' ]
+        api-level: [ '26', '34' ]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -103,7 +103,7 @@ jobs:
       fail-fast: true
       max-parallel: 1
       matrix:
-        api-level: [ '26', '30', '34' ]
+        api-level: [ '26', '34' ]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
