@@ -82,14 +82,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: shared-avd-test-report
+          name: shared-avd-${{ matrix.api-level }}-test-report
           path: 'shared/build/reports/androidTests/connected/debug'
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: shared-avd-test-results
+          name: shared-avd-${{ matrix.api-level }}-test-results
           path: 'shared/build/outputs/androidTest-results/connected/debug'
 
   tests-relay:
@@ -127,14 +127,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: relay-avd-test-report
+          name: relay-avd-${{ matrix.api-level }}-test-report
           path: 'relayApp/build/reports/androidTests/connected/debug'
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: relay-avd-test-results
+          name: relay-avd-${{ matrix.api-level }}-test-results
           path: 'relayApp/build/outputs/androidTest-results/connected/debug'
 
   tests-receiver:
@@ -172,14 +172,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: receiver-avd-test-report
+          name: receiver-avd-${{ matrix.api-level }}-test-report
           path: 'receiverApp/build/reports/androidTests/connected/debug'
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: receiver-avd-test-results
+          name: receiver-avd-${{ matrix.api-level }}-test-results
           path: 'receiverApp/build/outputs/androidTest-results/connected/debug'
 
   tests-server:
