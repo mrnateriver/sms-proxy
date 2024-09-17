@@ -19,7 +19,7 @@ jobs:
         uses: ./.github/actions/prepare-gradle
 
       - name: Add TLS certificates and keys
-        if: ${{ github.event.inputs.release }}
+        if: ${{ inputs.release == 'true' }}
         env:
           RELAY_APP_PRIVATE_KEY_PEM: ${{ secrets.RELAY_APP_PRIVATE_KEY_PEM }}
         run: |
@@ -28,14 +28,14 @@ jobs:
           echo $SERVER_CERTIFICATE_PEM > ./relayApp/src/androidMain/assets/proxy-api-server-certificate.pem
 
       - name: Decode keystore
-        if: ${{ github.event.inputs.release }}
+        if: ${{ inputs.release == 'true' }}
         env:
           ENCODED_STRING: ${{ secrets.RELEASE_STORE_BASE64 }}
         run: |
           echo $ENCODED_STRING | base64 -di > release.keystore
 
       - name: Build signed release APK
-        if: ${{ github.event.inputs.release }}
+        if: ${{ inputs.release == 'true' }}
         env:
           RELEASE_STORE_PATH: release.keystore
           RELEASE_STORE_KEY_ALIAS: ${{ secrets.RELEASE_STORE_KEY_ALIAS }}
@@ -45,13 +45,13 @@ jobs:
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
-        if: ${{ github.event.inputs.release }}
+        if: ${{ inputs.release == 'true' }}
         with:
           name: release-apk-relay
           path: relayApp/build/outputs/apk/release/relayApp-release.apk
 
       - name: Check build
-        if: ${{ !github.event.inputs.release }}
+        if: ${{ inputs.release != 'true' }}
         run: ./gradlew relayApp:build
 
   build-receiver:
@@ -65,7 +65,7 @@ jobs:
         uses: ./.github/actions/prepare-gradle
 
       - name: Add TLS certificates and keys
-        if: ${{ github.event.inputs.release }}
+        if: ${{ inputs.release == 'true' }}
         env:
           RECEIVER_APP_PRIVATE_KEY_PEM: ${{ secrets.RECEIVER_APP_PRIVATE_KEY_PEM }}
         run: |
@@ -74,14 +74,14 @@ jobs:
           echo $SERVER_CERTIFICATE_PEM > ./receiverApp/src/androidMain/assets/proxy-api-server-certificate.pem
 
       - name: Decode keystore
-        if: ${{ github.event.inputs.release }}
+        if: ${{ inputs.release == 'true' }}
         env:
           ENCODED_STRING: ${{ secrets.RELEASE_STORE_BASE64 }}
         run: |
           echo $ENCODED_STRING | base64 -di > release.keystore
 
       - name: Build signed release APK
-        if: ${{ github.event.inputs.release }}
+        if: ${{ inputs.release == 'true' }}
         env:
           RELEASE_STORE_PATH: release.keystore
           RELEASE_STORE_KEY_ALIAS: ${{ secrets.RELEASE_STORE_KEY_ALIAS }}
@@ -91,13 +91,13 @@ jobs:
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
-        if: ${{ github.event.inputs.release }}
+        if: ${{ inputs.release == 'true' }}
         with:
           name: release-apk-receiver
           path: receiverApp/build/outputs/apk/release/receiverApp-release.apk
 
       - name: Check build
-        if: ${{ !github.event.inputs.release }}
+        if: ${{ inputs.release != 'true' }}
         run: ./gradlew relayApp:build
 
   build-server:
@@ -111,7 +111,7 @@ jobs:
         uses: ./.github/actions/prepare-gradle
 
       - name: Add TLS certificates and keys
-        if: ${{ github.event.inputs.release }}
+        if: ${{ inputs.release == 'true' }}
         env:
           SERVER_PRIVATE_KEY_JKS_BASE64: ${{ secrets.SERVER_PRIVATE_KEY_JKS_BASE64 }}
         run: |
@@ -121,5 +121,5 @@ jobs:
 
       # TODO: build container image, yield image hash
       - name: Build release image
-        if: ${{ github.event.inputs.release }}
+        if: ${{ inputs.release == 'true' }}
         run: ./gradlew server:build # FIXME: proper Gradle task name
