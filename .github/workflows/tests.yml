@@ -30,9 +30,22 @@ jobs:
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
-      # TODO: publish HTML test reports
       - name: Run JVM tests
         run: ./gradlew shared:jvmTest
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shared-jvm-test-report
+          path: 'shared/build/reports/tests/jvmTest'
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shared-jvm-test-results
+          path: 'shared/build/test-results/jvmTest/**.xml'
 
   tests-shared-avd:
     name: Shared Unit Tests - AVD
@@ -57,7 +70,6 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
 
-      # TODO: publish HTML test reports
       - name: Run Android tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -65,6 +77,20 @@ jobs:
           arch: x86_64
           profile: Nexus 6
           script: ./gradlew shared:connectedCheck
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shared-avd-test-report
+          path: 'shared/build/reports/androidTests/connected/debug'
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shared-avd-test-results
+          path: 'shared/build/outputs/androidTest-results/connected/debug'
 
   tests-relay:
     name: Relay Unit Tests - AVD
@@ -89,7 +115,6 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
 
-      # TODO: publish HTML test reports
       - name: Run Android tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -97,6 +122,20 @@ jobs:
           arch: x86_64
           profile: Nexus 6
           script: ./gradlew relayApp:connectedCheck
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relay-avd-test-report
+          path: 'relayApp/build/reports/androidTests/connected/debug'
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relay-avd-test-results
+          path: 'relayApp/build/outputs/androidTest-results/connected/debug'
 
   tests-receiver:
     name: Receiver Unit Tests - AVD
@@ -121,7 +160,6 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
 
-      # TODO: publish HTML test reports
       - name: Run Android tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -129,6 +167,20 @@ jobs:
           arch: x86_64
           profile: Nexus 6
           script: ./gradlew receiverApp:connectedCheck
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: receiver-avd-test-report
+          path: 'receiverApp/build/reports/androidTests/connected/debug'
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: receiver-avd-test-results
+          path: 'receiverApp/build/outputs/androidTest-results/connected/debug'
 
   tests-server:
     name: Server Unit Tests - JVM
@@ -141,6 +193,19 @@ jobs:
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
 
-      # TODO: publish HTML test reports
       - name: Run JVM tests
         run: ./gradlew server:test
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-test-report
+          path: 'server/build/reports/tests/test'
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-test-results
+          path: 'server/build/test-results/test'
