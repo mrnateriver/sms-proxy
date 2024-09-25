@@ -20,26 +20,28 @@ jobs:
 
       - name: Add TLS certificates and keys
         if: ${{ inputs.release }}
+        env:
+          RELAY_APP_PRIVATE_KEY_PEM: ${{ secrets.RELAY_APP_PRIVATE_KEY_PEM }}
         run: |
-          export RELAY_APP_PRIVATE_KEY_PEM=${{ secrets.RELAY_APP_PRIVATE_KEY_PEM }}
           echo $RELAY_APP_PRIVATE_KEY_PEM > ./relayApp/src/androidMain/assets/proxy-api-client-certificate-private-key.pem
           echo $RELAY_APP_CERTIFICATE_PEM > ./relayApp/src/androidMain/assets/proxy-api-client-certificate.pem
           echo $SERVER_CERTIFICATE_PEM > ./relayApp/src/androidMain/assets/proxy-api-server-certificate.pem
 
       - name: Decode keystore
         if: ${{ inputs.release }}
+        env:
+          ENCODED_STRING: ${{ secrets.RELEASE_STORE_BASE64 }}
         run: |
-          export ENCODED_STRING=${{ secrets.RELEASE_STORE_BASE64 }}
           echo $ENCODED_STRING | base64 -d > release.keystore
 
       - name: Build signed release APK
         if: ${{ inputs.release }}
-        run: |
-          export RELEASE_STORE_PATH=release.keystore
-          export RELEASE_STORE_KEY_ALIAS=${{ secrets.RELEASE_STORE_KEY_ALIAS }}
-          export RELEASE_STORE_KEY_PASSWORD=${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
-          export RELEASE_STORE_PASSWORD=${{ secrets.RELEASE_STORE_PASSWORD }}
-          ./gradlew relayApp:assembleRelease
+        env:
+          RELEASE_STORE_PATH: release.keystore
+          RELEASE_STORE_KEY_ALIAS: ${{ secrets.RELEASE_STORE_KEY_ALIAS }}
+          RELEASE_STORE_KEY_PASSWORD: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+        run: ./gradlew relayApp:assembleRelease
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -64,26 +66,28 @@ jobs:
 
       - name: Add TLS certificates and keys
         if: ${{ inputs.release }}
+        env:
+          RECEIVER_APP_PRIVATE_KEY_PEM: ${{ secrets.RECEIVER_APP_PRIVATE_KEY_PEM }}
         run: |
-          export RECEIVER_APP_PRIVATE_KEY_PEM=${{ secrets.RECEIVER_APP_PRIVATE_KEY_PEM }}
           echo $RECEIVER_APP_PRIVATE_KEY_PEM > ./receiverApp/src/androidMain/assets/proxy-api-client-certificate-private-key.pem
           echo $RECEIVER_APP_CERTIFICATE_PEM > ./receiverApp/src/androidMain/assets/proxy-api-client-certificate.pem
           echo $SERVER_CERTIFICATE_PEM > ./receiverApp/src/androidMain/assets/proxy-api-server-certificate.pem
 
       - name: Decode keystore
         if: ${{ inputs.release }}
+        env:
+          ENCODED_STRING: ${{ secrets.RELEASE_STORE_BASE64 }}
         run: |
-          export ENCODED_STRING=${{ secrets.RELEASE_STORE_BASE64 }}
           echo $ENCODED_STRING | base64 -d > release.keystore
 
       - name: Build signed release APK
         if: ${{ inputs.release }}
-        run: |
-          export RELEASE_STORE_PATH=release.keystore
-          export RELEASE_STORE_KEY_ALIAS=${{ secrets.RELEASE_STORE_KEY_ALIAS }}
-          export RELEASE_STORE_KEY_PASSWORD=${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
-          export RELEASE_STORE_PASSWORD=${{ secrets.RELEASE_STORE_PASSWORD }}
-          ./gradlew receiverApp:assembleRelease
+        env:
+          RELEASE_STORE_PATH: release.keystore
+          RELEASE_STORE_KEY_ALIAS: ${{ secrets.RELEASE_STORE_KEY_ALIAS }}
+          RELEASE_STORE_KEY_PASSWORD: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+        run: ./gradlew receiverApp:assembleRelease
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -108,8 +112,9 @@ jobs:
 
       - name: Add TLS certificates and keys
         if: ${{ inputs.release }}
+        env:
+          SERVER_PRIVATE_KEY_JKS_BASE64: ${{ secrets.SERVER_PRIVATE_KEY_JKS_BASE64 }}
         run: |
-          export SERVER_PRIVATE_KEY_JKS_BASE64=${{ secrets.SERVER_PRIVATE_KEY_JKS_BASE64 }}
           echo $RELAY_APP_CERTIFICATE_PEM > ./server/src/main/resources/clients/proxy-api-relay-app.pem
           echo $RECEIVER_APP_CERTIFICATE_PEM > ./server/src/main/resources/clients/proxy-api-receiver-app.pem
           echo $SERVER_PRIVATE_KEY_JKS_BASE64 | base64 -d > ./server/src/main/resources/proxy-api-server-certificate.jks
