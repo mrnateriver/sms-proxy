@@ -23,6 +23,7 @@ jobs:
     name: Builds
     uses: ./.github/workflows/build.yml
     needs: [ tests ]
+    secrets: inherit
     with:
       release: true
 
@@ -30,3 +31,4 @@ jobs:
     name: Release
     uses: ./.github/workflows/release.yml
     needs: [ build ]
+    secrets: inherit
