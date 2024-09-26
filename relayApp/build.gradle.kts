@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.aboutLibraries)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
+    alias(libs.plugins.detekt)
 }
 
 kotlin {
@@ -41,6 +42,16 @@ tasks {
                 )
             )
     }
+}
+
+detekt {
+    autoCorrect = true
+    buildUponDefaultConfig = true
+    config.setFrom("$rootDir/detekt.yml")
+    source.setFrom(
+        "src/androidMain/kotlin",
+        "src/androidInstrumentedTest/kotlin"
+    )
 }
 
 android {
@@ -155,4 +166,7 @@ dependencies {
     add("kspAndroid", libs.androidx.hilt.compiler)
     add("kspAndroid", libs.android.hilt.compiler)
     add("kspAndroid", libs.room.compiler)
+
+    detektPlugins(libs.detekt.formatting)
+    detektPlugins(libs.detekt.compose)
 }

@@ -41,6 +41,8 @@ retrofitVersion = "2.11.0"
 sqldelight = "2.0.2"
 room = "2.7.0-alpha08"
 jetty = "9.4.55.v20240627" # Ktor only supports Jetty 9.x
+detekt = "1.23.7"
+detekt-compose = "0.4.12"
 
 [libraries]
 # Android Runtime
@@ -66,6 +68,8 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "androidx-lifecycleRuntimeComposeAndroid" }
 android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugarJdkLibs" }
 bcpkix-jdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bcpkixJdk18on" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
 ktor-network-tls-certificates = { module = "io.ktor:ktor-network-tls-certificates", version.ref = "ktor" }
 moshi-adapters = { module = "com.squareup.moshi:moshi-adapters", version.ref = "moshi" }
@@ -128,3 +132,4 @@ docker = { id = "com.bmuschko.docker-remote-api", version.ref = "docker" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 room = { id = "androidx.room", version.ref = "room" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
