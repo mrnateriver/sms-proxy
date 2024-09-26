@@ -8,6 +8,8 @@ jobs:
   security:
     name: Security
     uses: ./.github/workflows/security.yml
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   check-codegen:
     name: Codegen

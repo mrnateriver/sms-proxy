@@ -30,17 +30,9 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
 
-      # TODO: SAST
-      - name: Run SAST
-        run: echo "TODO"
-
-  dependencies:
-    name: Dependencies Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the repository
-        uses: actions/checkout@v4
-
-      # TODO: Dependabot maybe? Or Renovate? Either way, fail on critical CVEs
-      - name: Check dependencies for CVEs
-        run: echo "TODO"
+      - name: Snyk
+        uses: snyk/actions/gradle@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
