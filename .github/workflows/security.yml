@@ -1,6 +1,10 @@
 name: Security Checks
 on:
   workflow_call:
+    secrets:
+      SNYK_TOKEN:
+        description: 'Snyk API token for security scanning.'
+        required: true
     inputs:
       pr:
         description: 'Whether the workflow is executed for a PR, as opposed to a protected branch.'
