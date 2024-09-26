@@ -8,6 +8,8 @@ jobs:
   security:
     name: Security
     uses: ./.github/workflows/security.yml
+    with:
+      pr: true
 
   check-codegen:
     name: Codegen
