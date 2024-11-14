@@ -37,5 +37,4 @@ class AppDrawerSheetTest {
 
         rule.onNodeWithContentDescription(customContent).assertExists()
     }
-
 }

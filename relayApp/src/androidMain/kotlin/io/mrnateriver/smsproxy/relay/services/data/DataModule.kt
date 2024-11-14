@@ -38,7 +38,7 @@ object DataModule {
 
                 observabilityService.log(
                     LogLevel.DEBUG,
-                    "SQL: $sqlQuery${if (bindArgs.isNotEmpty()) "\nArgs: $bindArgs" else ""}"
+                    "SQL: $sqlQuery${if (bindArgs.isNotEmpty()) "\nArgs: $bindArgs" else ""}",
                 )
             }, Executors.newSingleThreadExecutor())
         }

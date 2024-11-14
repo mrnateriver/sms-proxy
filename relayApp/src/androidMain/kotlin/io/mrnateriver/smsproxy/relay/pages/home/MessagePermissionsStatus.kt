@@ -60,11 +60,11 @@ fun MessagePermissionsStatus(
 
 @Preview
 @Composable
-fun MessagePermissionsStatusPreview_Unknown() {
+private fun MessagePermissionsStatusPreview_Unknown() {
     Box(
         modifier = Modifier
             .background(Color.Black)
-            .padding(8.dp)
+            .padding(8.dp),
     ) {
         MessagePermissionsStatus(status = PermissionStatus.UNKNOWN)
     }
@@ -72,11 +72,11 @@ fun MessagePermissionsStatusPreview_Unknown() {
 
 @Preview
 @Composable
-fun MessagePermissionsStatusPreview_Denied() {
+private fun MessagePermissionsStatusPreview_Denied() {
     Box(
         modifier = Modifier
             .background(Color.Black)
-            .padding(8.dp)
+            .padding(8.dp),
     ) {
         MessagePermissionsStatus(status = PermissionStatus.DENIED)
     }
@@ -84,11 +84,11 @@ fun MessagePermissionsStatusPreview_Denied() {
 
 @Preview
 @Composable
-fun MessagePermissionsStatusPreview_Granted() {
+private fun MessagePermissionsStatusPreview_Granted() {
     Box(
         modifier = Modifier
             .background(Color.Black)
-            .padding(8.dp)
+            .padding(8.dp),
     ) {
         MessagePermissionsStatus(status = PermissionStatus.GRANTED)
     }

@@ -34,12 +34,12 @@ tasks {
             listOf(
                 resolveProjectFilePath(
                     "relayApp",
-                    "src/androidMain/assets/proxy-api-client-certificate.pem"
+                    "src/androidMain/assets/proxy-api-client-certificate.pem",
                 ),
                 resolveProjectFilePath(
                     "server",
-                    "src/main/resources/clients/proxy-api-relay-app.pem"
-                )
+                    "src/main/resources/clients/proxy-api-relay-app.pem",
+                ),
             )
     }
 }
@@ -50,7 +50,8 @@ detekt {
     config.setFrom("$rootDir/detekt.yml")
     source.setFrom(
         "src/androidMain/kotlin",
-        "src/androidInstrumentedTest/kotlin"
+        "src/androidInstrumentedTest/kotlin",
+        "./build.gradle.kts",
     )
 }
 
@@ -107,7 +108,7 @@ android {
     }
     installation {
         // This enables long timeouts required on slow environments, e.g. GitHub Actions
-        timeOutInMs = 10 * 60 * 1000  // 10 minutes
+        timeOutInMs = 10 * 60 * 1000 // 10 minutes
         if (!System.getenv("CI").isNullOrBlank()) {
             installOptions.addAll(listOf("-d", "-t"))
         }

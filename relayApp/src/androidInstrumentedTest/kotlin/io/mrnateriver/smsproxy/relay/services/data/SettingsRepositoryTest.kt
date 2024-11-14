@@ -22,7 +22,7 @@ class SettingsRepositoryTest {
             scope = backgroundTestScope,
             produceFile = {
                 testContext.preferencesDataStoreFile(
-                    "store-${UUID.randomUUID()}"
+                    "store-${UUID.randomUUID()}",
                 )
             },
         )

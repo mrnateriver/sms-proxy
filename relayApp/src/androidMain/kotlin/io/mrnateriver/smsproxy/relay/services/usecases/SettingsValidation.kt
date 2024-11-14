@@ -15,9 +15,9 @@ fun validateBaseApiUrl(value: String): ApiBaseUrlValidationResult {
     } else {
         try {
             URL(value)
-            return ApiBaseUrlValidationResult.VALID
+            ApiBaseUrlValidationResult.VALID
         } catch (e: MalformedURLException) {
-            return ApiBaseUrlValidationResult.INVALID_FORMAT
+            ApiBaseUrlValidationResult.INVALID_FORMAT
         }
     }
 }

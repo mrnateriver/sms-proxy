@@ -27,10 +27,10 @@ fun NavGraphBuilder.aboutPage(
     pageContentWrapper: @Composable (content: @Composable () -> Unit) -> Unit = { it() },
 ) {
     navigation(
-        route = AboutPageRoot,
-        startDestination = AboutPageInfo
+        route = ABOUT_PAGE_ROOT,
+        startDestination = ABOUT_PAGE_INFO,
     ) {
-        composable(AboutPageInfo) {
+        composable(ABOUT_PAGE_INFO) {
             AboutPage(
                 versionString = versionString,
                 navigateToLicensesPage = onNavigateToLicensesPageClick,
@@ -44,8 +44,8 @@ fun NavGraphBuilder.aboutPage(
 
 fun NavController.navigateToAboutPage(builder: (NavOptionsBuilder.() -> Unit)? = null) {
     navigate(
-        AboutPageRoot,
-        if (builder == null) null else navOptions(builder)
+        ABOUT_PAGE_ROOT,
+        if (builder == null) null else navOptions(builder),
     )
 }
 
@@ -57,19 +57,20 @@ val aboutPageDescriptor = PageDescriptor(
     true,
 )
 
-private const val AboutPageRoot = "about"
-private const val AboutPageInfo = "info"
+private const val ABOUT_PAGE_ROOT = "about"
+private const val ABOUT_PAGE_INFO = "info"
 
-private fun isAboutPageRoute(dest: NavDestination?): Boolean = dest?.route == AboutPageInfo
+private fun isAboutPageRoute(dest: NavDestination?): Boolean = dest?.route == ABOUT_PAGE_INFO
 
 @Composable
 fun AboutPage(
+    modifier: Modifier = Modifier,
     versionString: String? = null,
     navigateToLicensesPage: () -> Unit = {},
     pageContentWrapper: @Composable (content: @Composable () -> Unit) -> Unit = { it() },
 ) {
     pageContentWrapper {
-        Column {
+        Column(modifier = modifier) {
             AboutAuthorItem()
             AboutLicensesItem(navigateToLicensesPage = navigateToLicensesPage)
             AboutVersionItem(versionString = versionString)
@@ -83,7 +84,7 @@ private fun AboutPagePreview() {
     Box(
         modifier = Modifier
             .background(Color.Black)
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         AboutPage(versionString = "1.0.0")
     }

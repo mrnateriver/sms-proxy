@@ -22,10 +22,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
+import io.mrnateriver.smsproxy.shared.composables.theme.AppSpacings
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
-import io.mrnateriver.smsproxy.shared.composables.theme.AppSpacings
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
@@ -59,7 +59,7 @@ fun MessageRecordsRecent(
                 status = entry.sendStatus,
                 timestamp = dateFormatter.format(
                     entry.messageData.receivedAt.toLocalDateTime(timeZone)
-                        .toJavaLocalDateTime()
+                        .toJavaLocalDateTime(),
                 ),
             )
         }
@@ -70,11 +70,11 @@ private const val MESSAGE_RECORD_TEXT_MAX_LINES = 5
 
 @Composable
 private fun MessageRecord(
-    modifier: Modifier = Modifier,
     from: String,
     message: String,
     timestamp: String,
     status: MessageRelayStatus,
+    modifier: Modifier = Modifier,
 ) {
     Surface(
         modifier = modifier,
@@ -109,28 +109,28 @@ private fun MessageRecord(
             Text(
                 text = message,
                 maxLines = MESSAGE_RECORD_TEXT_MAX_LINES,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
 }
 
 @Composable
-fun MessageRecordStatusIndicator(modifier: Modifier = Modifier, status: MessageRelayStatus) {
+fun MessageRecordStatusIndicator(status: MessageRelayStatus, modifier: Modifier = Modifier) {
     val mod = modifier.size(AppSpacings.small * 2)
     when (status) {
         MessageRelayStatus.ERROR, MessageRelayStatus.FAILED -> Icon(
             modifier = mod,
             imageVector = Icons.Outlined.Clear,
             tint = MaterialTheme.colorScheme.error,
-            contentDescription = stringResource(R.string.dashboard_recent_messages_status_error)
+            contentDescription = stringResource(R.string.dashboard_recent_messages_status_error),
         )
 
         MessageRelayStatus.SUCCESS -> Icon(
             modifier = mod,
             imageVector = Icons.Outlined.CheckCircle,
             tint = MaterialTheme.colorScheme.primary,
-            contentDescription = stringResource(R.string.dashboard_recent_messages_status_success)
+            contentDescription = stringResource(R.string.dashboard_recent_messages_status_success),
         )
 
         MessageRelayStatus.IN_PROGRESS -> CircularProgressIndicator(modifier = mod)
@@ -194,7 +194,7 @@ val previewMessageRecords = listOf(
             sender = "+12223334455",
             message = "Hello World",
             receivedAt = Clock.System.now(),
-        )
+        ),
     ),
     MessageEntry(
         guid = UUID.randomUUID(),
@@ -208,7 +208,7 @@ val previewMessageRecords = listOf(
             sender = "Hello",
             message = "General Kenobi",
             receivedAt = Clock.System.now(),
-        )
+        ),
     ),
     MessageEntry(
         guid = UUID.randomUUID(),
@@ -220,9 +220,9 @@ val previewMessageRecords = listOf(
         updatedAt = null,
         messageData = MessageData(
             sender = "+993742732",
-            message = "Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. Test a very-very long text that should be truncated. ",
+            message = "Test a very-very long text that should be truncated.".repeat(n = 32),
             receivedAt = Clock.System.now(),
-        )
+        ),
     ),
     MessageEntry(
         guid = UUID.randomUUID(),
@@ -236,6 +236,6 @@ val previewMessageRecords = listOf(
             sender = "World",
             message = "How's it going",
             receivedAt = Clock.System.now(),
-        )
+        ),
     ),
 )

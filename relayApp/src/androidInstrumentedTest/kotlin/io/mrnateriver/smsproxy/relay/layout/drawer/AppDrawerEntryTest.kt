@@ -35,7 +35,7 @@ class AppDrawerEntryTest {
             AppDrawerEntry(
                 icon = Icons.Outlined.Settings,
                 iconContentDescription = "Test Icon",
-                label = ""
+                label = "",
             )
         }
 
@@ -48,7 +48,7 @@ class AppDrawerEntryTest {
             AppDrawerEntry(
                 modifier = Modifier.semantics { contentDescription = "Drawer Entry Root" },
                 label = "Drawer Entry",
-                selected = true
+                selected = true,
             )
         }
 
@@ -62,12 +62,11 @@ class AppDrawerEntryTest {
             AppDrawerEntry(
                 modifier = Modifier.semantics { contentDescription = "Drawer Entry Root" },
                 label = "Drawer Entry",
-                onClick = { clicked = true }
+                onClick = { clicked = true },
             )
         }
 
         rule.onNodeWithContentDescription("Drawer Entry Root").performClick()
         assertTrue(clicked)
     }
-
 }

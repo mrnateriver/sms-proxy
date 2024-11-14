@@ -77,9 +77,9 @@ class MessageRecordsRecentTest {
                     createMessageEntry(
                         "Alice",
                         "Hello, Bob!",
-                        MessageRelayStatus.ERROR
-                    )
-                )
+                        MessageRelayStatus.ERROR,
+                    ),
+                ),
             )
         }
 
@@ -95,9 +95,9 @@ class MessageRecordsRecentTest {
                     createMessageEntry(
                         "Alice",
                         "Hello, Bob!",
-                        MessageRelayStatus.FAILED
-                    )
-                )
+                        MessageRelayStatus.FAILED,
+                    ),
+                ),
             )
         }
 
@@ -113,9 +113,9 @@ class MessageRecordsRecentTest {
                     createMessageEntry(
                         "Alice",
                         "Hello, Bob!",
-                        MessageRelayStatus.SUCCESS
-                    )
-                )
+                        MessageRelayStatus.SUCCESS,
+                    ),
+                ),
             )
         }
 
@@ -131,9 +131,9 @@ class MessageRecordsRecentTest {
                     createMessageEntry(
                         "Alice",
                         "Hello, Bob!",
-                        MessageRelayStatus.IN_PROGRESS
-                    )
-                )
+                        MessageRelayStatus.IN_PROGRESS,
+                    ),
+                ),
             )
         }
 
@@ -150,7 +150,7 @@ class MessageRecordsRecentTest {
                     createMessageEntry("sender 2", "msg 2"),
                     createMessageEntry("sender 3", "msg 3"),
                     createMessageEntry("sender 4", "msg 4"),
-                )
+                ),
             )
         }
 

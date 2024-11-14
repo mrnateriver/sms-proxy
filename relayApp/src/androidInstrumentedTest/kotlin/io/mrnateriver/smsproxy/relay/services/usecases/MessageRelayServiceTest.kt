@@ -94,7 +94,7 @@ class MessageRelayServiceTest {
                 entry.messageData.sender,
                 entry.messageData.message,
                 entry.messageData.receivedAt,
-            )
+            ),
         )
     }
 
@@ -103,8 +103,8 @@ class MessageRelayServiceTest {
         whenever(apiClient.messagesProxy(any())).thenReturn(
             Response.error(
                 500,
-                ResponseBody.create(null, "")
-            )
+                ResponseBody.create(null, ""),
+            ),
         )
 
         val entry = createTestMessageEntry()

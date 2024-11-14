@@ -29,4 +29,3 @@ abstract class MessageDao {
     @Query("SELECT COUNT(guid) FROM MessageDaoEntity WHERE sendStatus IN (:statuses)")
     abstract suspend fun getCountByStatuses(vararg statuses: MessageRelayStatus): Int
 }
-

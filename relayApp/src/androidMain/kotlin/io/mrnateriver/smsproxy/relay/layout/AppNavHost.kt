@@ -7,49 +7,63 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import io.mrnateriver.smsproxy.relay.AppViewModel
 import io.mrnateriver.smsproxy.relay.BuildConfig
-import io.mrnateriver.smsproxy.relay.pages.home.HomePageRoute
+import io.mrnateriver.smsproxy.relay.pages.home.HOME_PAGE_ROUTE
 import io.mrnateriver.smsproxy.relay.pages.home.homePage
 import io.mrnateriver.smsproxy.relay.pages.settings.navigateToSettingsPage
 import io.mrnateriver.smsproxy.relay.pages.settings.settingsPage
+import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import io.mrnateriver.smsproxy.shared.pages.about.aboutPage
 import io.mrnateriver.smsproxy.shared.pages.about.navigateToLicensesPage
 
 @Composable
 fun AppNavHost(
-    modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: AppViewModel,
+    modifier: Modifier = Modifier,
+    viewModel: AppViewModel = hiltViewModel<AppViewModel>(),
 ) {
+    val showApiKeyError = viewModel.showApiKeyError
+    val showMissingApiCertificatesError = viewModel.showMissingCertificatesError
+    val showSettingsHint by viewModel.showServerSettingsHint.collectAsStateWithLifecycle(false)
+    val messageRecent by viewModel.messageRecordsRecent.collectAsStateWithLifecycle(listOf())
+    val messageStats by viewModel.messageStats.collectAsStateWithLifecycle(MessageStatsData())
+
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = HomePageRoute,
+        startDestination = HOME_PAGE_ROUTE,
         exitTransition = { navExitTransitionBuilder() },
         enterTransition = { navEnterTransitionBuilder() },
         popEnterTransition = { navPopEnterTransitionBuilder() },
         popExitTransition = { navPopExitTransitionBuilder() },
     ) {
         homePage(
+            showApiKeyError = showApiKeyError,
+            showMissingApiCertificatesError = showMissingApiCertificatesError,
+            showSettingsHint = showSettingsHint,
+            messageRecent = messageRecent,
+            messageStats = messageStats,
             onGoToSettingsClick = { navController.navigateToSettingsPage() },
-            viewModel = viewModel,
         )
 
         settingsPage(
             onBackClick = { navController.popBackStack() },
-            viewModel = viewModel,
+            settingsService = viewModel.settingsService,
         )
 
         aboutPage(
             onNavigateToLicensesPageClick = { navController.navigateToLicensesPage() },
             versionString = "${BuildConfig.VERSION_NAME}+${BuildConfig.VERSION_CODE}",
-            pageContentWrapper = { AppContentSurface { it() } }
+            pageContentWrapper = { AppContentSurface { it() } },
         )
     }
 }
@@ -60,7 +74,7 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.navExitTransitionB
         animationSpec = tween(durationMillis = 300),
     ) + scaleOut(
         targetScale = 0.9f,
-        transformOrigin = TransformOrigin(0.5f, 1f),
+        transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f),
         animationSpec = tween(durationMillis = 200),
     )
 
@@ -70,7 +84,7 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.navEnterTransition
         animationSpec = tween(durationMillis = 500),
     ) + scaleIn(
         initialScale = 0.9f,
-        transformOrigin = TransformOrigin(0.5f, 1f),
+        transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f),
         animationSpec = tween(durationMillis = 800),
     )
 
@@ -80,7 +94,7 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.navPopExitTransiti
         animationSpec = tween(durationMillis = 300),
     ) + scaleOut(
         targetScale = 0.9f,
-        transformOrigin = TransformOrigin(0.5f, 1f),
+        transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f),
         animationSpec = tween(durationMillis = 200),
     )
 
@@ -90,6 +104,6 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.navPopEnterTransit
         animationSpec = tween(durationMillis = 500),
     ) + scaleIn(
         initialScale = 0.9f,
-        transformOrigin = TransformOrigin(0.5f, 1f),
+        transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f),
         animationSpec = tween(durationMillis = 800),
     )

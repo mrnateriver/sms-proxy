@@ -89,7 +89,7 @@ class AppLayoutTest {
     fun appLayout_onInnerPage_shouldNavigateUpWhenButtonClicked() {
         var navigateUpClicked = false
         rule.setContent {
-            AppLayout(isHomePage = false, onNavigateUpClicked = { navigateUpClicked = true })
+            AppLayout(isHomePage = false, onNavigateUpClick = { navigateUpClicked = true })
         }
 
         rule.onNodeWithContentDescription(rule.activity.getString(R.string.app_bar_navigation_button_label_back))
@@ -97,5 +97,4 @@ class AppLayoutTest {
 
         assertTrue(navigateUpClicked)
     }
-
 }

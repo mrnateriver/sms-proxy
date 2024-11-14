@@ -45,7 +45,8 @@ class AppBarTest {
         rule.setContent {
             AppBar(
                 navigationIconContentDescription = "test-navigation-icon",
-                onNavigationButtonClick = { clicked = true })
+                onNavigationButtonClick = { clicked = true },
+            )
         }
 
         rule.onNodeWithContentDescription("test-navigation-icon")
@@ -53,5 +54,4 @@ class AppBarTest {
 
         assert(clicked)
     }
-
 }

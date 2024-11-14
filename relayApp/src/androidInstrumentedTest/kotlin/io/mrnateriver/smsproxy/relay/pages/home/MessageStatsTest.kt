@@ -34,7 +34,7 @@ class MessageStatsTest {
                     relayed = MessageStatsEntry(123456, testDate),
                     errors = MessageStatsEntry(123456, testDate),
                     failures = MessageStatsEntry(123456, testDate),
-                )
+                ),
             )
         }
     }

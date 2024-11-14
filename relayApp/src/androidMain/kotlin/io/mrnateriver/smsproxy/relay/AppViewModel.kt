@@ -31,8 +31,8 @@ class AppViewModel @Inject constructor(
     val showApiKeyError get() = apiKey.isBlank()
 
     val showMissingCertificatesError = apiCertificates.serverCertificatePem == null ||
-            apiCertificates.clientCertificatePem == null ||
-            apiCertificates.clientPrivateKeyPem == null
+        apiCertificates.clientCertificatePem == null ||
+        apiCertificates.clientPrivateKeyPem == null
 
     val showServerSettingsHint = settingsService.isApiConfigured.map { !it }
 

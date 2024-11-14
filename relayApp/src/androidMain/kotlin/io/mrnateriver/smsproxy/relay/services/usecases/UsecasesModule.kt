@@ -25,7 +25,9 @@ import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as Observab
 abstract class UsecasesModule {
     @Binds
     @Singleton
-    abstract fun bindsMessageProcessingWorkerService(impl: MessageBackgroundProcessingService): MessageBackgroundProcessingServiceContract
+    abstract fun bindsMessageProcessingWorkerService(
+        impl: MessageBackgroundProcessingService,
+    ): MessageBackgroundProcessingServiceContract
 
     @Module
     @InstallIn(SingletonComponent::class)
@@ -42,7 +44,7 @@ abstract class UsecasesModule {
                 smsProcessingService,
                 statsService,
                 observabilityService,
-                workerScheduler
+                workerScheduler,
             )
         }
 

@@ -10,6 +10,7 @@ import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import io.mrnateriver.smsproxy.shared.services.ProxyApiClientFactory
 import io.mrnateriver.smsproxy.shared.services.createProxyApiClient
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStreamReader
 import javax.inject.Singleton
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
@@ -31,7 +32,7 @@ object ProxyApiModule {
             readAssetFile(
                 "proxy-api-client-certificate-private-key.pem",
                 context,
-                observabilityService
+                observabilityService,
             )
 
         return ProxyApiCertificates(serverCertificatePem, clientCertificatePem, clientPrivateKeyPem)
@@ -49,7 +50,7 @@ object ProxyApiModule {
                 clientCertificatePem = certificates?.clientCertificatePem,
                 clientPrivateKeyPem = certificates?.clientPrivateKeyPem,
                 observabilityService = observabilityService,
-                baseApiUrl = it
+                baseApiUrl = it,
             )
         }
     }
@@ -65,16 +66,14 @@ object ProxyApiModule {
             val bufferedReader = BufferedReader(InputStreamReader(inputStream))
 
             bufferedReader.use { it.readText() }
-
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             observabilityService.reportException(e)
             observabilityService.log(
                 LogLevel.WARNING,
-                "Failed to read TLS certificate from assets: $fileName"
+                "Failed to read TLS certificate from assets: $fileName",
             )
 
             null
         }
     }
-
 }

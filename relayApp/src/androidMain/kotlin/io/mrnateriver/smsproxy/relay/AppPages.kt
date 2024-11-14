@@ -9,7 +9,8 @@ import io.mrnateriver.smsproxy.shared.pages.about.licensesPageDescriptor
 enum class AppPages(val descriptor: PageDescriptor) {
     SETTINGS(settingsPageDescriptor),
     ABOUT(aboutPageDescriptor),
-    LICENSES(licensesPageDescriptor);
+    LICENSES(licensesPageDescriptor),
+    ;
 
     companion object {
         fun fromNavDestination(dest: NavDestination?): AppPages? {

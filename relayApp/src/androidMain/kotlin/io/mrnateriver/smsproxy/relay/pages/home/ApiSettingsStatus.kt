@@ -8,7 +8,6 @@ import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.composables.AlertMessage
 import io.mrnateriver.smsproxy.shared.composables.AlertMessageAction
 
-@Preview
 @Composable
 fun ApiSettingsStatus(modifier: Modifier = Modifier, onGoToSettingsClick: () -> Unit = {}) {
     AlertMessage(
@@ -20,4 +19,10 @@ fun ApiSettingsStatus(modifier: Modifier = Modifier, onGoToSettingsClick: () -> 
             action = onGoToSettingsClick,
         ),
     )
+}
+
+@Preview
+@Composable
+private fun ApiSettingsStatusPreview() {
+    ApiSettingsStatus()
 }

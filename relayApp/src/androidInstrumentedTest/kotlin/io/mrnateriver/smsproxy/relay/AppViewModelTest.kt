@@ -46,7 +46,7 @@ class AppViewModelTest {
                 statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(),
-            ).showMissingCertificatesError
+            ).showMissingCertificatesError,
         )
 
         assertTrue(
@@ -55,7 +55,7 @@ class AppViewModelTest {
                 statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(serverCertificatePem = "test"),
-            ).showMissingCertificatesError
+            ).showMissingCertificatesError,
         )
 
         assertTrue(
@@ -64,7 +64,7 @@ class AppViewModelTest {
                 statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(clientCertificatePem = "test"),
-            ).showMissingCertificatesError
+            ).showMissingCertificatesError,
         )
 
         assertTrue(
@@ -73,7 +73,7 @@ class AppViewModelTest {
                 statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(clientPrivateKeyPem = "test"),
-            ).showMissingCertificatesError
+            ).showMissingCertificatesError,
         )
 
         assertTrue(
@@ -83,9 +83,9 @@ class AppViewModelTest {
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(
                     clientCertificatePem = "test",
-                    clientPrivateKeyPem = "test"
+                    clientPrivateKeyPem = "test",
                 ),
-            ).showMissingCertificatesError
+            ).showMissingCertificatesError,
         )
 
         assertFalse(
@@ -96,9 +96,9 @@ class AppViewModelTest {
                 apiCertificates = ProxyApiCertificates(
                     serverCertificatePem = "test",
                     clientCertificatePem = "test",
-                    clientPrivateKeyPem = "test"
+                    clientPrivateKeyPem = "test",
                 ),
-            ).showMissingCertificatesError
+            ).showMissingCertificatesError,
         )
     }
 
@@ -112,7 +112,7 @@ class AppViewModelTest {
                 statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(),
-            ).showServerSettingsHint.first()
+            ).showServerSettingsHint.first(),
         )
 
         assertFalse(
@@ -123,7 +123,7 @@ class AppViewModelTest {
                 statsService = mock<MessageStatsService>(),
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(),
-            ).showServerSettingsHint.first()
+            ).showServerSettingsHint.first(),
         )
     }
 
@@ -140,7 +140,7 @@ class AppViewModelTest {
                 statsService = statsService,
                 messagesRepository = mock<MessageRepositoryContract>(),
                 apiCertificates = ProxyApiCertificates(),
-            ).messageStats.first() === stubStatsData
+            ).messageStats.first() === stubStatsData,
         )
     }
 
@@ -164,7 +164,7 @@ class AppViewModelTest {
                     onBlocking { getLastEntries(any()) } doReturn stubMessageRecords
                 },
                 apiCertificates = ProxyApiCertificates(),
-            ).messageRecordsRecent.first().isEmpty()
+            ).messageRecordsRecent.first().isEmpty(),
         )
     }
 

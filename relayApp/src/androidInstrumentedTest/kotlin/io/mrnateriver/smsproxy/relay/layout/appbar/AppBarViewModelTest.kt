@@ -58,5 +58,4 @@ class AppBarViewModelTest {
         assertNotNull(rememberedAppBarViewModel2)
         assertTrue(rememberedAppBarViewModel1 === rememberedAppBarViewModel2)
     }
-
 }

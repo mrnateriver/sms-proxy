@@ -25,9 +25,12 @@ class MutableCoroutineStateTest {
     fun rememberMutableCoroutineState_shouldReturnStateThatIsPopulatedFromFlow() {
         var state: MutableState<Int>? = null
         rule.setContent {
-            state = rememberMutableCoroutineState(flow {
-                emit(123456)
-            }, {}, 42)
+            state = rememberMutableCoroutineState(
+                flow {
+                    emit(123456)
+                },
+                {}, 42,
+            )
         }
 
         assertTrue(state?.value == 123456)

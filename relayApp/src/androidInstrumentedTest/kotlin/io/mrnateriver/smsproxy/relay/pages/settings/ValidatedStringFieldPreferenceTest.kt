@@ -1,8 +1,9 @@
 package io.mrnateriver.smsproxy.relay.pages.settings
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
@@ -30,8 +31,8 @@ class ValidatedStringFieldPreferenceTest {
             AppPreferencesProvider {
                 ValidatedStringFieldPreference(
                     title = "Test Title",
-                    state = remember { mutableStateOf("") },
-                    validate = { null }
+                    value = "",
+                    validate = { null },
                 )
             }
         }
@@ -45,8 +46,8 @@ class ValidatedStringFieldPreferenceTest {
             AppPreferencesProvider {
                 ValidatedStringFieldPreference(
                     title = "Test Title",
-                    state = remember { mutableStateOf("Test Value 42") },
-                    validate = { null }
+                    value = "Test Value 42",
+                    validate = { null },
                 )
             }
         }
@@ -60,15 +61,14 @@ class ValidatedStringFieldPreferenceTest {
             AppPreferencesProvider {
                 ValidatedStringFieldPreference(
                     title = "Test Title",
-                    state = remember { mutableStateOf("Test Value 42") },
-                    validate = { "Test Invalid Input" }
+                    value = "Test Value 42",
+                    validate = { "Test Invalid Input" },
                 )
             }
         }
 
         rule.onNodeWithText("Test Invalid Input").assertExists()
-        rule.onNode(SemanticsMatcher.expectValue(SemanticsProperties.Error, "Test Invalid Input"))
-            .assertExists()
+        rule.onNode(SemanticsMatcher.expectValue(SemanticsProperties.Error, "Test Invalid Input")).assertExists()
     }
 
     @Test
@@ -76,10 +76,12 @@ class ValidatedStringFieldPreferenceTest {
         val state = mutableStateOf("")
         rule.setContent {
             AppPreferencesProvider {
+                var fieldValue by state
                 ValidatedStringFieldPreference(
                     title = "Test Title",
-                    state = state,
-                    validate = { if (it.isEmpty()) null else "Test Invalid Input" }
+                    value = fieldValue,
+                    onValueChange = { fieldValue = it },
+                    validate = { if (it.isEmpty()) null else "Test Invalid Input" },
                 )
             }
         }
@@ -89,8 +91,7 @@ class ValidatedStringFieldPreferenceTest {
         state.value = "Test Value 42"
 
         rule.onNodeWithText("Test Invalid Input").assertExists()
-        rule.onNode(SemanticsMatcher.expectValue(SemanticsProperties.Error, "Test Invalid Input"))
-            .assertExists()
+        rule.onNode(SemanticsMatcher.expectValue(SemanticsProperties.Error, "Test Invalid Input")).assertExists()
     }
 
     @Test
@@ -99,8 +100,8 @@ class ValidatedStringFieldPreferenceTest {
             AppPreferencesProvider {
                 ValidatedStringFieldPreference(
                     title = "Test Title",
-                    state = remember { mutableStateOf("Test Value 42") },
-                    validate = { null }
+                    value = "Test Value 42",
+                    validate = { null },
                 )
             }
         }
@@ -116,8 +117,8 @@ class ValidatedStringFieldPreferenceTest {
             AppPreferencesProvider {
                 ValidatedStringFieldPreference(
                     title = "Test Title",
-                    state = remember { mutableStateOf("Test Value 42") },
-                    validate = { null }
+                    value = "Test Value 42",
+                    validate = { null },
                 )
             }
         }
@@ -133,8 +134,8 @@ class ValidatedStringFieldPreferenceTest {
             AppPreferencesProvider {
                 ValidatedStringFieldPreference(
                     title = "Test Title",
-                    state = remember { mutableStateOf("Test Value 42") },
-                    validate = { "Test Invalid Input" }
+                    value = "Test Value 42",
+                    validate = { "Test Invalid Input" },
                 )
             }
         }
@@ -150,8 +151,8 @@ class ValidatedStringFieldPreferenceTest {
             AppPreferencesProvider {
                 ValidatedStringFieldPreference(
                     title = "Test Title",
-                    state = remember { mutableStateOf("Test Value 42") },
-                    validate = { if (it == "Test Value 42") null else "Test Invalid Input" }
+                    value = "Test Value 42",
+                    validate = { if (it == "Test Value 42") null else "Test Invalid Input" },
                 )
             }
         }
@@ -160,10 +161,7 @@ class ValidatedStringFieldPreferenceTest {
 
         rule.onAllNodesWithText("Test Invalid Input").assertCountEquals(0)
 
-        rule.onAllNodesWithText("Test Value 42")
-            .filterToOne(isEditable())
-            .requestFocus()
-            .performTextInput("3")
+        rule.onAllNodesWithText("Test Value 42").filterToOne(isEditable()).requestFocus().performTextInput("3")
 
         rule.onAllNodesWithText("Test Invalid Input").assertCountEquals(1)
     }
@@ -173,19 +171,19 @@ class ValidatedStringFieldPreferenceTest {
         val state = mutableStateOf("")
         rule.setContent {
             AppPreferencesProvider {
+                var fieldValue by state
                 ValidatedStringFieldPreference(
                     title = "Test Title",
-                    state = state,
-                    validate = { null }
+                    value = fieldValue,
+                    onValueChange = { fieldValue = it },
+                    validate = { null },
                 )
             }
         }
 
         rule.onNodeWithText("Test Title").performClick() // Clicking on title also works
 
-        rule.onNode(isEditable())
-            .requestFocus()
-            .performTextInput("hello")
+        rule.onNode(isEditable()).requestFocus().performTextInput("hello")
 
         rule.onNodeWithText(rule.activity.getString(android.R.string.ok)).performClick()
 
@@ -197,19 +195,19 @@ class ValidatedStringFieldPreferenceTest {
         val state = mutableStateOf("hello")
         rule.setContent {
             AppPreferencesProvider {
+                var fieldValue by state
                 ValidatedStringFieldPreference(
                     title = "Test Title",
-                    state = state,
-                    validate = { if (it == "hello") null else "Test Invalid Input" }
+                    value = fieldValue,
+                    onValueChange = { fieldValue = it },
+                    validate = { if (it == "hello") null else "Test Invalid Input" },
                 )
             }
         }
 
         rule.onNodeWithText("hello").performClick()
 
-        rule.onNode(isEditable())
-            .requestFocus()
-            .performTextInput("hey")
+        rule.onNode(isEditable()).requestFocus().performTextInput("hey")
 
         rule.onNodeWithText(rule.activity.getString(android.R.string.ok)).performClick()
 

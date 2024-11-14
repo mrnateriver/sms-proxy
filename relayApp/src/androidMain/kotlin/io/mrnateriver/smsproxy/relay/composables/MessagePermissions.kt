@@ -15,12 +15,6 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 private const val PERMISSION_RECEIVE_MESSAGES = Manifest.permission.RECEIVE_SMS
 private const val PERMISSION_READ_MESSAGES = Manifest.permission.READ_SMS
 
-enum class PermissionStatus {
-    UNKNOWN,
-    GRANTED,
-    DENIED
-}
-
 @Composable
 @OptIn(ExperimentalPermissionsApi::class)
 fun rememberMessagePermissions(): State<PermissionStatus> {
@@ -29,7 +23,7 @@ fun rememberMessagePermissions(): State<PermissionStatus> {
         permissions = listOf(
             PERMISSION_RECEIVE_MESSAGES,
             PERMISSION_READ_MESSAGES,
-        )
+        ),
     ) { gotUserResponse = true }
 
     LaunchedEffect(Unit) {

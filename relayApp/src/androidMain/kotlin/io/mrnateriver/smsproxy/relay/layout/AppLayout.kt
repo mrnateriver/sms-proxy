@@ -2,6 +2,7 @@ package io.mrnateriver.smsproxy.relay.layout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,13 +25,15 @@ import io.mrnateriver.smsproxy.relay.layout.appbar.AppBar
 import io.mrnateriver.smsproxy.relay.layout.drawer.AppDrawer
 import io.mrnateriver.smsproxy.shared.composables.rememberRootBackgroundColor
 
+private const val SCALE_DOWN_ANIMATION_THRESHOLD = 0.05f
+
 @Composable
 fun AppLayout(
     modifier: Modifier = Modifier,
     isHomePage: Boolean = true,
     title: String? = null,
-    onNavigateUpClicked: () -> Unit = {},
-    drawerContent: @Composable (toggleDrawer: () -> Unit) -> Unit = {},
+    onNavigateUpClick: () -> Unit = {},
+    drawerContent: @Composable ColumnScope.(toggleDrawer: () -> Unit) -> Unit = {},
     content: @Composable () -> Unit = {},
 ) {
     AppDrawer(
@@ -41,7 +44,7 @@ fun AppLayout(
             if (isHomePage) {
                 toggleDrawer()
             } else {
-                onNavigateUpClicked()
+                onNavigateUpClick()
             }
         }
 
@@ -52,22 +55,30 @@ fun AppLayout(
             topBar = {
                 AppBar(
                     title = title,
-                    navigationIconImageVector = if (isHomePage) Icons.Outlined.Menu else Icons.AutoMirrored.Outlined.ArrowBack,
+                    navigationIconImageVector = if (isHomePage) {
+                        Icons.Outlined.Menu
+                    } else {
+                        Icons.AutoMirrored.Outlined.ArrowBack
+                    },
                     onNavigationButtonClick = buttonClick,
-                    navigationIconContentDescription =
-                    if (isHomePage) stringResource(R.string.app_bar_navigation_button_label_drawer)
-                    else stringResource(R.string.app_bar_navigation_button_label_back),
+                    navigationIconContentDescription = if (isHomePage) {
+                        stringResource(R.string.app_bar_navigation_button_label_drawer)
+                    } else {
+                        stringResource(R.string.app_bar_navigation_button_label_back)
+                    },
                 )
             },
         ) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    scaleX = 1 - 0.05f * fraction
-                    scaleY = 1 - 0.05f * fraction
-                    transformOrigin = TransformOrigin(0.5f, 1f)
-                }
-                .padding(it)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = 1 - SCALE_DOWN_ANIMATION_THRESHOLD * fraction
+                        scaleY = 1 - SCALE_DOWN_ANIMATION_THRESHOLD * fraction
+                        transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f)
+                    }
+                    .padding(it),
+            ) {
                 content()
             }
         }
@@ -84,17 +95,17 @@ private fun AppLayoutPreview() {
                 Modifier
                     .background(Color.Cyan.copy(alpha = 0.2f))
                     .padding(16.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             ) {
                 Text("Drawer Content", color = Color.Black)
             }
-        }
+        },
     ) {
         Box(
             Modifier
                 .background(Color.Red.copy(alpha = 0.5f))
                 .padding(16.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             Text("Main Content", color = Color.White)
         }

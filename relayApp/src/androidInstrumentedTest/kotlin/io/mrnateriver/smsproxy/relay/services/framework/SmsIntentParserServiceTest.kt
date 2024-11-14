@@ -23,7 +23,7 @@ class SmsIntentParserServiceTest {
                     mockSmsMessage("msg1", "sender1"),
                     mockSmsMessage("msg2", "sender2"),
                 )
-            }
+            },
         )
         val intent = Intent()
         val actual = subject.getMessagesFromIntent(intent)

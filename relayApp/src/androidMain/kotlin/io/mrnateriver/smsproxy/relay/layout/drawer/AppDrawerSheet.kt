@@ -2,6 +2,7 @@ package io.mrnateriver.smsproxy.relay.layout.drawer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,7 +24,7 @@ import io.mrnateriver.smsproxy.shared.composables.theme.AppSpacings
 @Composable
 fun AppDrawerSheet(
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit = {},
+    content: @Composable ColumnScope.() -> Unit = {},
 ) {
     ModalDrawerSheet(modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)) {
         Text(
@@ -36,24 +37,26 @@ fun AppDrawerSheet(
     }
 }
 
+private const val PREVIEW_DRAWER_OPTIONS_COUNT = 10
+
 @Preview
 @Composable
 private fun AppDrawerSheetPreview() {
     Box(
         Modifier
             .background(Color.Black)
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         AppDrawerSheet {
-            for (i in 0..10) {
+            for (i in 0..PREVIEW_DRAWER_OPTIONS_COUNT) {
                 Box(
                     Modifier
                         .background(Color.Cyan.copy(alpha = 0.2f))
                         .padding(16.dp)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
                 ) { Text("Content $i") }
 
-                if (i < 10) {
+                if (i < PREVIEW_DRAWER_OPTIONS_COUNT) {
                     HorizontalDivider()
                 }
             }

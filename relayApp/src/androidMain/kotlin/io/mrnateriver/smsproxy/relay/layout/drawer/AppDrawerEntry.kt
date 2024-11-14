@@ -28,7 +28,9 @@ fun AppDrawerEntry(
             .padding(bottom = AppSpacings.tiny),
         icon = if (icon != null) {
             { Icon(imageVector = icon, contentDescription = iconContentDescription) }
-        } else null,
+        } else {
+            null
+        },
         label = { Text(label, style = MaterialTheme.typography.bodyLarge) },
         selected = selected,
         onClick = onClick,

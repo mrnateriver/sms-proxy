@@ -9,12 +9,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.composables.AlertMessage
 
-@Preview
 @Composable
 fun ApiSettingsWarningCard(modifier: Modifier = Modifier) {
     AlertMessage(
         modifier = modifier,
         text = stringResource(R.string.settings_page_address_and_key_warning_message),
-        textIconVector = Icons.Outlined.Info
+        textIconVector = Icons.Outlined.Info,
     )
+}
+
+@Preview
+@Composable
+private fun ApiSettingsWarningCardPreview() {
+    ApiSettingsWarningCard()
 }

@@ -96,5 +96,4 @@ class AppDrawerContentsTest {
         assertFalse(toggled)
         assertTrue(navigatedWith === AppPages.ABOUT)
     }
-
 }

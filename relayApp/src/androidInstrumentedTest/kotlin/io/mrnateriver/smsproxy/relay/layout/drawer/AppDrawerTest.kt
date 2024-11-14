@@ -123,5 +123,4 @@ class AppDrawerTest {
 
         rule.onNodeWithText("Drawer is closed").assertExists()
     }
-
 }

@@ -3,7 +3,6 @@ package io.mrnateriver.smsproxy.relay
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -26,12 +25,10 @@ fun App() {
 
             val activePage = AppPages.fromNavDestination(currentDestination)
 
-            val appViewModel = hiltViewModel<AppViewModel>()
-
             AppLayout(
                 title = stringResource(activePage?.descriptor?.titleResId ?: R.string.app_name),
                 isHomePage = isHomePageRoute(currentDestination),
-                onNavigateUpClicked = { navController.navigateUp() },
+                onNavigateUpClick = { navController.navigateUp() },
                 drawerContent = { toggleDrawer ->
                     AppDrawerContents(
                         activePage = activePage,
@@ -40,10 +37,7 @@ fun App() {
                     )
                 },
                 content = {
-                    AppNavHost(
-                        navController = navController,
-                        viewModel = appViewModel
-                    )
+                    AppNavHost(navController = navController)
                 },
             )
         }

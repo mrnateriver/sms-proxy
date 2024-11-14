@@ -39,7 +39,7 @@ class MessageBackgroundProcessingServiceTest {
         MessageBackgroundProcessingService(
             processingService,
             statsService,
-            observabilityService
+            observabilityService,
         )
 
     private val now = Instant.fromEpochMilliseconds(1723996071981)

@@ -36,7 +36,8 @@ class MessageRepositoryTest {
                 messageData = entry,
                 createdAt = now,
                 updatedAt = now,
-            ), result
+            ),
+            result,
         )
     }
 }

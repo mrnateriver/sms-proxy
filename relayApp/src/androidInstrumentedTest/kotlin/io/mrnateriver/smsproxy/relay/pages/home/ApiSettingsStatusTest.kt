@@ -18,7 +18,7 @@ class ApiSettingsStatusTest {
         var called = false
         rule.setContent {
             ApiSettingsStatus(
-                onGoToSettingsClick = { called = true }
+                onGoToSettingsClick = { called = true },
             )
         }
 

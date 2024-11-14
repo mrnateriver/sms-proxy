@@ -79,7 +79,7 @@ class MessageStatsService @Inject constructor(
                 val lastEntry = (lastEntries as Iterable<*>).firstOrNull() as MessageEntry?
                 MessageStatsEntry(
                     count as Int,
-                    lastEntry?.updatedAt?.toLocalDateTime(TimeZone.currentSystemDefault())
+                    lastEntry?.updatedAt?.toLocalDateTime(TimeZone.currentSystemDefault()),
                 )
             }
         }
@@ -98,8 +98,7 @@ class MessageStatsService @Inject constructor(
 
             MessageStatsEntry(
                 count as Int,
-                (entry as MessageEntry?)?.updatedAt?.toLocalDateTime(TimeZone.currentSystemDefault())
+                (entry as MessageEntry?)?.updatedAt?.toLocalDateTime(TimeZone.currentSystemDefault()),
             )
         }
 }
-

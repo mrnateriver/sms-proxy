@@ -7,7 +7,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,24 +21,25 @@ import me.zhanghai.compose.preference.TextFieldPreference
 
 @Composable
 fun ValidatedStringFieldPreference(
-    modifier: Modifier = Modifier,
-    validate: (v: String) -> String?,
-    state: MutableState<String>,
+    value: String,
     title: String,
+    modifier: Modifier = Modifier,
+    onValueChange: (String) -> Unit = {},
+    validate: (v: String) -> String?,
 ) {
-    val currentValue by state
-    var popupValue by remember { mutableStateOf(currentValue) }
+    var popupValue by remember { mutableStateOf(value) }
 
-    val currentError = validate(popupValue.ifEmpty { currentValue })
+    val currentError = validate(popupValue.ifEmpty { value })
 
     var popupError by remember { mutableStateOf(currentError) }
-    var shouldShowPopupError by remember { mutableStateOf(currentValue.isNotEmpty()) }
+    var shouldShowPopupError by remember { mutableStateOf(value.isNotEmpty()) }
 
     TextFieldPreference(
         modifier = modifier.semantics { currentError?.let { error(it) } },
-        state = state,
+        value = value,
+        onValueChange = onValueChange,
         title = { Text(title) },
-        valueToText = { popupValue.ifEmpty { currentValue } },
+        valueToText = { popupValue.ifEmpty { value } },
         textToValue = {
             val popupFieldError = validate(it)
 
@@ -50,7 +50,7 @@ fun ValidatedStringFieldPreference(
         },
         summary = {
             Text(
-                text = (currentError ?: "").ifEmpty { currentValue },
+                text = (currentError ?: "").ifEmpty { value },
                 color = if (currentError.isNullOrEmpty()) Color.Unspecified else MaterialTheme.colorScheme.error,
             )
         },
@@ -64,9 +64,10 @@ fun ValidatedStringFieldPreference(
                     shouldShowPopupError = true
                     onValueChange(it)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .semantics { if (isInputInvalid) error(popupFieldError!!) },
-                keyboardOptions = KeyboardOptions(autoCorrect = false),
+                keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
                 keyboardActions = KeyboardActions { onOk() },
                 singleLine = true,
                 isError = isInputInvalid,
@@ -76,7 +77,7 @@ fun ValidatedStringFieldPreference(
                     }
                 },
             )
-        }
+        },
     )
 }
 
@@ -86,7 +87,8 @@ private fun ValidatedStringFieldPreferencePreview_ValidationError() {
     AppPreferencesProvider {
         ValidatedStringFieldPreference(
             title = "Validated Field",
-            state = remember { mutableStateOf("") },
+            value = "",
+            onValueChange = {},
             validate = { "Failed Validation" },
         )
     }
@@ -98,7 +100,8 @@ private fun ValidatedStringFieldPreferencePreview_Value() {
     AppPreferencesProvider {
         ValidatedStringFieldPreference(
             title = "Validated Field",
-            state = remember { mutableStateOf("Some Value") },
+            value = "Some Value",
+            onValueChange = {},
             validate = { null },
         )
     }

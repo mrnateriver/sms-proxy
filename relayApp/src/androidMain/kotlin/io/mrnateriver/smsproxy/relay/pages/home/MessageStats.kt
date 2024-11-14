@@ -31,7 +31,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 @Composable
-fun MessageStats(modifier: Modifier = Modifier, data: MessageStatsData) {
+fun MessageStats(data: MessageStatsData, modifier: Modifier = Modifier) {
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
 
     fun formatDate(date: LocalDateTime?): String {
@@ -40,7 +40,7 @@ fun MessageStats(modifier: Modifier = Modifier, data: MessageStatsData) {
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppSpacings.medium)
+        verticalArrangement = Arrangement.spacedBy(AppSpacings.medium),
     ) {
         Text(
             modifier = Modifier.padding(start = AppSpacings.medium),
@@ -90,10 +90,10 @@ fun MessageStats(modifier: Modifier = Modifier, data: MessageStatsData) {
 
 @Composable
 private fun StatsCard(
-    modifier: Modifier = Modifier,
     title: String,
     value: String,
     lastEvent: String,
+    modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Surface(
@@ -154,8 +154,8 @@ private fun StatsCardPreview() {
 }
 
 val previewMessageStatsData = MessageStatsData(
-    processed = MessageStatsEntry(123, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
-    relayed = MessageStatsEntry(456, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
-    errors = MessageStatsEntry(42, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
-    failures = MessageStatsEntry(0, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
+    processed = MessageStatsEntry(value = 123, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
+    relayed = MessageStatsEntry(value = 456, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
+    errors = MessageStatsEntry(value = 42, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
+    failures = MessageStatsEntry(value = 0, Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())),
 )

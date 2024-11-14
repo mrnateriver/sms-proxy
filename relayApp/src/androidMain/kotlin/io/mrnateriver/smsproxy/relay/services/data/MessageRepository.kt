@@ -31,7 +31,7 @@ class MessageRepository @Inject constructor(
         return entry.also {
             messageDao.update(
                 it.toDatabaseEntity()
-                    .copy(updatedAt = Clock.System.now())
+                    .copy(updatedAt = Clock.System.now()),
             )
         }
     }

@@ -3,6 +3,7 @@ package io.mrnateriver.smsproxy.relay.layout.drawer
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerDefaults
@@ -28,7 +29,7 @@ import kotlinx.coroutines.launch
 fun AppDrawer(
     modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    drawerContent: @Composable (toggleDrawer: () -> Unit) -> Unit = {},
+    drawerContent: @Composable ColumnScope.(toggleDrawer: () -> Unit) -> Unit = {},
     content: (@Composable (progress: Float, toggleDrawer: () -> Unit) -> Unit) = { _, _ -> },
 ) {
     val scope = rememberCoroutineScope()
@@ -93,7 +94,7 @@ private fun AppDrawerPreview_DrawerOpen() {
     Box(
         Modifier
             .background(Color.Black)
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         AppDrawer(
             drawerContent = {
@@ -101,7 +102,7 @@ private fun AppDrawerPreview_DrawerOpen() {
                     Modifier
                         .background(Color.Cyan.copy(alpha = 0.2f))
                         .padding(16.dp)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
                 ) {
                     Text("Drawer Content", color = Color.Black)
                 }
@@ -112,7 +113,7 @@ private fun AppDrawerPreview_DrawerOpen() {
                 Modifier
                     .background(Color.Red.copy(alpha = 0.5f))
                     .padding(16.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             ) {
                 Text("Main Content: $fraction", color = Color.White)
             }
@@ -126,7 +127,7 @@ private fun AppDrawerPreview_DrawerClosed() {
     Box(
         Modifier
             .background(Color.Black)
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         AppDrawer(
             drawerContent = {
@@ -134,7 +135,7 @@ private fun AppDrawerPreview_DrawerClosed() {
                     Modifier
                         .background(Color.Cyan.copy(alpha = 0.2f))
                         .padding(16.dp)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
                 ) {
                     Text("Drawer Content", color = Color.Black)
                 }
@@ -145,7 +146,7 @@ private fun AppDrawerPreview_DrawerClosed() {
                 Modifier
                     .background(Color.Red.copy(alpha = 0.5f))
                     .padding(16.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             ) {
                 Text("Main Content: $fraction", color = Color.White)
             }

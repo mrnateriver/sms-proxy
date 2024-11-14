@@ -26,7 +26,7 @@ class MessageProcessingService(
     private val repository: MessageRepositoryContract,
     private val relay: MessageRelayServiceContract,
     private val observability: ObservabilityServiceContract,
-    private val config: MessageProcessingConfig = MessageProcessingConfig(3),
+    private val config: MessageProcessingConfig = MessageProcessingConfig(maxRetries = 3),
     private val clock: Clock = Clock.System,
 ) : MessageProcessingServiceContract {
     override suspend fun process(msg: MessageData): MessageEntry {
@@ -45,7 +45,7 @@ class MessageProcessingService(
             val entries = repository.getAll(
                 MessageRelayStatus.ERROR,
                 MessageRelayStatus.PENDING,
-                MessageRelayStatus.IN_PROGRESS
+                MessageRelayStatus.IN_PROGRESS,
             )
             observability.log(LogLevel.INFO, "Processing ${entries.size} entries")
 
@@ -80,7 +80,7 @@ class MessageProcessingService(
         return repository.update(
             entry.copy(
                 sendStatus = MessageRelayStatus.IN_PROGRESS,
-                sendRetries = entry.sendRetries.inc()
+                sendRetries = entry.sendRetries.inc(),
             ),
         )
     }
@@ -123,7 +123,7 @@ class MessageProcessingService(
             return repository.update(
                 entry.copy(
                     sendStatus = MessageRelayStatus.ERROR,
-                    sendFailureReason = exception.toString()
+                    sendFailureReason = exception.toString(),
                 ),
             )
         }

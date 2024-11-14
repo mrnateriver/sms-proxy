@@ -31,7 +31,7 @@ class MessageStatsRepository(
 
             observabilityService.log(
                 LogLevel.DEBUG,
-                "Updating failure count: ${currentFailures + 1} at $now"
+                "Updating failure count: ${currentFailures + 1} at $now",
             )
 
             preferences[KEY_PROCESSING_ERRORS] = currentFailures + 1

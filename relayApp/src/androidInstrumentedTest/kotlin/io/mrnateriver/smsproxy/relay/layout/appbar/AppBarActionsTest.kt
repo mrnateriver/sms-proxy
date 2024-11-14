@@ -25,7 +25,8 @@ class AppBarActionsTest {
             AppBarActions {
                 IconButton(
                     modifier = Modifier.semantics { contentDescription = "test-button" },
-                    onClick = { /* no-op */ }) {
+                    onClick = { /* no-op */ },
+                ) {
                     Icon(Icons.Outlined.Settings, contentDescription = "")
                 }
             }
@@ -34,5 +35,4 @@ class AppBarActionsTest {
         rule.onNodeWithContentDescription("test-button")
             .assertExists()
     }
-
 }

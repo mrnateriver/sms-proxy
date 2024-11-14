@@ -31,14 +31,14 @@ class MessageReceiverService @Inject constructor(
                             // SMS messages is parsed from the PDU and reported by the network, which can
                             // operate in a different time zone
                             receivedAt = Clock.System.now(),
-                        )
+                        ),
                     )
                 } catch (e: Exception) {
                     statsService.incrementProcessingErrors()
 
                     observabilityService.log(
                         LogLevel.WARNING,
-                        "Failed to process message: $e\nScheduling background job to retry."
+                        "Failed to process message: $e\nScheduling background job to retry.",
                     )
 
                     workerScheduler.scheduleBackgroundMessageProcessing()

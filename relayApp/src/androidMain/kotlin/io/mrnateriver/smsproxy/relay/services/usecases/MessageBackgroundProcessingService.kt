@@ -16,30 +16,34 @@ class MessageBackgroundProcessingService @Inject constructor(
     private val statsService: MessageStatsServiceContract,
     private val observabilityService: ObservabilityServiceContract,
 ) : MessageBackgroundProcessingServiceContract {
-    override suspend fun handleUnprocessedMessages(): MessageBackgroundProcessingResult =
-        withContext(Dispatchers.IO) {
-            observabilityService.runSpan("MessageBackgroundProcessingService.handleUnprocessedMessages") {
-                val results = processingService
-                    .handleUnprocessedMessages()
-                    .map { it.sendStatus }.toList()
-                val result = when {
-                    results.any { it == MessageRelayStatus.ERROR || it == MessageRelayStatus.IN_PROGRESS } -> MessageBackgroundProcessingResult.RETRY
-                    results.any { it == MessageRelayStatus.SUCCESS } -> MessageBackgroundProcessingResult.SUCCESS // This would mean the rest have FAILURE status, and we don't want to retry them
-                    results.isNotEmpty() -> MessageBackgroundProcessingResult.FAILURE
-                    else -> MessageBackgroundProcessingResult.SUCCESS
-                }
+    override suspend fun handleUnprocessedMessages(): MessageBackgroundProcessingResult = withContext(Dispatchers.IO) {
+        observabilityService.runSpan("MessageBackgroundProcessingService.handleUnprocessedMessages") {
+            val results = processingService.handleUnprocessedMessages().map { it.sendStatus }.toList()
+            val result = when {
+                results.any {
+                    it == MessageRelayStatus.ERROR || it == MessageRelayStatus.IN_PROGRESS
+                } -> MessageBackgroundProcessingResult.RETRY
 
-                for (i in 0 until results.count { it == MessageRelayStatus.ERROR }) {
-                    statsService.incrementProcessingErrors()
-                }
+                results.any {
+                    it == MessageRelayStatus.SUCCESS
+                    // This would mean the rest have FAILURE status, and we don't want to retry them
+                } -> MessageBackgroundProcessingResult.SUCCESS
 
-                statsService.triggerUpdate()
-
-                observabilityService.log(
-                    LogLevel.DEBUG,
-                    "Processed ${results.size} messages: $result"
-                )
-                result
+                results.isNotEmpty() -> MessageBackgroundProcessingResult.FAILURE
+                else -> MessageBackgroundProcessingResult.SUCCESS
             }
+
+            repeat(results.count { it == MessageRelayStatus.ERROR }) {
+                statsService.incrementProcessingErrors()
+            }
+
+            statsService.triggerUpdate()
+
+            observabilityService.log(
+                LogLevel.DEBUG,
+                "Processed ${results.size} messages: $result",
+            )
+            result
         }
+    }
 }

@@ -15,32 +15,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import io.mrnateriver.smsproxy.relay.AppViewModel
 import io.mrnateriver.smsproxy.relay.composables.PermissionStatus
 import io.mrnateriver.smsproxy.relay.composables.rememberMessagePermissions
 import io.mrnateriver.smsproxy.relay.layout.AppContentSurface
 import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 
-const val HomePageRoute = "/"
+const val HOME_PAGE_ROUTE = "/"
 
 fun NavGraphBuilder.homePage(
-    onGoToSettingsClick: () -> Unit,
-    viewModel: AppViewModel,
+    showApiKeyError: Boolean,
+    showMissingApiCertificatesError: Boolean,
+    showSettingsHint: Boolean,
+    messageRecent: List<MessageEntry>,
+    messageStats: MessageStatsData,
+    onGoToSettingsClick: () -> Unit = {},
 ) {
-    composable(HomePageRoute) {
-        val showApiKeyError = viewModel.showApiKeyError
-        val showMissingApiCertificatesError = viewModel.showMissingCertificatesError
+    composable(HOME_PAGE_ROUTE) {
         val messagePermissionsStatus by rememberMessagePermissions()
-        val showSettingsHint by viewModel.showServerSettingsHint.collectAsStateWithLifecycle(false)
-        val messageRecent by viewModel.messageRecordsRecent.collectAsStateWithLifecycle(listOf())
-        val messageStats by viewModel.messageStats.collectAsStateWithLifecycle(MessageStatsData())
 
         HomePage(
             showApiKeyError = showApiKeyError,
@@ -58,7 +55,7 @@ fun NavController.navigateHome() {
     popBackStack(graph.findStartDestination().id, inclusive = false, saveState = true)
 }
 
-fun isHomePageRoute(dest: NavDestination?): Boolean = dest?.route == HomePageRoute
+fun isHomePageRoute(dest: NavDestination?): Boolean = dest?.route == HOME_PAGE_ROUTE
 
 @Composable
 fun HomePage(
@@ -94,7 +91,7 @@ private fun HomePagePreview() {
     Box(
         modifier = Modifier
             .background(Color.Black)
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         HomePage()
     }

@@ -8,7 +8,6 @@ import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.composables.AlertMessage
 import io.mrnateriver.smsproxy.shared.composables.AlertMessageType
 
-@Preview
 @Composable
 fun ApiCertificatesStatus(modifier: Modifier = Modifier) {
     AlertMessage(
@@ -17,4 +16,10 @@ fun ApiCertificatesStatus(modifier: Modifier = Modifier) {
         text = stringResource(R.string.home_page_missing_api_certificates_card_text),
         title = stringResource(R.string.home_page_missing_api_certificates_card_title),
     )
+}
+
+@Preview
+@Composable
+private fun ApiCertificatesStatusPreview() {
+    ApiCertificatesStatus()
 }

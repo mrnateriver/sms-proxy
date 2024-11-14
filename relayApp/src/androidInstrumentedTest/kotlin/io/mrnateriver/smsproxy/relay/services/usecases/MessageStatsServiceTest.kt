@@ -104,7 +104,7 @@ class MessageStatsServiceTest {
     @Test
     fun messageStatsService_shouldEmitStatsData() = runTest {
         whenever(messageStatsRepository.getProcessingErrors()).thenReturn(
-            flowOf(MessageStatsEntry())
+            flowOf(MessageStatsEntry()),
         )
 
         var statsData = subject.getStats().first()
@@ -120,7 +120,7 @@ class MessageStatsServiceTest {
         subject.incrementProcessingErrors()
 
         whenever(messageStatsRepository.getProcessingErrors()).thenReturn(
-            flowOf(MessageStatsEntry(42, nowLocal))
+            flowOf(MessageStatsEntry(42, nowLocal)),
         )
 
         statsData = subject.getStats().first()

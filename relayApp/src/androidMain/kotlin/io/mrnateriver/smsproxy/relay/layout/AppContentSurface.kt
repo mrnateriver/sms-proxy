@@ -20,10 +20,7 @@ fun AppContentSurface(
     content: @Composable () -> Unit = {},
 ) {
     Surface(
-        shape = MaterialTheme.shapes.extraLarge.copy(
-            bottomStart = ZeroCornerSize,
-            bottomEnd = ZeroCornerSize,
-        ),
+        shape = MaterialTheme.shapes.extraLarge.copy(bottomStart = ZeroCornerSize, bottomEnd = ZeroCornerSize),
         color = MaterialTheme.colorScheme.background,
         modifier = modifier.fillMaxSize(),
         content = {
@@ -39,7 +36,7 @@ private fun AppContentSurfacePreview() {
     Box(
         Modifier
             .background(Color.Black)
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         AppContentSurface()
     }
