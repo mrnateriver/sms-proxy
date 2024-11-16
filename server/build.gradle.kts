@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.detekt)
     application
 }
 
@@ -27,6 +28,17 @@ tasks {
     }
 }
 
+detekt {
+    autoCorrect = false
+    buildUponDefaultConfig = true
+    config.setFrom("$rootDir/detekt.yml")
+    source.setFrom(
+        "src/main/kotlin",
+        "src/test/kotlin",
+        "./build.gradle.kts",
+    )
+}
+
 dependencies {
     implementation(projects.shared)
 
@@ -41,6 +53,9 @@ dependencies {
 
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)
+
+    detektPlugins(libs.detekt.formatting)
+    detektPlugins(libs.detekt.compose)
 }
 
 sqldelight {

@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.detekt)
 }
 
 kotlin {
@@ -32,14 +33,25 @@ tasks {
             listOf(
                 resolveProjectFilePath(
                     "receiverApp",
-                    "src/androidMain/assets/proxy-api-client-certificate.pem"
+                    "src/androidMain/assets/proxy-api-client-certificate.pem",
                 ),
                 resolveProjectFilePath(
                     "server",
-                    "src/main/resources/clients/proxy-api-receiver-app.pem"
-                )
+                    "src/main/resources/clients/proxy-api-receiver-app.pem",
+                ),
             )
     }
+}
+
+detekt {
+    autoCorrect = false
+    buildUponDefaultConfig = true
+    config.setFrom("$rootDir/detekt.yml")
+    source.setFrom(
+        "src/androidMain/kotlin",
+        "src/androidInstrumentedTest/kotlin",
+        "./build.gradle.kts",
+    )
 }
 
 android {
@@ -114,3 +126,7 @@ android {
     }
 }
 
+dependencies {
+    detektPlugins(libs.detekt.formatting)
+    detektPlugins(libs.detekt.compose)
+}

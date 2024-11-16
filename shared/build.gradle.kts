@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.detekt)
 }
 
 kotlin {
@@ -45,6 +46,19 @@ kotlin {
             implementation(libs.mockito.kotlin)
         }
     }
+}
+
+detekt {
+    autoCorrect = false
+    buildUponDefaultConfig = true
+    config.setFrom("$rootDir/detekt.yml")
+    source.setFrom(
+        "src/androidMain/kotlin",
+        "src/androidInstrumentedTest/kotlin",
+        "src/commonMain/kotlin",
+        "src/commonTest/kotlin",
+        "./build.gradle.kts",
+    )
 }
 
 android {
@@ -90,4 +104,9 @@ android {
         androidTestImplementation(libs.mockito.kotlin)
         androidTestImplementation(libs.mockito.android)
     }
+}
+
+dependencies {
+    detektPlugins(libs.detekt.formatting)
+    detektPlugins(libs.detekt.compose)
 }

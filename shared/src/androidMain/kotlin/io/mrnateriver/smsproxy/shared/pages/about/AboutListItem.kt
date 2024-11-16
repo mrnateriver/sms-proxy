@@ -18,10 +18,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AboutListItem(
-    modifier: Modifier = Modifier,
-    image: (@Composable () -> Unit)? = null,
     text: String,
     title: String,
+    modifier: Modifier = Modifier,
+    image: (@Composable () -> Unit)? = null,
     onClick: (() -> Unit)? = null,
     trailingContentIconContentDescription: String? = null,
 ) {
@@ -37,19 +37,21 @@ fun AboutListItem(
                     contentDescription = trailingContentIconContentDescription,
                 )
             }
-        } else null
+        } else {
+            null
+        },
     )
 }
 
 @Preview
 @Composable
-fun AboutListItemPreview() {
+private fun AboutListItemPreview() {
     AboutListItem(
         image = {
             Icon(
                 imageVector = Icons.Outlined.Face,
                 contentDescription = "Face Icon",
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
         },
         text = "List Item Text",
@@ -59,13 +61,13 @@ fun AboutListItemPreview() {
 
 @Preview
 @Composable
-fun AboutListItemPreview_Clickable() {
+private fun AboutListItemPreview_Clickable() {
     AboutListItem(
         image = {
             Icon(
                 imageVector = Icons.Outlined.Face,
                 contentDescription = "Face Icon",
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
         },
         text = "List Item Text",

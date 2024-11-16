@@ -39,8 +39,8 @@ class MessageStatsRepositoryTest {
         mock<ObservabilityServiceContract> {
             onBlocking<ObservabilityServiceContract, Any> {
                 runSpan(any<String>(), any<suspend () -> Unit>())
-            } doSuspendableAnswer {
-                it.getArgument<suspend () -> Any>(1)()
+            } doSuspendableAnswer { invocation ->
+                invocation.getArgument<suspend () -> Any>(1)()
             }
         }
     private val now = Instant.fromEpochMilliseconds(1723996071981)

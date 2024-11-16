@@ -14,15 +14,15 @@ import io.mrnateriver.smsproxy.shared.pages.PageDescriptor
 fun NavGraphBuilder.licensesPage(
     pageContentWrapper: @Composable (content: @Composable () -> Unit) -> Unit = { it() },
 ) {
-    composable(LicensesPageRoute) {
+    composable(LICENSES_PAGE_ROUTE) {
         LicensesPage(pageContentWrapper = pageContentWrapper)
     }
 }
 
 fun NavController.navigateToLicensesPage(builder: (NavOptionsBuilder.() -> Unit)? = null) {
     navigate(
-        LicensesPageRoute,
-        if (builder == null) null else navOptions(builder)
+        LICENSES_PAGE_ROUTE,
+        if (builder == null) null else navOptions(builder),
     )
 }
 
@@ -32,9 +32,9 @@ val licensesPageDescriptor = PageDescriptor(
     isActive = ::isLicensesPageRoute,
 )
 
-private const val LicensesPageRoute = "licenses"
+private const val LICENSES_PAGE_ROUTE = "licenses"
 
-private fun isLicensesPageRoute(dest: NavDestination?): Boolean = dest?.route == LicensesPageRoute
+private fun isLicensesPageRoute(dest: NavDestination?): Boolean = dest?.route == LICENSES_PAGE_ROUTE
 
 @Composable
 fun LicensesPage(

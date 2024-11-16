@@ -45,7 +45,7 @@ tasks {
 }
 
 detekt {
-    autoCorrect = true
+    autoCorrect = false
     buildUponDefaultConfig = true
     config.setFrom("$rootDir/detekt.yml")
     source.setFrom(

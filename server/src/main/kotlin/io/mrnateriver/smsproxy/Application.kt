@@ -31,20 +31,23 @@ fun main() {
     val serverKeyStore = getServerKeyStore(keyStorePassword)
     val clientsKeyStore = createClientsKeyStore()
 
-    val server = embeddedServer(Netty, applicationEngineEnvironment {
-        module { messageProxyApi() }
+    val server = embeddedServer(
+        Netty,
+        applicationEngineEnvironment {
+            module { messageProxyApi() }
 
-        sslConnector(
-            keyStore = serverKeyStore,
-            keyAlias = keyAlias,
-            privateKeyPassword = { keyPassword },
-            keyStorePassword = { keyStorePassword },
-        ) {
-            host = SERVER_HOST
-            port = SERVER_PORT
-            trustStore = clientsKeyStore
-        }
-    })
+            sslConnector(
+                keyStore = serverKeyStore,
+                keyAlias = keyAlias,
+                privateKeyPassword = { keyPassword },
+                keyStorePassword = { keyStorePassword },
+            ) {
+                host = SERVER_HOST
+                port = SERVER_PORT
+                trustStore = clientsKeyStore
+            }
+        },
+    )
 
     server.start(wait = true)
 }
@@ -56,7 +59,7 @@ fun Application.messageProxyApi() {
             call.respondText("Ktor: hello", status = HttpStatusCode.NoContent)
         }
 
-        val rnd = Random(42)
+        val rnd = Random(seed = 42)
         get("/hello") {
             call.respondText("Ktor: ${rnd.nextInt()}")
         }
@@ -85,12 +88,13 @@ private fun createClientsKeyStore(): KeyStore {
     return keyStore
 }
 
+@Suppress("ThrowsCount")
 private fun String.decodeCertificatePem(): X509Certificate {
     try {
         val certificateFactory = CertificateFactory.getInstance("X.509")
         val certificates = certificateFactory
             .generateCertificates(
-                Buffer().writeUtf8(this).inputStream()
+                Buffer().writeUtf8(this).inputStream(),
             )
 
         return certificates.single() as X509Certificate
@@ -105,21 +109,16 @@ private fun String.decodeCertificatePem(): X509Certificate {
 
 // TODO: codegen
 data class MessageProxyRequest(
-
     /* Random key of the end receiver of the proxied message. */
     @Json(name = "receiverKey")
-    val receiverKey: kotlin.String,
+    val receiverKey: String,
 
     @Json(name = "sender")
-    val sender: kotlin.String,
+    val sender: String,
 
     @Json(name = "message")
-    val message: kotlin.String,
+    val message: String,
 
     @Json(name = "receivedAt")
     val receivedAt: kotlinx.datetime.Instant,
-
-    ) {
-
-
-}
+)

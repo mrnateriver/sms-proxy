@@ -34,5 +34,4 @@ class AndroidObservabilityService : ObservabilityServiceContract {
             else -> Log.DEBUG
         }
     }
-
 }

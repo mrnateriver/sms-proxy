@@ -30,7 +30,7 @@ class AlertMessageTest {
             AlertMessage(
                 text = "",
                 textIconVector = Icons.Outlined.Settings,
-                textIconContentDescription = "Test Icon"
+                textIconContentDescription = "Test Icon",
             )
         }
 
@@ -50,7 +50,7 @@ class AlertMessageTest {
         rule.setContent {
             AlertMessage(
                 text = "",
-                action = AlertMessageAction(label = "Test Action", action = { called = true })
+                action = AlertMessageAction(label = "Test Action", action = { called = true }),
             )
         }
 

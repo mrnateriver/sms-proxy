@@ -93,12 +93,12 @@ class MessageProcessingService(
 
     private inline fun checkTimeout(entry: MessageEntry, cont: (entry: MessageEntry) -> Unit) {
         if (entry.sendStatus == MessageRelayStatus.IN_PROGRESS) {
-            if (entry.updatedAt != null && entry.updatedAt.plus(config.timeout) < clock.now()) {
+            check(entry.updatedAt == null || entry.updatedAt.plus(config.timeout) >= clock.now()) {
                 observability.log(LogLevel.WARNING, "Entry ${entry.guid} is stuck in progress")
-                throw IllegalStateException("Entry is stuck in progress")
-            } else {
-                cont(entry)
+                "Entry is stuck in progress"
             }
+
+            cont(entry)
         }
     }
 

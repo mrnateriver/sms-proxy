@@ -69,9 +69,9 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
             eq(
                 msgEntry.copy(
                     sendRetries = 1,
-                    sendStatus = MessageRelayStatus.SUCCESS
-                )
-            )
+                    sendStatus = MessageRelayStatus.SUCCESS,
+                ),
+            ),
         )
         assertEquals(MessageRelayStatus.SUCCESS, result.sendStatus)
     }
@@ -108,7 +108,7 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
                 msgEntry.copy(
                     sendRetries = 1,
                     sendStatus = MessageRelayStatus.ERROR,
-                    sendFailureReason = "java.lang.RuntimeException: test"
+                    sendFailureReason = "java.lang.RuntimeException: test",
                 ),
             ),
         )
@@ -173,5 +173,4 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
             eq(msgEntry.copy(sendStatus = MessageRelayStatus.SUCCESS, sendRetries = 3)),
         )
     }
-
 }

@@ -14,11 +14,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.shared.composables.theme.AppMaterialTheme
 
 @Composable
-@Preview
-fun App() {
+fun App(modifier: Modifier = Modifier) {
     AppMaterialTheme {
         var showContent by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Button(onClick = { showContent = !showContent }) {
                 Text("Click me!")
             }
@@ -26,11 +25,17 @@ fun App() {
                 val greeting = remember { "Hello!" }
                 Column(
                     Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text("Compose: $greeting")
                 }
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun AppPreview() {
+    App()
 }

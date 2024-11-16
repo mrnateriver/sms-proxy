@@ -28,7 +28,7 @@ class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTe
             verify(mockRepository).getAll(
                 MessageRelayStatus.ERROR,
                 MessageRelayStatus.PENDING,
-                MessageRelayStatus.IN_PROGRESS
+                MessageRelayStatus.IN_PROGRESS,
             )
         }
 
@@ -106,7 +106,7 @@ class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTe
             val msgEntry = createTestMessageEntry(
                 msgData,
                 MessageRelayStatus.PENDING,
-                mockProcessingConfig.maxRetries.dec()
+                mockProcessingConfig.maxRetries.dec(),
             )
 
             whenever(mockRepository.getAll(anyVararg(MessageRelayStatus::class)))
@@ -130,17 +130,25 @@ class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTe
                 Instant.fromEpochSeconds(10),
             )
 
-            whenever(mockClock.now()).thenReturn(Instant.fromEpochMilliseconds((10.seconds + mockProcessingConfig.timeout + 1.milliseconds).inWholeMilliseconds))
+            whenever(
+                mockClock.now(),
+            ).thenReturn(
+                Instant.fromEpochMilliseconds(
+                    (10.seconds + mockProcessingConfig.timeout + 1.milliseconds).inWholeMilliseconds,
+                ),
+            )
             whenever(mockRepository.getAll(anyVararg(MessageRelayStatus::class)))
                 .thenReturn(listOf(msgEntry))
 
             subject.handleUnprocessedMessages()
 
-            verify(mockRepository).update(argThat {
-                sendStatus == MessageRelayStatus.ERROR &&
+            verify(mockRepository).update(
+                argThat {
+                    sendStatus == MessageRelayStatus.ERROR &&
                         sendFailureReason != null &&
                         sendFailureReason!!.contains("stuck in progress")
-            })
+                },
+            )
         }
 
     @Test
@@ -163,9 +171,9 @@ class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTe
                 listOf(
                     MessageRelayStatus.SUCCESS,
                     MessageRelayStatus.SUCCESS,
-                    MessageRelayStatus.IN_PROGRESS
+                    MessageRelayStatus.IN_PROGRESS,
                 ),
-                results.map { it.sendStatus }
+                results.map { it.sendStatus },
             )
         }
 
@@ -187,6 +195,7 @@ class MessageProcessingServiceHandleUnprocessedTest : MessageProcessingServiceTe
             assertEquals(msgEntries.size, results.size)
             assertEquals(
                 listOf(MessageRelayStatus.ERROR, MessageRelayStatus.ERROR),
-                results.map { it.sendStatus })
+                results.map { it.sendStatus },
+            )
         }
 }
