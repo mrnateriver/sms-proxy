@@ -84,7 +84,7 @@ android {
     }
     installation {
         // This enables long timeouts required on slow environments, e.g. GitHub Actions
-        timeOutInMs = 10 * 60 * 1000  // 10 minutes
+        timeOutInMs = 10 * 60 * 1000 // 10 minutes
         if (!System.getenv("CI").isNullOrBlank()) {
             installOptions.addAll(listOf("-d", "-t"))
         }
