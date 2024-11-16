@@ -10,6 +10,8 @@ jobs:
     uses: ./.github/workflows/security.yml
     with:
       pr: true
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   check-codegen:
     name: Codegen
@@ -21,7 +23,10 @@ jobs:
     uses: ./.github/workflows/tests.yml
     needs: [ check-codegen ]
 
-  # TODO: linting!
+  linting:
+    name: Linting
+    uses: ./.github/workflows/linting.yml
+    needs: [ check-codegen ]
 
   build:
     name: Builds

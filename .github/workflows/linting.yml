@@ -1,0 +1,59 @@
+name: Linting
+on:
+  workflow_call:
+
+# TODO: switch to type resolution mode when Detekt 2.0 is released and the issue with commonTest is fixed
+#       https://github.com/detekt/detekt/issues/4036
+
+jobs:
+  lint-shared:
+    name: Lint Shared
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      - name: Run Detekt
+        run: ./gradlew shared:detekt
+
+  tests-relay:
+    name: Lint Relay
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      - name: Run Detekt
+        run: ./gradlew relayApp:detekt
+
+  tests-receiver:
+    name: Lint Receiver
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      - name: Run Detekt
+        run: ./gradlew receiverApp:detekt
+
+  tests-server:
+    name: Lint Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      - name: Run Detekt
+        run: ./gradlew server:detekt
