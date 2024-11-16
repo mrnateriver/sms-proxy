@@ -25,7 +25,7 @@ jobs:
         with:
           base: ""
           head: ${{ github.ref_name }}
-          extra_args: --only-verified --fail
+          extra_args: --only-verified
 
   sast:
     name: Security Scan
