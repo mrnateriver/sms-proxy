@@ -3,6 +3,7 @@ package io.mrnateriver.smsproxy.relay.services.usecases
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageBackgroundProcessingService.MessageBackgroundProcessingResult
 import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -15,8 +16,9 @@ class MessageBackgroundProcessingService @Inject constructor(
     private val processingService: MessageProcessingServiceContract,
     private val statsService: MessageStatsServiceContract,
     private val observabilityService: ObservabilityServiceContract,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : MessageBackgroundProcessingServiceContract {
-    override suspend fun handleUnprocessedMessages(): MessageBackgroundProcessingResult = withContext(Dispatchers.IO) {
+    override suspend fun handleUnprocessedMessages(): MessageBackgroundProcessingResult = withContext(dispatcher) {
         observabilityService.runSpan("MessageBackgroundProcessingService.handleUnprocessedMessages") {
             val results = processingService.handleUnprocessedMessages().map { it.sendStatus }.toList()
             val result = when {

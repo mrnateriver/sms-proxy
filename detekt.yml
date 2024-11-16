@@ -186,6 +186,7 @@ coroutines:
     active: false
   InjectDispatcher:
     active: true
+    ignoreAnnotated: [ 'Provides' ]
     dispatcherNames:
       - 'IO'
       - 'Default'
@@ -718,6 +719,7 @@ style:
     allowNonStandardGrouping: false
   UnnecessaryAbstractClass:
     active: true
+    ignoreAnnotated: [ 'Dao', 'Module' ]
   UnnecessaryAnnotationUseSiteTarget:
     active: false
   UnnecessaryApply:

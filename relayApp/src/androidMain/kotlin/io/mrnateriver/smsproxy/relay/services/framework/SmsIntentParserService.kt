@@ -14,7 +14,7 @@ class SmsIntentParserService(
         }
 
         val msgText = msgs.joinToString("") { it.displayMessageBody }
-        val msgSender = msgs.first().originatingAddress ?: ""
+        val msgSender = msgs.first().originatingAddress.orEmpty()
 
         return ParsedSmsMessage(msgSender, msgText)
     }
