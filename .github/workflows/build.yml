@@ -123,3 +123,7 @@ jobs:
       - name: Build release image
         if: ${{ inputs.release }}
         run: ./gradlew server:build # FIXME: proper Gradle task name
+
+      - name: Check build
+        if: ${{ !inputs.release }}
+        run: ./gradlew server:build
