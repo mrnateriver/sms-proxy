@@ -119,6 +119,7 @@ android {
     }
     room {
         schemaDirectory("$projectDir/schemas")
+        generateKotlin = true
     }
     dependencies {
         coreLibraryDesugaring(libs.android.desugar.jdk.libs)

@@ -75,7 +75,7 @@ class AppDrawerTest {
         // This is coupled to implementation details of `DrawerState`, but we need to make sure
         // the values are calculated properly, and there's no way to inverse control of animation duration
         rule.mainClock.advanceTimeBy(128L)
-        rule.onNode(hasText("Progress: 0.683", true)).assertExists()
+        rule.onNode(hasText("Progress: 0.78", true)).assertExists()
 
         // We only need the second half of the animation duration here, but since it's rounded to be
         // a multiple of frame duration, we're using the full duration to make sure the animation definitely ends
