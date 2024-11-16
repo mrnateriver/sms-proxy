@@ -58,7 +58,6 @@ abstract class MessageProcessingServiceTestBase {
             null,
             messageData,
             createdAt,
-            updatedAt
+            updatedAt,
         )
-
 }

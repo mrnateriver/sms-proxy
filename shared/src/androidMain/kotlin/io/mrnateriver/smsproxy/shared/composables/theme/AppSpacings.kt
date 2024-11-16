@@ -9,7 +9,7 @@ val AppSpacings = Spacings(
     small = 8.dp,
     medium = 16.dp,
     large = 24.dp,
-    extraLarge = 32.dp
+    extraLarge = 32.dp,
 )
 
 @Immutable

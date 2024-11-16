@@ -31,7 +31,7 @@ fun createProxyApiClient(
 ): ProxyApi {
     return ApiClient(
         baseApiUrl,
-        createOkHttpClientBuilder(serverCertificatePem, clientCertificatePem, clientPrivateKeyPem)
+        createOkHttpClientBuilder(serverCertificatePem, clientCertificatePem, clientPrivateKeyPem),
     )
         .addAuthorization("Bearer", HttpBearerAuth(apiKey))
         .apply {
@@ -47,7 +47,6 @@ private fun createOkHttpClientBuilder(
     clientCertificatePem: String?,
     clientPrivateKeyPem: String?,
 ): OkHttpClient.Builder {
-
     return OkHttpClient.Builder()
         .readTimeout(BuildConfig.API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
         .connectTimeout(BuildConfig.API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
@@ -56,11 +55,11 @@ private fun createOkHttpClientBuilder(
             val clientCertificates = createHandshakeCertificates(
                 serverCertificatePem,
                 clientCertificatePem,
-                clientPrivateKeyPem
+                clientPrivateKeyPem,
             )
 
             sslSocketFactory(clientCertificates.sslSocketFactory(), clientCertificates.trustManager)
-            hostnameVerifier(::verifySelfSignedCertificateHost)
+            hostnameVerifier { _, session -> verifySelfSignedCertificateHost(session) }
         }
 }
 
@@ -85,6 +84,6 @@ internal fun createHandshakeCertificates(
     return clientCertificatesBuilder.build()
 }
 
-internal fun verifySelfSignedCertificateHost(hostname: String, session: SSLSession): Boolean {
+internal fun verifySelfSignedCertificateHost(session: SSLSession): Boolean {
     return OkHostnameVerifier.verify(BuildConfig.API_SERVER_CN, session)
 }

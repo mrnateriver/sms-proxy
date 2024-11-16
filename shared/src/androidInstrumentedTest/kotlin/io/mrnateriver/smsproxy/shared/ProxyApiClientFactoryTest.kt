@@ -84,7 +84,7 @@ class ProxyApiClientFactoryTest {
             on { peerCertificates } doReturn arrayOf(SERVER_CERTIFICATE_PEM.decodeCertificatePem())
         }
 
-        assertTrue(verifySelfSignedCertificateHost(BuildConfig.API_SERVER_CN, mockSession))
+        assertTrue(verifySelfSignedCertificateHost(mockSession))
     }
 
     @Test
@@ -93,7 +93,7 @@ class ProxyApiClientFactoryTest {
             on { peerCertificates } doReturn arrayOf(UNVERIFIED_SERVER_CERTIFICATE_PEM.decodeCertificatePem())
         }
 
-        assertFalse(verifySelfSignedCertificateHost("whatever", mockSession))
+        assertFalse(verifySelfSignedCertificateHost(mockSession))
     }
 }
 

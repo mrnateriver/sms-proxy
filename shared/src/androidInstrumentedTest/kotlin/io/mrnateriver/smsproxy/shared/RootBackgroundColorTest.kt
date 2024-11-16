@@ -23,9 +23,11 @@ class RootBackgroundColorTest {
         rule.setContent {
             expected = MaterialTheme.colorScheme.surfaceContainerLowest
 
-            CompositionLocalProvider(LocalConfiguration provides Configuration().apply {
-                uiMode = Configuration.UI_MODE_NIGHT_YES
-            }) {
+            CompositionLocalProvider(
+                LocalConfiguration provides Configuration().apply {
+                    uiMode = Configuration.UI_MODE_NIGHT_YES
+                },
+            ) {
                 color = rememberRootBackgroundColor()
             }
         }

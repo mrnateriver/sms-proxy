@@ -186,6 +186,7 @@ coroutines:
     active: false
   InjectDispatcher:
     active: true
+    excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**' ]
     ignoreAnnotated: [ 'Provides' ]
     dispatcherNames:
       - 'IO'
@@ -270,6 +271,7 @@ exceptions:
       - 'NumberFormatException'
       - 'ParseException'
     allowedExceptionNameRegex: '_|(ignore|expected).*'
+    excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**' ]
   ThrowingExceptionFromFinally:
     active: true
   ThrowingExceptionInMain:
@@ -583,7 +585,7 @@ style:
       - reason: 'Kotlin does not support @Inherited annotation, see https://youtrack.jetbrains.com/issue/KT-22265'
         value: 'java.lang.annotation.Inherited'
   ForbiddenComment:
-    active: true
+    active: false
     comments:
       - reason: 'Forbidden FIXME todo marker in comment, please fix the problem.'
         value: 'FIXME:'

@@ -30,8 +30,8 @@ class MessageBackgroundProcessingServiceTest {
         mock<ObservabilityServiceContract> {
             onBlocking<ObservabilityServiceContract, Any> {
                 runSpan(any<String>(), any<suspend () -> Unit>())
-            } doSuspendableAnswer {
-                it.getArgument<suspend () -> Any>(1)()
+            } doSuspendableAnswer { invocation ->
+                invocation.getArgument<suspend () -> Any>(1)()
             }
         }
 

@@ -16,17 +16,17 @@ import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as Mess
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 class MessageReceiverServiceTest {
-    private var smsProcessingService = mock<MessageProcessingServiceContract> {}
-    private var statsService = mock<MessageStatsServiceContract> {}
+    private val smsProcessingService = mock<MessageProcessingServiceContract> {}
+    private val statsService = mock<MessageStatsServiceContract> {}
     private val observabilityService =
         mock<ObservabilityServiceContract> {
             onBlocking<ObservabilityServiceContract, Any> {
                 runSpan(any<String>(), any<suspend () -> Unit>())
-            } doSuspendableAnswer {
-                it.getArgument<suspend () -> Any>(1)()
+            } doSuspendableAnswer { invocation ->
+                invocation.getArgument<suspend () -> Any>(1)()
             }
         }
-    private var schedulerService = mock<MessageProcessingSchedulerContract> {}
+    private val schedulerService = mock<MessageProcessingSchedulerContract> {}
 
     private val subject = MessageReceiverService(
         smsProcessingService,

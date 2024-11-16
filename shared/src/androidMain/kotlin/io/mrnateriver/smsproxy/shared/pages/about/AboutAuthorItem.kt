@@ -16,13 +16,13 @@ import androidx.compose.ui.unit.dp
 import io.mrnateriver.smsproxy.shared.BuildConfig
 import io.mrnateriver.smsproxy.shared.R
 
-@Preview
 @Composable
 fun AboutAuthorItem(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
     val authorWebPageUrl = BuildConfig.AUTHOR_WEB_PAGE_URL
 
     AboutListItem(
+        modifier = modifier,
         text = authorWebPageUrl,
         title = stringResource(R.string.about_page_entry_author_title),
         image = {
@@ -32,10 +32,16 @@ fun AboutAuthorItem(modifier: Modifier = Modifier) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .clip(CircleShape)
-                    .size(48.dp)
+                    .size(48.dp),
             )
         },
-        onClick = { uriHandler.openUri(authorWebPageUrl) }
+        onClick = { uriHandler.openUri(authorWebPageUrl) },
     )
     HorizontalDivider()
+}
+
+@Preview
+@Composable
+private fun AboutAuthorItemPreview() {
+    AboutAuthorItem()
 }

@@ -13,21 +13,21 @@ import io.mrnateriver.smsproxy.shared.R
 val provider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
     providerPackage = "com.google.android.gms",
-    certificates = R.array.com_google_android_gms_fonts_certs
+    certificates = R.array.com_google_android_gms_fonts_certs,
 )
 
 val bodyFontFamily = FontFamily(
     Font(
         googleFont = GoogleFont("Roboto"),
         fontProvider = provider,
-    )
+    ),
 )
 
 val displayFontFamily = FontFamily(
     Font(
         googleFont = GoogleFont("Roboto Condensed"),
         fontProvider = provider,
-    )
+    ),
 )
 
 val baseline = Typography()
@@ -38,15 +38,15 @@ val AppTypography = Typography(
     displaySmall = baseline.displaySmall.copy(fontFamily = displayFontFamily),
     headlineLarge = baseline.headlineLarge.copy(
         fontFamily = displayFontFamily,
-        fontWeight = FontWeight.ExtraBold
+        fontWeight = FontWeight.ExtraBold,
     ),
     headlineMedium = baseline.headlineMedium.copy(
         fontFamily = displayFontFamily,
-        fontWeight = FontWeight.ExtraBold
+        fontWeight = FontWeight.ExtraBold,
     ),
     headlineSmall = baseline.headlineSmall.copy(
         fontFamily = displayFontFamily,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
     ),
     titleLarge = baseline.titleLarge.copy(fontFamily = displayFontFamily),
     titleMedium = baseline.titleMedium.copy(fontFamily = displayFontFamily),
@@ -58,4 +58,3 @@ val AppTypography = Typography(
     labelMedium = baseline.labelMedium.copy(fontFamily = bodyFontFamily),
     labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily),
 )
-

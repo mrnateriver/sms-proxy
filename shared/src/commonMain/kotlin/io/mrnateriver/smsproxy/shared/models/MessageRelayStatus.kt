@@ -5,5 +5,5 @@ enum class MessageRelayStatus {
     IN_PROGRESS,
     SUCCESS,
     ERROR,
-    FAILED;
+    FAILED,
 }

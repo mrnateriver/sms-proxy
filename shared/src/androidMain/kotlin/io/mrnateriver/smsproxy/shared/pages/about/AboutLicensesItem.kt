@@ -7,13 +7,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.shared.R
 
-@Preview
 @Composable
 fun AboutLicensesItem(modifier: Modifier = Modifier, navigateToLicensesPage: () -> Unit = {}) {
     AboutListItem(
+        modifier = modifier,
         title = stringResource(R.string.about_page_entry_licenses_title),
         text = stringResource(R.string.about_page_entry_licenses_text),
         onClick = navigateToLicensesPage,
     )
     HorizontalDivider()
+}
+
+@Preview
+@Composable
+private fun AboutLicensesItemPreview() {
+    AboutLicensesItem()
 }

@@ -12,14 +12,15 @@ class AppSpacingsTest {
             AppSpacings.small,
             AppSpacings.medium,
             AppSpacings.large,
-            AppSpacings.extraLarge
+            AppSpacings.extraLarge,
         )
 
         for (i in 1..<spacings.size) {
             val prev = spacings[i - 1]
             val cur = spacings[i]
             assert((cur.value.toInt() - prev.value.toInt()) % tiny == 0) {
-                "Spacing (${cur.value}) is not greater than the previous value (${prev.value}) by a multiple of AppSpacings.tiny ($tiny)"
+                "Spacing (${cur.value}) is not greater than the previous value (${prev.value}) " + //
+                    "by a multiple of AppSpacings.tiny ($tiny)"
             }
         }
     }

@@ -39,9 +39,9 @@ data class AlertMessageAction(
 
 @Composable
 fun AlertMessage(
+    text: String,
     modifier: Modifier = Modifier,
     type: AlertMessageType = AlertMessageType.INFO,
-    text: String,
     textIconVector: ImageVector? = null,
     textIconContentDescription: String? = null,
     title: String? = null,
@@ -76,7 +76,7 @@ fun AlertMessage(
                     Text(
                         text = text,
                         modifier = Modifier.padding(top = if (offsetText) AppSpacings.small / 2 else 0.dp),
-                        onTextLayout = { layoutResult -> offsetText = layoutResult.lineCount == 1 }
+                        onTextLayout = { layoutResult -> offsetText = layoutResult.lineCount == 1 },
                     )
                 }
             } else {
@@ -114,7 +114,7 @@ private fun AlertMessage_Info_TextIcon_SingleLine() {
 private fun AlertMessage_Info_TextIcon() {
     AlertMessage(
         type = AlertMessageType.INFO,
-        text = "This is an info message with a long text so that it spans multiple lines. This is an info message with a long text so that it spans multiple lines. This is an info message with a long text so that it spans multiple lines. This is an info message with a long text so that it spans multiple lines. This is an info message with a long text so that it spans multiple lines.",
+        text = "This is an info message with a long text so that it spans multiple lines.".repeat(n = 32),
         textIconVector = Icons.Outlined.Info,
     )
 }
@@ -147,7 +147,7 @@ private fun AlertMessage_Info_WithTitleAndButton_TextIcon() {
 private fun AlertMessage_Error_WithTitleAndButton_TextIcon() {
     AlertMessage(
         type = AlertMessageType.ERROR,
-        text = "This is an info message with a long text so that it spans multiple lines. This is an info message with a long text so that it spans multiple lines. This is an info message with a long text so that it spans multiple lines. This is an info message with a long text so that it spans multiple lines. This is an info message with a long text so that it spans multiple lines.",
+        text = "This is an info message with a long text so that it spans multiple lines.".repeat(n = 32),
         textIconVector = Icons.Outlined.Warning,
         title = "Alert Message",
         action = AlertMessageAction("Do Something") {},
