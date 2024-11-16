@@ -50,11 +50,11 @@ fun ValidatedStringFieldPreference(
         },
         summary = {
             Text(
-                text = (currentError ?: "").ifEmpty { value },
+                text = currentError.orEmpty().ifEmpty { value },
                 color = if (currentError.isNullOrEmpty()) Color.Unspecified else MaterialTheme.colorScheme.error,
             )
         },
-        textField = { fieldValue, onValueChange, onOk ->
+        textField = { fieldValue, onFieldValueChange, onOk ->
             val popupFieldError = validate(fieldValue.text)
             val isInputInvalid = shouldShowPopupError && !popupFieldError.isNullOrEmpty()
 
@@ -62,18 +62,18 @@ fun ValidatedStringFieldPreference(
                 value = fieldValue,
                 onValueChange = {
                     shouldShowPopupError = true
-                    onValueChange(it)
+                    onFieldValueChange(it)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .semantics { if (isInputInvalid) error(popupFieldError!!) },
+                    .semantics { if (isInputInvalid && popupFieldError != null) error(popupFieldError) },
                 keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
                 keyboardActions = KeyboardActions { onOk() },
                 singleLine = true,
                 isError = isInputInvalid,
                 supportingText = {
-                    if (isInputInvalid) {
-                        Text(popupFieldError!!, color = MaterialTheme.colorScheme.error)
+                    if (isInputInvalid && popupFieldError != null) {
+                        Text(popupFieldError, color = MaterialTheme.colorScheme.error)
                     }
                 },
             )

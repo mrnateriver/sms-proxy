@@ -2,6 +2,7 @@ package io.mrnateriver.smsproxy.relay.services.usecases
 
 import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import io.mrnateriver.smsproxy.shared.models.MessageData
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
@@ -13,13 +14,14 @@ import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as Mess
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 class MessageReceiverService @Inject constructor(
-    private var smsProcessingService: MessageProcessingServiceContract,
-    private var statsService: MessageStatsServiceContract,
-    private var observabilityService: ObservabilityServiceContract,
-    private var workerScheduler: MessageProcessingSchedulerContract,
+    private val smsProcessingService: MessageProcessingServiceContract,
+    private val statsService: MessageStatsServiceContract,
+    private val observabilityService: ObservabilityServiceContract,
+    private val workerScheduler: MessageProcessingSchedulerContract,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : MessageReceiverServiceContract {
     override fun handleIncomingMessage(sender: String, message: String) {
-        runBlocking(Dispatchers.IO) {
+        runBlocking(dispatcher) {
             observabilityService.runSpan("SmsBroadcastReceiverService.handleIncomingMessage") {
                 try {
                     smsProcessingService.process(

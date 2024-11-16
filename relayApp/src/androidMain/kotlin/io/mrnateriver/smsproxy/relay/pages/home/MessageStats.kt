@@ -35,7 +35,7 @@ fun MessageStats(data: MessageStatsData, modifier: Modifier = Modifier) {
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
 
     fun formatDate(date: LocalDateTime?): String {
-        return date?.let { dateFormatter.format(it.toJavaLocalDateTime()) } ?: ""
+        return date?.let { dateFormatter.format(it.toJavaLocalDateTime()) }.orEmpty()
     }
 
     Column(
