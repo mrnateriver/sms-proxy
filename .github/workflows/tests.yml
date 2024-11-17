@@ -76,7 +76,7 @@ jobs:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           profile: Nexus 6
-          script: ./gradlew shared:connectedCheck
+          script: ./gradlew shared:connectedDebugAndroidTest
 
       - name: Upload test report
         if: always()
@@ -121,7 +121,7 @@ jobs:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           profile: Nexus 6
-          script: ./gradlew relayApp:connectedCheck
+          script: ./gradlew relayApp:connectedDebugAndroidTest
 
       - name: Upload test report
         if: always()
@@ -166,7 +166,7 @@ jobs:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           profile: Nexus 6
-          script: ./gradlew receiverApp:connectedCheck
+          script: ./gradlew receiverApp:connectedDebugAndroidTest
 
       - name: Upload test report
         if: always()
