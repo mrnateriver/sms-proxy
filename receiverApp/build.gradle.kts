@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.sentry)
+    alias(libs.plugins.sentry.kotlin)
 }
 
 kotlin {
@@ -54,8 +56,17 @@ detekt {
     )
 }
 
+sentry {
+    org = getProperty("sentry.org")
+    projectName = getProperty("sentry.projectNamePrefix").let { "$it-receiver" }
+    authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: getProperty("sentry.authToken")
+    includeSourceContext = true
+    telemetry = false
+}
+
 android {
-    namespace = "${rootProject.ext["basePackageName"]}.receiver"
+    val basePackageName = "${rootProject.ext["basePackageName"]}.receiver"
+    namespace = basePackageName
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -63,7 +74,10 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "${rootProject.ext["basePackageName"]}.receiver"
+        applicationId = basePackageName
+        manifestPlaceholders["basePackageName"] = basePackageName
+        manifestPlaceholders["sentryDsn"] = System.getenv("SENTRY_DSN") ?: getProperty("sentry.dsn").orEmpty()
+
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

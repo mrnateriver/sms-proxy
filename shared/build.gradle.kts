@@ -26,6 +26,7 @@ kotlin {
             implementation(libs.about.libraries)
             implementation(libs.okhttp.loggingInterceptor)
             implementation(libs.okhttp.tls)
+            implementation(libs.sentry.android)
         }
         jvmMain.dependencies {
         }

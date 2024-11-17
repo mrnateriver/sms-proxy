@@ -6,7 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.mrnateriver.smsproxy.shared.services.AndroidObservabilityService
+import io.mrnateriver.smsproxy.shared.services.AndroidSentryObservabilityService
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
@@ -18,8 +18,7 @@ import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as Observab
 class FrameworkModule {
     @Provides
     @Singleton
-    fun providesObservabilityService(): ObservabilityServiceContract =
-        AndroidObservabilityService()
+    fun providesObservabilityService(): ObservabilityServiceContract = AndroidSentryObservabilityService()
 
     @Provides
     @Singleton

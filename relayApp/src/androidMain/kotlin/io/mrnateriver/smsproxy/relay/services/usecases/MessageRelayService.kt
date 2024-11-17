@@ -37,23 +37,25 @@ class MessageRelayService @Inject constructor(
     private lateinit var apiClient: Flow<Pair<String, ProxyApi>>
 
     override suspend fun relay(entry: MessageEntry) {
-        val (receiverKey, proxyApiService) = getApiClient()
+        observabilityService.runSpan("MessageRelayService.relay") {
+            val (receiverKey, proxyApiService) = getApiClient()
 
-        val response = proxyApiService.messagesProxy(
-            MessageProxyRequest(
-                receiverKey,
-                entry.messageData.sender,
-                entry.messageData.message,
-                entry.messageData.receivedAt,
-            ),
-        )
-
-        if (!response.isSuccessful) {
-            val body = response.errorBody()?.string()
-            throw IOException(
-                "Failed to relay message, status code: ${response.code()} " +
-                    "${response.message()}${if (body.isNullOrBlank()) "" else "\n$body"}",
+            val response = proxyApiService.messagesProxy(
+                MessageProxyRequest(
+                    receiverKey,
+                    entry.messageData.sender,
+                    entry.messageData.message,
+                    entry.messageData.receivedAt,
+                ),
             )
+
+            if (!response.isSuccessful) {
+                val body = response.errorBody()?.string()
+                throw IOException(
+                    "Failed to relay message, status code: ${response.code()} " +
+                        "${response.message()}${if (body.isNullOrBlank()) "" else "\n$body"}",
+                )
+            }
         }
     }
 

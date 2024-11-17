@@ -14,6 +14,7 @@ import kotlinx.datetime.Instant
 import okhttp3.ResponseBody
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -37,7 +38,14 @@ class MessageRelayServiceTest {
         onBlocking { receiverKey }.thenReturn(flow { emit("123") })
         onBlocking { baseApiUrl }.thenReturn(flow { emit("http://localhost") })
     }
-    private val observabilityService = mock<ObservabilityServiceContract> { }
+    private val observabilityService =
+        mock<ObservabilityServiceContract> {
+            onBlocking<ObservabilityServiceContract, Any> {
+                runSpan(any<String>(), any<suspend () -> Unit>())
+            } doSuspendableAnswer { invocation ->
+                invocation.getArgument<suspend () -> Any>(1)()
+            }
+        }
 
     private val subject =
         MessageRelayService(

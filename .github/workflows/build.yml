@@ -41,6 +41,7 @@ jobs:
           RELEASE_STORE_KEY_ALIAS: ${{ secrets.RELEASE_STORE_KEY_ALIAS }}
           RELEASE_STORE_KEY_PASSWORD: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: ./gradlew relayApp:assembleRelease
 
       - name: Upload artifact
@@ -87,6 +88,7 @@ jobs:
           RELEASE_STORE_KEY_ALIAS: ${{ secrets.RELEASE_STORE_KEY_ALIAS }}
           RELEASE_STORE_KEY_PASSWORD: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: ./gradlew receiverApp:assembleRelease
 
       - name: Upload artifact

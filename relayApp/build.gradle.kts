@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.sentry)
+    alias(libs.plugins.sentry.kotlin)
 }
 
 kotlin {
@@ -21,8 +23,7 @@ kotlin {
     }
 
     sourceSets {
-        androidMain.dependencies {
-        }
+        androidMain.dependencies {}
     }
 }
 
@@ -30,17 +31,16 @@ tasks {
     register<GenerateCertificatesTask>("generateProxyApiCertificate") {
         applicationName = "relayApp"
         outputPrivateKeyFile = "src/androidMain/assets/proxy-api-client-certificate-private-key.pem"
-        outputCertificatesFiles =
-            listOf(
-                resolveProjectFilePath(
-                    "relayApp",
-                    "src/androidMain/assets/proxy-api-client-certificate.pem",
-                ),
-                resolveProjectFilePath(
-                    "server",
-                    "src/main/resources/clients/proxy-api-relay-app.pem",
-                ),
-            )
+        outputCertificatesFiles = listOf(
+            resolveProjectFilePath(
+                "relayApp",
+                "src/androidMain/assets/proxy-api-client-certificate.pem",
+            ),
+            resolveProjectFilePath(
+                "server",
+                "src/main/resources/clients/proxy-api-relay-app.pem",
+            ),
+        )
     }
 }
 
@@ -55,6 +55,14 @@ detekt {
     )
 }
 
+sentry {
+    org = getProperty("sentry.org")
+    projectName = getProperty("sentry.projectNamePrefix").let { "$it-relay" }
+    authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: getProperty("sentry.authToken")
+    includeSourceContext = true
+    telemetry = false
+}
+
 android {
     val basePackageName = "${rootProject.ext["basePackageName"]}.relay"
     namespace = basePackageName
@@ -67,6 +75,7 @@ android {
     defaultConfig {
         applicationId = basePackageName
         manifestPlaceholders["basePackageName"] = basePackageName
+        manifestPlaceholders["sentryDsn"] = System.getenv("SENTRY_DSN") ?: getProperty("sentry.dsn").orEmpty()
 
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
@@ -147,6 +156,8 @@ android {
         implementation(libs.room.ktx)
         implementation(libs.androidx.hilt.navigation.compose)
         implementation(libs.androidx.lifecycle.runtime.compose.android)
+        implementation(libs.sentry.android)
+        implementation(libs.sentry.compose)
 
         debugImplementation(libs.androidx.ui.tooling)
         debugImplementation(libs.androidx.ui.test.manifest)

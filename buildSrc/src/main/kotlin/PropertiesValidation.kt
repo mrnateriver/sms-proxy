@@ -1,10 +1,9 @@
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.extra
 import org.gradle.tooling.BuildException
 import java.net.URI
 
 fun Project.validateNonEmpty(prop: String): String {
-    val value = project.properties.get("${rootProject.extra["basePackageName"]}.$prop")?.toString()
+    val value = getProperty(prop)
     if (value.isNullOrBlank()) {
         throw RuntimeException("Project property '$prop' must be non-empty before build.")
     }

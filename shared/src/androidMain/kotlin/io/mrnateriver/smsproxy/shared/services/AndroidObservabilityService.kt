@@ -4,14 +4,13 @@ import android.util.Log
 import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
-// TODO: real observability, for instance Sentry; rename the class to something like "SentryObservabilityService"
-class AndroidObservabilityService : ObservabilityServiceContract {
+open class AndroidObservabilityService : ObservabilityServiceContract {
     override fun log(level: LogLevel, message: String) {
         Log.println(mapLogLevel(level), "shared", message)
     }
 
     override fun reportException(exception: Throwable) {
-        log(LogLevel.ERROR, exception.stackTraceToString())
+        Log.println(Log.ERROR, "shared", exception.stackTraceToString())
     }
 
     override suspend fun <T> runSpan(name: String, body: suspend () -> T): T {
@@ -22,7 +21,6 @@ class AndroidObservabilityService : ObservabilityServiceContract {
     }
 
     override suspend fun incrementCounter(metricName: String) {
-        // TODO: actually report metrics
         log(LogLevel.DEBUG, "Incrementing counter: $metricName")
     }
 
