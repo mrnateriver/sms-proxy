@@ -7,11 +7,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -21,7 +19,6 @@ import io.mrnateriver.smsproxy.relay.pages.home.HOME_PAGE_ROUTE
 import io.mrnateriver.smsproxy.relay.pages.home.homePage
 import io.mrnateriver.smsproxy.relay.pages.settings.navigateToSettingsPage
 import io.mrnateriver.smsproxy.relay.pages.settings.settingsPage
-import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import io.mrnateriver.smsproxy.shared.pages.about.aboutPage
 import io.mrnateriver.smsproxy.shared.pages.about.navigateToLicensesPage
 
@@ -31,12 +28,6 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     viewModel: AppViewModel = hiltViewModel<AppViewModel>(),
 ) {
-    val showApiKeyError = viewModel.showApiKeyError
-    val showMissingApiCertificatesError = viewModel.showMissingCertificatesError
-    val showSettingsHint by viewModel.showServerSettingsHint.collectAsStateWithLifecycle(false)
-    val messageRecent by viewModel.messageRecordsRecent.collectAsStateWithLifecycle(listOf())
-    val messageStats by viewModel.messageStats.collectAsStateWithLifecycle(MessageStatsData())
-
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -47,11 +38,7 @@ fun AppNavHost(
         popExitTransition = { navPopExitTransitionBuilder() },
     ) {
         homePage(
-            showApiKeyError = showApiKeyError,
-            showMissingApiCertificatesError = showMissingApiCertificatesError,
-            showSettingsHint = showSettingsHint,
-            messageRecent = messageRecent,
-            messageStats = messageStats,
+            viewModel = viewModel,
             onGoToSettingsClick = { navController.navigateToSettingsPage() },
         )
 
