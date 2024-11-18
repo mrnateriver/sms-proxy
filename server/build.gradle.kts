@@ -48,8 +48,6 @@ dependencies {
     implementation(libs.sqldelight.driver.jdbc)
     implementation(libs.moshi.kotlin)
     implementation(libs.moshi.adapters)
-    implementation(libs.jetty.http)
-    implementation(libs.jetty.util)
 
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)
