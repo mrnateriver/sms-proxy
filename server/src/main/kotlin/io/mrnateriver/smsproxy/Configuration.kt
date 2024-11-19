@@ -42,8 +42,8 @@ fun getTlsConfigurationFromEnv(): TlsConfiguration? {
     )
 }
 
-fun getServerConfigurationFromEnv(): ServerConfiguration {
+fun getServerConfigurationFromEnv(defaultPort: Int? = null): ServerConfiguration {
     val host = System.getenv("SERVER_HOST") ?: DEFAULT_SERVER_HOST
-    val port = System.getenv("SERVER_PORT")?.toInt() ?: DEFAULT_SERVER_PORT
+    val port = System.getenv("SERVER_PORT")?.toInt() ?: defaultPort ?: DEFAULT_SERVER_PORT
     return ServerConfiguration(host, port)
 }

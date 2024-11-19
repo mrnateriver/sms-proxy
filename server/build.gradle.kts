@@ -11,8 +11,14 @@ group = rootProject.ext["basePackageName"] as String
 version = "1.0.0"
 application {
     mainClass.set("$group.ApplicationKt")
+
+    val apiKey = validateNonEmpty("apiKey")
+
     applicationDefaultJvmArgs =
-        listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
+        listOf(
+            "-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}",
+            "-Dio.mrnateriver.smsproxy.apiKey=$apiKey",
+        )
 }
 
 tasks {
