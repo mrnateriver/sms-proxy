@@ -7,26 +7,48 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask as OpenApiGen
 plugins {
     alias(libs.plugins.openapi)
     alias(libs.plugins.docker)
+    alias(libs.plugins.fabrikt)
 }
 
 val rootGroupId = rootProject.ext["basePackageName"] as String
 val rootPackage = rootGroupId
 val proxyApiSpecDir = layout.projectDirectory
-val proxyApiSpecPath =
-    proxyApiSpecDir.file("tsp-output/@typespec/openapi3/openapi.yaml")
+val proxyApiSpecPath = proxyApiSpecDir.file("tsp-output/@typespec/openapi3/openapi.yaml")
+val proxyApiServerName = "proxyApiServer"
 
-val buildTypeSpecApiGenImageName = "buildTypeSpecApiGenImage"
-val typeSpecApiGenContainerTag = "${rootGroupId.replace('.', '-')}-api-gen:latest"
+fabrikt {
+    generate("api") {
+        apiFile = proxyApiSpecPath
+        basePackage = rootPackage
+
+        outputDirectory = rootProject.layout.projectDirectory.dir(proxyApiServerName)
+        sourcesPath = "src/main/kotlin"
+        resourcesPath = "src/main/resources"
+        validationLibrary = NoValidation
+        controller {
+            generate = enabled
+            authentication = enabled
+            suspendModifier = enabled
+            target = Ktor
+        }
+        model {
+            generate = enabled
+            javaSerialization = disabled
+            serializationLibrary = Kotlin
+        }
+    }
+}
 
 tasks {
-    register<DockerBuildImage>(buildTypeSpecApiGenImageName) {
+    val typeSpecApiGenContainerTag = "${rootGroupId.replace('.', '-')}-api-gen:latest"
+    val buildDockerImage = register<DockerBuildImage>("buildTypeSpecApiGenImage") {
         inputDir = proxyApiSpecDir
         images.add(typeSpecApiGenContainerTag)
     }
 
     val createTypeSpecApiGenContainer =
         register<DockerCreateContainer>("createTypeSpecApiGenContainer") {
-            dependsOn(buildTypeSpecApiGenImageName)
+            dependsOn(buildDockerImage)
 
             imageId = typeSpecApiGenContainerTag
             workingDir = "/app"
@@ -48,14 +70,13 @@ tasks {
             containerId = createTypeSpecApiGenContainer.get().containerId
         }
 
-    register<OpenApiGenerateTask>("generateApiServer") {
-        dependsOn(waitForTypeSpecApiGenContainer)
+    val cleanApiServerOutput = register<Delete>("cleanProxyApiServerOutput") {
+        clearCodegenOutput(proxyApiServerName)
+    }
 
-        // FIXME: not workable yet
-        generatorName = "kotlin-server"
-        library = "jaxrs-spec"
-
-        configureCommon("proxyApiServer")
+    register("generateApiServer") {
+        dependsOn(cleanApiServerOutput, waitForTypeSpecApiGenContainer)
+        finalizedBy("fabriktGenerateApi")
     }
 
     register<OpenApiGenerateTask>("generateApiClient") {

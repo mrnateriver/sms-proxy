@@ -51,7 +51,7 @@ output-reports:
     - 'SarifOutputReport'
 
 comments:
-  excludes: [ '**/generated/**' ]
+  excludes: [ '**/generated/**', 'proxyApiClient', 'proxyApiServer' ]
   active: true
   AbsentOrWrongFileLicense:
     active: false
@@ -92,7 +92,7 @@ comments:
     searchProtectedProperty: false
 
 complexity:
-  excludes: [ '**/generated/**' ]
+  excludes: [ '**/generated/**', 'proxyApiClient', 'proxyApiServer' ]
   active: true
   CognitiveComplexMethod:
     active: false
@@ -180,7 +180,7 @@ complexity:
     ignoreAnnotatedFunctions: [ 'Preview' ]
 
 coroutines:
-  excludes: [ '**/generated/**' ]
+  excludes: [ '**/generated/**', 'proxyApiClient', 'proxyApiServer' ]
   active: true
   GlobalCoroutineUsage:
     active: false
@@ -204,7 +204,7 @@ coroutines:
     active: true
 
 empty-blocks:
-  excludes: [ '**/generated/**' ]
+  excludes: [ '**/generated/**', 'proxyApiClient', 'proxyApiServer' ]
   active: true
   EmptyCatchBlock:
     active: true
@@ -240,7 +240,7 @@ empty-blocks:
     active: true
 
 exceptions:
-  excludes: [ '**/generated/**' ]
+  excludes: [ '**/generated/**', 'proxyApiClient', 'proxyApiServer' ]
   active: true
   ExceptionRaisedInUnexpectedLocation:
     active: true
@@ -313,7 +313,7 @@ exceptions:
       - 'Throwable'
 
 naming:
-  excludes: [ '**/generated/**' ]
+  excludes: [ '**/generated/**', 'proxyApiClient', 'proxyApiServer' ]
   active: true
   BooleanPropertyNaming:
     active: false
@@ -391,7 +391,7 @@ naming:
     excludeClassPattern: '$^'
 
 performance:
-  excludes: [ '**/generated/**' ]
+  excludes: [ '**/generated/**', 'proxyApiClient', 'proxyApiServer' ]
   active: true
   ArrayPrimitive:
     active: true
@@ -410,7 +410,7 @@ performance:
     active: true
 
 potential-bugs:
-  excludes: [ '**/generated/**' ]
+  excludes: [ '**/generated/**', 'proxyApiClient', 'proxyApiServer' ]
   active: true
   AvoidReferentialEquality:
     active: true
@@ -515,7 +515,7 @@ potential-bugs:
     active: true
 
 style:
-  excludes: [ '**/generated/**' ]
+  excludes: [ '**/generated/**', '/proxyApiClient', '/proxyApiServer' ]
   active: true
   AlsoCouldBeApply:
     active: false
@@ -800,7 +800,7 @@ style:
       - 'java.util.*'
 
 formatting:
-  excludes: [ '**/generated/**' ]
+  excludes: [ '**/generated/**', 'proxyApiClient', 'proxyApiServer' ]
   TrailingCommaOnCallSite:
     active: true
     useTrailingCommaOnCallSite: true
@@ -809,6 +809,7 @@ formatting:
     useTrailingCommaOnDeclarationSite: true
 
 Compose:
+  excludes: [ '**/generated/**', 'proxyApiClient', 'proxyApiServer' ]
   ComposableAnnotationNaming:
     active: true
   ComposableNaming:
