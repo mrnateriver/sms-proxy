@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
     alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 java {
@@ -18,4 +19,5 @@ dependencies {
     api(libs.kotlinx.datetime)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.auth)
+    implementation(libs.kotlinx.serialization.json)
 }

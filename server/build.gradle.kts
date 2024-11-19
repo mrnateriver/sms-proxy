@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ktor)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.detekt)
@@ -47,6 +48,9 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.auth)
+    implementation(libs.ktor.server.contentNegotiation)
+    implementation(libs.ktor.server.serializationKotlinxJson)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.driver.jdbc)
 
     testImplementation(libs.ktor.server.tests)

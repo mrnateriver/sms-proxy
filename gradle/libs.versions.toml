@@ -29,6 +29,7 @@ ktor = "3.0.1"
 logback = "1.5.12"
 kotlinx-datetime = "0.6.0"
 kotlinx-coroutines = "1.8.0"
+kotlinx-serialization-json = "1.7.3"
 hilt = "2.52"
 moshi = "1.15.1"
 okhttp = "4.12.0"
@@ -99,6 +100,8 @@ mockito-android = { module = "org.mockito:mockito-android", version.ref = "mocki
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
+ktor-server-contentNegotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-server-serializationKotlinxJson = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-network-tls-certificates = { module = "io.ktor:ktor-network-tls-certificates", version.ref = "ktor" }
 sqldelight-dialect-postgresql = { module = "app.cash.sqldelight:postgresql-dialect", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { group = "app.cash.sqldelight", name = "jdbc-driver", version.ref = "sqldelight" }
@@ -110,6 +113,7 @@ ktor-server-tests = { module = "io.ktor:ktor-server-test-host", version.ref = "k
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
 # Shared Testing
@@ -124,6 +128,7 @@ androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "about-libraries" }
