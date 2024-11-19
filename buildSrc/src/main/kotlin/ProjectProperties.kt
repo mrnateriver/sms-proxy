@@ -5,12 +5,13 @@ import java.util.Properties
 
 fun Project.getProperty(prop: String): String? {
     val key = "${rootProject.extra["basePackageName"]}.$prop"
-    return project.properties.get(key)?.toString() ?: getLocalProperty(key)
+    return getLocalProperty(key) ?: project.properties.get(key)?.toString()
 }
 
 val localProperties = Properties()
 private fun Project.getLocalProperty(prop: String): String? {
-    if (localProperties.size == 0) { // Hopefully local.properties will at least contain the local SDK path
+    // Hopefully local.properties will at least contain the local SDK path so an empty property bag is an indicator that it hasn't been loaded yet
+    if (localProperties.size == 0) {
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
             FileInputStream(localPropertiesFile).use { stream ->
