@@ -1,57 +1,70 @@
 package io.mrnateriver.smsproxy
 
-import com.squareup.moshi.Json
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.BearerTokenCredential
+import io.ktor.server.auth.Principal
+import io.ktor.server.auth.bearer
+import io.ktor.server.auth.principal
+import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
-import io.ktor.server.engine.sslConnector
 import io.ktor.server.netty.Netty
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
-import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import okio.Buffer
-import java.io.File
-import java.security.GeneralSecurityException
-import java.security.KeyStore
-import java.security.cert.CertificateFactory
-import java.security.cert.X509Certificate
+import io.mrnateriver.smsproxy.controllers.MessagesProxyController
+import io.mrnateriver.smsproxy.controllers.MessagesProxyController.Companion.messagesProxyRoutes
+import io.mrnateriver.smsproxy.controllers.TypedApplicationCall
+import io.mrnateriver.smsproxy.models.MessageProxyRequest
+import io.mrnateriver.smsproxy.models.MessageProxyResponse
 import kotlin.random.Random
 
-const val SERVER_HOST = "0.0.0.0" // TODO: use env var
-const val SERVER_PORT = 4430 // TODO: use env var
-
 fun main() {
-    // TODO: use TLS only in dev mode -- rely on reverse proxy in prod
-    val keyStorePassword = System.getenv("CERT_KEY_STORE_PASSWORD").toCharArray()
-    val keyPassword = System.getenv("CERT_KEY_PASSWORD").toCharArray()
-    val keyAlias = System.getenv("CERT_KEY_ALIAS") ?: "serverKey"
+    val serverConfig = getServerConfigurationFromEnv()
+    val tlsConfig = getTlsConfigurationFromEnv()
 
-    val serverKeyStore = getServerKeyStore(keyStorePassword)
-    val clientsKeyStore = createClientsKeyStore()
-
-    val server = embeddedServer(Netty, configure = {
-        sslConnector(
-            keyStore = serverKeyStore,
-            keyAlias = keyAlias,
-            privateKeyPassword = { keyPassword },
-            keyStorePassword = { keyStorePassword },
-        ) {
-            host = SERVER_HOST
-            port = SERVER_PORT
-            trustStore = clientsKeyStore
-        }
-    }) { messageProxyApi() }
+    val server = embeddedServer(
+        Netty,
+        configure = {
+            if (tlsConfig != null) {
+                tlsConnector(serverConfig, tlsConfig)
+            } else {
+                connector {
+                    host = serverConfig.host
+                    port = serverConfig.port
+                }
+            }
+        },
+        module = {
+            install(Authentication) {
+                bearer("BearerAuth") {
+                    authenticate { credentials: BearerTokenCredential ->
+                        // TODO: check API token
+                        principal()
+                    }
+                }
+            }
+            messageProxyApi()
+        },
+    )
 
     server.start(wait = true)
 }
 
 fun Application.messageProxyApi() {
     routing {
-        post<MessageProxyRequest>("/messages/proxy") {
-            println("Request: $it")
-            call.respondText("Ktor: hello", status = HttpStatusCode.NoContent)
-        }
+        messagesProxyRoutes(object : MessagesProxyController {
+            override suspend fun messagesProxy(
+                messageProxyRequest: MessageProxyRequest,
+                principal: Principal,
+                call: TypedApplicationCall<MessageProxyResponse>,
+            ) {
+                println("Request: $messageProxyRequest")
+                call.respondTyped(HttpStatusCode.NoContent, MessageProxyResponse("test"))
+            }
+        })
 
         val rnd = Random(seed = 42)
         get("/hello") {
@@ -59,55 +72,3 @@ fun Application.messageProxyApi() {
         }
     }
 }
-
-private fun getServerKeyStore(keyStorePassword: CharArray): KeyStore {
-    val stream = ::main.javaClass.getResource("/proxy-api-server-certificate.jks")
-
-    val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
-    keyStore.load(stream?.openStream(), keyStorePassword)
-    return keyStore
-}
-
-private fun createClientsKeyStore(): KeyStore {
-    val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
-    keyStore.load(null, null)
-
-    val dir = File(::main.javaClass.getResource("/clients")!!.file)
-    dir.walk().forEach {
-        if (it.isFile && it.name.endsWith(".pem")) {
-            keyStore.setCertificateEntry(it.name, it.readText().decodeCertificatePem())
-        }
-    }
-
-    return keyStore
-}
-
-@Suppress("ThrowsCount")
-private fun String.decodeCertificatePem(): X509Certificate {
-    try {
-        val certificateFactory = CertificateFactory.getInstance("X.509")
-        val certificates = certificateFactory.generateCertificates(
-            Buffer().writeUtf8(this).inputStream(),
-        )
-
-        return certificates.single() as X509Certificate
-    } catch (nsee: NoSuchElementException) {
-        throw IllegalArgumentException("failed to decode certificate", nsee)
-    } catch (iae: IllegalArgumentException) {
-        throw IllegalArgumentException("failed to decode certificate", iae)
-    } catch (e: GeneralSecurityException) {
-        throw IllegalArgumentException("failed to decode certificate", e)
-    }
-}
-
-// TODO: codegen
-data class MessageProxyRequest(
-    /* Random key of the end receiver of the proxied message. */
-    @Json(name = "receiverKey") val receiverKey: String,
-
-    @Json(name = "sender") val sender: String,
-
-    @Json(name = "message") val message: String,
-
-    @Json(name = "receivedAt") val receivedAt: kotlinx.datetime.Instant,
-)
