@@ -1,0 +1,42 @@
+CREATE TABLE messages (
+    guid UUID PRIMARY KEY NOT NULL,
+    externalId VARCHAR(255),
+    sendStatus CHAR(16) AS io.mrnateriver.smsproxy.shared.models.MessageRelayStatus NOT NULL,
+    sendRetries INT NOT NULL,
+    sendFailureReason TEXT,
+    messageData BYTEA NOT NULL,
+    createdAt TIMESTAMPTZ NOT NULL,
+    updatedAt TIMESTAMPTZ NULL
+);
+
+insert:
+INSERT INTO messages (guid, externalId, sendStatus, sendRetries, sendFailureReason, messageData, createdAt, updatedAt)
+VALUES (?, NULL, 'PENDING', 0, NULL, ?, NOW(), NOW());
+
+update:
+UPDATE messages
+SET externalId = ?, sendStatus = ?, sendRetries = ?, sendFailureReason = ?, updatedAt = NOW()
+WHERE guid = ?;
+
+getAllBySendStatus:
+SELECT guid, externalId, sendStatus, sendRetries, sendFailureReason, messageData, createdAt, updatedAt
+FROM messages
+WHERE sendStatus IN (?);
+
+getLastEntries:
+SELECT guid, externalId, sendStatus, sendRetries, sendFailureReason, messageData, createdAt, updatedAt
+FROM messages
+LIMIT ?;
+
+getLastEntryByStatus:
+SELECT guid, externalId, sendStatus, sendRetries, sendFailureReason, messageData, createdAt, updatedAt
+FROM messages
+WHERE sendStatus IN (?)
+ORDER BY createdAt DESC
+LIMIT 1;
+
+getCountByStatus:
+SELECT COUNT(guid) FROM messages WHERE sendStatus IN (?);
+
+getCount:
+SELECT COUNT(guid) FROM messages;

@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ktor)
@@ -58,19 +59,24 @@ dependencies {
     implementation(libs.ktor.server.serializationKotlinxJson)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.driver.jdbc)
+    implementation(libs.postgresql.jdbc)
+    implementation(libs.hikari)
+    implementation(libs.dagger)
 
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)
 
     detektPlugins(libs.detekt.formatting)
     detektPlugins(libs.detekt.compose)
+
+    ksp(libs.dagger.compiler)
 }
 
 sqldelight {
     databases {
         create("MessagesDatabase") {
-            packageName.set("${rootProject.ext.get("basePackageName")}.shared.db")
             dialect(libs.sqldelight.dialect.postgresql)
+            packageName.set("${rootProject.ext.get("basePackageName")}.shared.db")
         }
     }
 }

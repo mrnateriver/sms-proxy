@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy
+package io.mrnateriver.smsproxy.data
 
 import app.cash.sqldelight.db.SqlDriver
 
