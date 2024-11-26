@@ -6,4 +6,5 @@ data class MessageData(
     val sender: String,
     val receivedAt: Instant,
     val message: String,
+    val receiverKey: String? = null,
 )
