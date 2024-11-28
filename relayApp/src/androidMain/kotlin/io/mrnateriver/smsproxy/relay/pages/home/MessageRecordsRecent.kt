@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import arrow.core.left
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.composables.theme.AppSpacings
 import io.mrnateriver.smsproxy.shared.models.MessageData
@@ -53,12 +54,13 @@ fun MessageRecordsRecent(
             style = MaterialTheme.typography.headlineMedium,
         )
         entries.forEach { entry ->
+            val messageData = entry.messageData.leftOrNull()!!
             MessageRecord(
-                from = entry.messageData.sender,
-                message = entry.messageData.message,
+                from = messageData.sender,
+                message = messageData.message,
                 status = entry.sendStatus,
                 timestamp = dateFormatter.format(
-                    entry.messageData.receivedAt.toLocalDateTime(timeZone)
+                    messageData.receivedAt.toLocalDateTime(timeZone)
                         .toJavaLocalDateTime(),
                 ),
             )
@@ -194,7 +196,7 @@ val previewMessageRecords = listOf(
             sender = "+12223334455",
             message = "Hello World",
             receivedAt = Clock.System.now(),
-        ),
+        ).left(),
     ),
     MessageEntry(
         guid = UUID.randomUUID(),
@@ -208,7 +210,7 @@ val previewMessageRecords = listOf(
             sender = "Hello",
             message = "General Kenobi",
             receivedAt = Clock.System.now(),
-        ),
+        ).left(),
     ),
     MessageEntry(
         guid = UUID.randomUUID(),
@@ -222,7 +224,7 @@ val previewMessageRecords = listOf(
             sender = "+993742732",
             message = "Test a very-very long text that should be truncated.".repeat(n = 32),
             receivedAt = Clock.System.now(),
-        ),
+        ).left(),
     ),
     MessageEntry(
         guid = UUID.randomUUID(),
@@ -236,6 +238,6 @@ val previewMessageRecords = listOf(
             sender = "World",
             message = "How's it going",
             receivedAt = Clock.System.now(),
-        ),
+        ).left(),
     ),
 )

@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import arrow.core.left
 import io.mrnateriver.smsproxy.relay.R
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
@@ -169,7 +170,7 @@ class MessageRecordsRecentTest {
                 sender = sender,
                 message = message,
                 receivedAt = now,
-            ),
+            ).left(),
             sendStatus = status,
             sendRetries = 1,
             sendFailureReason = null,

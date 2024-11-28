@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay.services.data
 
+import arrow.core.left
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
@@ -20,7 +21,7 @@ class MessageRepository @Inject constructor(
             sendStatus = MessageRelayStatus.PENDING,
             sendRetries = 0,
             sendFailureReason = null,
-            messageData = entry,
+            messageData = entry.left(),
             createdAt = now,
             updatedAt = now,
         )
@@ -63,7 +64,7 @@ private fun MessageDaoEntity.toDomainEntity() = MessageEntry(
     sendStatus = sendStatus,
     sendRetries = sendRetries,
     sendFailureReason = sendFailureReason,
-    messageData = messageData,
+    messageData = messageData.left(),
     createdAt = createdAt,
     updatedAt = updatedAt,
 )
@@ -74,7 +75,7 @@ private fun MessageEntry.toDatabaseEntity() = MessageDaoEntity(
     sendStatus = sendStatus,
     sendRetries = sendRetries,
     sendFailureReason = sendFailureReason,
-    messageData = messageData,
+    messageData = messageData.leftOrNull()!!,
     createdAt = createdAt,
     updatedAt = updatedAt,
 )

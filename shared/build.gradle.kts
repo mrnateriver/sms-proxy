@@ -33,6 +33,8 @@ kotlin {
         }
         commonMain.dependencies {
             api(libs.kotlinx.datetime)
+            api(libs.arrow.core)
+
             implementation(libs.kotlinx.coroutines)
 
             // We need Compose for the androidMain source set, but we can't apply the compose compiler plugin

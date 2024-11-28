@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay.services.usecases
 
+import arrow.core.left
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageBackgroundProcessingService.MessageBackgroundProcessingResult.FAILURE
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageBackgroundProcessingService.MessageBackgroundProcessingResult.RETRY
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageBackgroundProcessingService.MessageBackgroundProcessingResult.SUCCESS
@@ -129,7 +130,7 @@ class MessageBackgroundProcessingServiceTest {
             status,
             0,
             null,
-            MessageData("123", now, "Hello, World!"),
+            MessageData("123", now, "Hello, World!").left(),
             now,
             now,
         )

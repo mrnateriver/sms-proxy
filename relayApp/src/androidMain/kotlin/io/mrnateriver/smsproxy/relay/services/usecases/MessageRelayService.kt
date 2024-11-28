@@ -40,12 +40,13 @@ class MessageRelayService @Inject constructor(
         observabilityService.runSpan("MessageRelayService.relay") {
             val (receiverKey, proxyApiService) = getApiClient()
 
+            val messageData = entry.messageData.leftOrNull()!!
             val response = proxyApiService.messagesProxy(
                 MessageProxyRequest(
                     receiverKey,
-                    entry.messageData.sender,
-                    entry.messageData.message,
-                    entry.messageData.receivedAt,
+                    messageData.sender,
+                    messageData.message,
+                    messageData.receivedAt,
                 ),
             )
 

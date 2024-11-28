@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay.services.data
 
+import arrow.core.left
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
@@ -33,7 +34,7 @@ class MessageRepositoryTest {
                 sendStatus = MessageRelayStatus.PENDING,
                 sendRetries = 0,
                 sendFailureReason = null,
-                messageData = entry,
+                messageData = entry.left(),
                 createdAt = now,
                 updatedAt = now,
             ),

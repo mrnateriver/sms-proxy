@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay.services.usecases
 
+import arrow.core.left
 import io.mrnateriver.smsproxy.models.MessageProxyRequest
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
@@ -96,12 +97,13 @@ class MessageRelayServiceTest {
         val entry = createTestMessageEntry()
         subject.relay(entry)
 
+        val messageData = entry.messageData.leftOrNull()!!
         verify(apiClient).messagesProxy(
             MessageProxyRequest(
                 "123",
-                entry.messageData.sender,
-                entry.messageData.message,
-                entry.messageData.receivedAt,
+                messageData.sender,
+                messageData.message,
+                messageData.receivedAt,
             ),
         )
     }
@@ -132,7 +134,7 @@ class MessageRelayServiceTest {
             status,
             0,
             null,
-            MessageData("123", now, "Hello, World!"),
+            MessageData("123", now, "Hello, World!").left(),
             now,
             now,
         )

@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay.services.usecases
 
+import arrow.core.left
 import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsEntry
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
@@ -140,7 +141,7 @@ class MessageStatsServiceTest {
         MessageRelayStatus.SUCCESS,
         0,
         null,
-        MessageData("123", now, "Hello, World!"),
+        MessageData("123", now, "Hello, World!").left(),
         now,
         now,
     )

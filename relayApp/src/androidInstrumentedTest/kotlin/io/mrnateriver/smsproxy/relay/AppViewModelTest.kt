@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay
 
+import arrow.core.left
 import io.mrnateriver.smsproxy.relay.services.data.ProxyApiCertificates
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService
@@ -208,7 +209,7 @@ class AppViewModelTest {
                 sender = sender,
                 message = message,
                 receivedAt = now,
-            ),
+            ).left(),
             sendStatus = status,
             sendRetries = 1,
             sendFailureReason = null,
