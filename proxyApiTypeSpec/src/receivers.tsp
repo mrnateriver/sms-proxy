@@ -14,8 +14,8 @@ model RegisterReceiverRequest {
   @doc("Random key of the receiver.")
   receiverKey: string;
 
-  @doc("Public key of the receiver for encrypting sent out messages.")
-  publicKey: bytes;
+  @doc("Base64-encoded public key of the receiver for encrypting sent out messages.")
+  publicKey: string;
 }
 
 @route("/receivers")

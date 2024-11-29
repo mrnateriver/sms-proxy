@@ -1,6 +1,5 @@
 package io.mrnateriver.smsproxy.models
 
-import kotlin.ByteArray
 import kotlin.String
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -12,5 +11,5 @@ public data class RegisterReceiverRequest(
   @SerialName("receiverKey")
   public val receiverKey: String,
   @SerialName("publicKey")
-  public val publicKey: ByteArray,
+  public val publicKey: String,
 )
