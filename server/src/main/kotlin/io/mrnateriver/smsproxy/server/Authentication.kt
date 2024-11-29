@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy
+package io.mrnateriver.smsproxy.server
 
 import io.ktor.server.application.Application
 import io.ktor.server.application.install

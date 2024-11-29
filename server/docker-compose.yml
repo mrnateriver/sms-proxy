@@ -1,0 +1,31 @@
+services:
+  flyway:
+    image: redgate/flyway
+    command: -url=jdbc:postgresql://db:5432/ -schemas=sms-proxy -user=sms-proxy -password=sms-proxy -connectRetries=60 migrate
+    volumes:
+      - ./build/resources/main/migrations:/flyway/sql
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: sms-proxy
+      POSTGRES_PASSWORD: sms-proxy
+      POSTGRES_DB: sms-proxy
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:

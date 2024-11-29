@@ -1,0 +1,10 @@
+CREATE TABLE messages (
+    guid UUID PRIMARY KEY NOT NULL,
+    externalId VARCHAR(255),
+    sendStatus VARCHAR(16) AS io.mrnateriver.smsproxy.shared.models.MessageRelayStatus NOT NULL,
+    sendRetries INT NOT NULL,
+    sendFailureReason TEXT,
+    messageData BYTEA NOT NULL,
+    createdAt TIMESTAMPTZ NOT NULL,
+    updatedAt TIMESTAMPTZ NULL
+);

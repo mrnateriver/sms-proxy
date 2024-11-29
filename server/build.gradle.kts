@@ -8,7 +8,7 @@ plugins {
     application
 }
 
-group = rootProject.ext["basePackageName"] as String
+group = "${rootProject.ext["basePackageName"]}.server"
 version = "1.0.0"
 application {
     mainClass.set("$group.ApplicationKt")
@@ -18,7 +18,7 @@ application {
     applicationDefaultJvmArgs =
         listOf(
             "-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}",
-            "-Dio.mrnateriver.smsproxy.apiKey=$apiKey",
+            "-D$group.apiKey=$apiKey",
         )
 }
 
@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.contentNegotiation)
     implementation(libs.ktor.server.serializationKotlinxJson)
+    implementation(libs.ktor.server.statusPages)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.driver.jdbc)
     implementation(libs.postgresql.jdbc)
@@ -74,9 +75,20 @@ dependencies {
 
 sqldelight {
     databases {
-        create("MessagesDatabase") {
+        create("Database") {
             dialect(libs.sqldelight.dialect.postgresql)
-            packageName.set("${rootProject.ext.get("basePackageName")}.shared.db")
+            packageName.set("$group.db")
+
+            deriveSchemaFromMigrations = true
+
+            migrationOutputDirectory = layout.buildDirectory.dir("resources/main/migrations")
+            migrationOutputFileFormat = ".sql"
         }
+    }
+}
+
+tasks {
+    compileKotlin.configure {
+        dependsOn("generateMainDatabaseMigrations")
     }
 }

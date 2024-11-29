@@ -1,0 +1,13 @@
+insert:
+INSERT INTO receivers (key, publicKey, fcmKey, createdAt, updatedAt)
+VALUES (?, ?, ?, NOW(), NOW())
+RETURNING *;
+
+findReceiverByKey:
+SELECT key, publicKey, fcmKey, createdAt, updatedAt
+FROM receivers
+WHERE key = ?
+LIMIT 1;
+
+doesReceiverExist:
+SELECT EXISTS(SELECT 1 FROM receivers WHERE key = ? LIMIT 1);
