@@ -17,9 +17,8 @@ class MessagesProxyController @Inject constructor(
         principal: Principal,
         call: TypedApplicationCall<MessageProxyResponse>,
     ) {
-        // TODO: handle exceptions, including validation
-        messagesProxyUseCase.proxyMessage(messageProxyRequest.toUseCaseRequest())
-        call.response.status(HttpStatusCode.NoContent)
+        val guid = messagesProxyUseCase.proxyMessage(messageProxyRequest.toUseCaseRequest())
+        call.respondTyped(HttpStatusCode.Created, MessageProxyResponse(externalId = guid.toString()))
     }
 }
 
