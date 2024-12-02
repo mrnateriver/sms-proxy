@@ -1,8 +1,10 @@
 package io.mrnateriver.smsproxy.server.usecases
 
-import io.ktor.server.plugins.BadRequestException
+import io.mrnateriver.smsproxy.server.entities.exceptions.ValidationException
 import io.mrnateriver.smsproxy.shared.models.MessageData
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import java.util.UUID
 import javax.inject.Inject
 import io.mrnateriver.smsproxy.server.data.contracts.ReceiversRepository as ReceiversRepositoryContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
@@ -11,14 +13,45 @@ class MessageProxyUseCase @Inject constructor(
     private val messageProcessingService: MessageProcessingServiceContract,
     private val receiversRepository: ReceiversRepositoryContract,
 ) {
-    suspend fun proxyMessage(request: ProxyMessageRequest) {
-        if (!receiversRepository.doesReceiverExist(request.receiverKey)) {
-            // TODO: proper validation error
-            throw BadRequestException("Receiver does not exist")
+    suspend fun proxyMessage(request: ProxyMessageRequest): UUID {
+        validateProxyRequest(request)
+
+        // TODO: do the processing in the background -- how to return ID then considering the shared service?
+        return messageProcessingService.process(request.toMessageData()).guid
+    }
+
+    @Throws(ValidationException::class)
+    private suspend fun validateProxyRequest(request: ProxyMessageRequest) {
+        val errors = mutableMapOf<String, List<String>>()
+
+        if (request.receiverKey.isBlank()) {
+            errors["receiverKey"] = listOf("Receiver key must not be blank")
+        } else if (!receiversRepository.doesReceiverExist(request.receiverKey)) {
+            // This is prone to brute forcing keys, but considering the security model which only relies on secrecy of
+            // static keys and the fact that the whole system simply proxies SMS, which can be sent to any number,
+            // the source of the message must not be trusted anyway, and thus brute forcing keys is not a threat in
+            // itself
+            errors["receiverKey"] = listOf("Receiver with the specified key does not exist")
         }
 
-        // TODO: do the processing in the background
-        messageProcessingService.process(request.toMessageData())
+        if (request.sender.isBlank()) {
+            errors["sender"] = listOf("Sender must not be blank")
+        }
+
+        if (request.message.isBlank()) {
+            errors["message"] = listOf("Message must not be blank")
+        }
+
+        if (request.receivedAt > Clock.System.now()) {
+            errors["receivedAt"] = listOf("Received at must not be in the future")
+        }
+
+        if (errors.isNotEmpty()) {
+            throw ValidationException(
+                errors = errors,
+                message = "Invalid message data",
+            )
+        }
     }
 
     data class ProxyMessageRequest(

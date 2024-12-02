@@ -7,7 +7,6 @@ import javax.inject.Inject
 import io.mrnateriver.smsproxy.server.data.contracts.ReceiversRepository as ReceiversRepositoryContract
 
 class ReceiversUseCase @Inject constructor(private val receiversRepository: ReceiversRepositoryContract) {
-
     suspend fun registerReceiver(request: RegisterReceiverRequest) {
         // TODO: refactor to a better place
         // TODO: validate public key
