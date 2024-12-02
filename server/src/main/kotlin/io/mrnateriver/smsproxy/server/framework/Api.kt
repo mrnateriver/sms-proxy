@@ -18,7 +18,7 @@ fun Application.installApi() {
     installErrorHandling()
 
     routing {
-        val framework = DaggerFramework.create()
+        val framework = DaggerFramework.builder().logger(log).build()
         val proxyController = framework.messagesProxyController()
         val receiversController = framework.receiversController()
 

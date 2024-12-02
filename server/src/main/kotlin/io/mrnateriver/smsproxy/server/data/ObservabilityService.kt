@@ -1,19 +1,20 @@
 package io.mrnateriver.smsproxy.server.data
 
+import io.ktor.util.logging.Logger
 import io.mrnateriver.smsproxy.shared.contracts.LogLevel
+import org.slf4j.event.Level
 import javax.inject.Inject
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
-class ObservabilityService @Inject constructor() : ObservabilityServiceContract {
-    // TODO: OTEL for spans and metrics, logging with some famous kotlin/java library
+class ObservabilityService @Inject constructor(private val logger: Logger) : ObservabilityServiceContract {
+    // TODO: OTEL for spans and metrics
 
     override fun log(level: LogLevel, message: String) {
-        println("[$level] $message")
+        logger.atLevel(level).log(message)
     }
 
     override fun reportException(exception: Throwable) {
-        println("Exception: ${exception.message}")
-        exception.printStackTrace()
+        log(LogLevel.ERROR, "${exception.message}\n${exception.stackTraceToString()}")
     }
 
     override suspend fun <T> runSpan(name: String, body: suspend () -> T): T {
@@ -26,4 +27,13 @@ class ObservabilityService @Inject constructor() : ObservabilityServiceContract 
     override suspend fun incrementCounter(metricName: String) {
         log(LogLevel.DEBUG, "Incrementing counter: $metricName")
     }
+
+    private fun Logger.atLevel(level: LogLevel) = atLevel(
+        when (level) {
+            LogLevel.DEBUG -> Level.DEBUG
+            LogLevel.INFO -> Level.INFO
+            LogLevel.WARNING -> Level.WARN
+            LogLevel.ERROR -> Level.ERROR
+        },
+    )
 }

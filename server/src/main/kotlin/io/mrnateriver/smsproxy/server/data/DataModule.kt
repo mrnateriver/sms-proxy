@@ -8,6 +8,7 @@ import com.zaxxer.hikari.HikariDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import io.ktor.util.logging.Logger
 import io.mrnateriver.smsproxy.server.db.Database
 import io.mrnateriver.smsproxy.server.db.Messages
 import io.mrnateriver.smsproxy.server.db.MessagesQueries
@@ -43,11 +44,13 @@ interface DataModule {
     @Singleton
     fun bindMessageFirebaseRelay(messageFirebaseRelay: MessageFirebaseRelay): MessageRelayServiceContract
 
-    @Binds
-    @Singleton
-    fun bindObservabilityService(observabilityService: ObservabilityService): ObservabilityServiceContract
-
     companion object {
+        @Provides
+        @Singleton
+        fun provideObservabilityService(logger: Logger): ObservabilityServiceContract {
+            return ObservabilityService(logger)
+        }
+
         @Provides
         @Singleton
         fun provideDataSource(): DataSource {
