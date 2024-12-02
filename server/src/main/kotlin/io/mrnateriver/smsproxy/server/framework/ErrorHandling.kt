@@ -1,24 +1,65 @@
 package io.mrnateriver.smsproxy.server.framework
 
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.install
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.statuspages.StatusPages
-import io.ktor.server.response.respondText
+import io.ktor.server.response.respond
+import io.mrnateriver.smsproxy.server.entities.ApiError
+import io.mrnateriver.smsproxy.server.entities.exceptions.ValidationException
+import org.slf4j.event.Level
 
 fun Application.installErrorHandling() {
+    val ktorDevMode = System.getProperty("io.ktor.development") == "true"
     install(StatusPages) {
+        // TODO: metrics
+
         exception<Throwable> { call, cause ->
-            // TODO: handle validation or general http errors
-            // TODO: output JSON
-            // TODO: log error
-            // TODO: metrics
-            call.respondText(
-                contentType = ContentType.Application.Json,
-                status = HttpStatusCode.InternalServerError,
-                text = cause.localizedMessage,
+            call.respondApiError(
+                code = HttpStatusCode.InternalServerError,
+                message = (if (ktorDevMode) cause.message else null) ?: "Internal server error",
+                logLevel = Level.ERROR,
+                cause = cause,
+            )
+        }
+
+        exception<BadRequestException> { call, cause ->
+            call.respondApiError(
+                code = HttpStatusCode.BadRequest,
+                message = (if (ktorDevMode) cause.message else null) ?: "Bad request",
+                logLevel = Level.WARN,
+                cause = cause,
+            )
+        }
+
+        exception<ValidationException> { call, cause ->
+            call.respondApiError(
+                code = HttpStatusCode.UnprocessableEntity,
+                message = cause.message,
+                logLevel = Level.WARN,
+                errors = cause.errors,
+                cause = cause,
             )
         }
     }
+}
+
+suspend fun ApplicationCall.respondApiError(
+    code: HttpStatusCode,
+    message: String,
+    cause: Throwable? = null,
+    logLevel: Level = Level.ERROR,
+    errors: Map<String, List<String>>? = null,
+) {
+    application.environment.log.atLevel(logLevel).log(message, cause)
+    respond(
+        code,
+        if (errors == null) {
+            ApiError(code = code.value, message = message)
+        } else {
+            ApiError(code = code.value, message = message, errors = errors)
+        },
+    )
 }

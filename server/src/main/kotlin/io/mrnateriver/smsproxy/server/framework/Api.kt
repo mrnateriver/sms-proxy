@@ -3,6 +3,7 @@ package io.mrnateriver.smsproxy.server.framework
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.application.log
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
 import io.mrnateriver.smsproxy.controllers.MessagesProxyController.Companion.messagesProxyRoutes
@@ -13,6 +14,8 @@ fun Application.installApi() {
     install(ContentNegotiation) {
         json()
     }
+
+    installErrorHandling()
 
     routing {
         val framework = DaggerFramework.create()
