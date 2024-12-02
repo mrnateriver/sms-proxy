@@ -2,7 +2,6 @@ package io.mrnateriver.smsproxy.server.data
 
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
-import app.cash.sqldelight.driver.jdbc.asJdbcDriver
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dagger.Binds
@@ -67,8 +66,8 @@ interface DataModule {
 
         @Provides
         @Singleton
-        fun provideSqlDriver(dataSource: DataSource): SqlDriver {
-            return dataSource.asJdbcDriver()
+        fun provideSqlDriver(dataSource: DataSource, logger: Logger): SqlDriver {
+            return LoggingJdbcDriver(dataSource, logger)
         }
 
         @Provides

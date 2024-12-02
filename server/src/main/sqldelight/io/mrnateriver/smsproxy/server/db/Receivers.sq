@@ -1,6 +1,7 @@
 insert:
 INSERT INTO receivers (key, publicKey, fcmKey, createdAt, updatedAt)
 VALUES (?, ?, ?, NOW(), NOW())
+ON CONFLICT (key) DO UPDATE SET key = EXCLUDED.key
 RETURNING *;
 
 findReceiverByKey:
