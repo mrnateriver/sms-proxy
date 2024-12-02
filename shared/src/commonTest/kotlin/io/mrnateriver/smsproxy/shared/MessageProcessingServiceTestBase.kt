@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.shared
 
+import arrow.core.left
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
@@ -56,7 +57,7 @@ abstract class MessageProcessingServiceTestBase {
             status,
             retries,
             null,
-            messageData,
+            messageData.left(),
             createdAt,
             updatedAt,
         )
