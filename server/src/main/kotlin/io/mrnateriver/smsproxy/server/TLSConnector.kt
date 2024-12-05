@@ -11,7 +11,9 @@ import java.security.KeyStore
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 
-fun ApplicationEngine.Configuration.tlsConnector(server: ServerConfiguration, config: TlsConfiguration) {
+fun ApplicationEngine.Configuration.tlsConnector(server: ServerConfiguration) {
+    val config = server.tlsConfig ?: return
+
     val keyStorePassword = config.keyStorePassword.toCharArray()
     val keyPassword = config.keyPassword.toCharArray()
     val keyAlias = config.keyAlias

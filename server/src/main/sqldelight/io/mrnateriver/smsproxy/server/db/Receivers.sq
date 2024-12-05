@@ -1,14 +1,14 @@
 insert:
-INSERT INTO receivers (key, publicKey, fcmKey, createdAt, updatedAt)
+INSERT INTO receivers (receiverKeyHash, publicKey, fcmKey, createdAt, updatedAt)
 VALUES (?, ?, ?, NOW(), NOW())
-ON CONFLICT (key) DO UPDATE SET key = EXCLUDED.key
+ON CONFLICT (receiverKeyHash) DO UPDATE SET receiverKeyHash = EXCLUDED.receiverKeyHash
 RETURNING *;
 
 findReceiverByKey:
-SELECT key, publicKey, fcmKey, createdAt, updatedAt
+SELECT receiverKeyHash, publicKey, fcmKey, createdAt, updatedAt
 FROM receivers
-WHERE key = ?
+WHERE receiverKeyHash = ?
 LIMIT 1;
 
 doesReceiverExist:
-SELECT EXISTS(SELECT 1 FROM receivers WHERE key = ? LIMIT 1);
+SELECT EXISTS(SELECT 1 FROM receivers WHERE receiverKeyHash = ? LIMIT 1);

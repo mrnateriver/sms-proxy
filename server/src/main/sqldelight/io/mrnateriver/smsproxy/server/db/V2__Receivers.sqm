@@ -1,5 +1,5 @@
 CREATE TABLE receivers (
-    key CHAR(16) NOT NULL PRIMARY KEY,
+    receiverKeyHash BYTEA NOT NULL PRIMARY KEY,
     publicKey BYTEA NOT NULL,
     fcmKey VARCHAR(255) NOT NULL,
     createdAt TIMESTAMPTZ NOT NULL,

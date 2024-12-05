@@ -1,22 +1,5 @@
 package io.mrnateriver.smsproxy.server
 
-import io.ktor.server.engine.ApplicationEngine
-import io.ktor.server.engine.connector
-
-fun ApplicationEngine.Configuration.configureConnection() {
-    val tlsConfig = getTlsConfigurationFromEnv()
-    val serverConfig = getServerConfigurationFromEnv()
-
-    if (tlsConfig != null) {
-        tlsConnector(serverConfig, tlsConfig)
-    } else {
-        connector {
-            host = serverConfig.host
-            port = serverConfig.port
-        }
-    }
-}
-
 private const val DEFAULT_SERVER_HOST = "127.0.0.1"
 private const val DEFAULT_SERVER_PORT = 4430
 
@@ -29,8 +12,10 @@ data class TlsConfiguration(
 )
 
 data class ServerConfiguration(
+    val hashingSecret: String,
     val host: String,
     val port: Int,
+    val tlsConfig: TlsConfiguration? = null,
 )
 
 private fun getTlsConfigurationFromEnv(): TlsConfiguration? {
@@ -59,8 +44,16 @@ private fun getTlsConfigurationFromEnv(): TlsConfiguration? {
     )
 }
 
-private fun getServerConfigurationFromEnv(): ServerConfiguration {
+fun getServerConfigurationFromEnv(): ServerConfiguration {
+    val hashingSecret = System.getenv("HASHING_SECRET")
+    require(!hashingSecret.isNullOrEmpty()) {
+        "HASHING_SECRET must be set"
+    }
+
     val host = System.getenv("SERVER_HOST") ?: DEFAULT_SERVER_HOST
     val port = System.getenv("SERVER_PORT")?.toInt() ?: DEFAULT_SERVER_PORT
-    return ServerConfiguration(host, port)
+
+    val tlsConfig = getTlsConfigurationFromEnv()
+
+    return ServerConfiguration(hashingSecret = hashingSecret, host = host, port = port, tlsConfig = tlsConfig)
 }

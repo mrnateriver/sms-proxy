@@ -9,8 +9,9 @@ import io.ktor.server.routing.routing
 import io.mrnateriver.smsproxy.controllers.MessagesProxyController.Companion.messagesProxyRoutes
 import io.mrnateriver.smsproxy.controllers.ReceiversController.Companion.receiversRoutes
 import io.mrnateriver.smsproxy.controllers.ReceiversRegisterController.Companion.receiversRegisterRoutes
+import io.mrnateriver.smsproxy.server.ServerConfiguration
 
-fun Application.installApi() {
+fun Application.installApi(serverConfig: ServerConfiguration) {
     install(ContentNegotiation) {
         json()
     }
@@ -18,7 +19,7 @@ fun Application.installApi() {
     installErrorHandling()
 
     routing {
-        val framework = DaggerFramework.builder().logger(log).build()
+        val framework = DaggerFramework.builder().logger(log).hashingSecret(serverConfig.hashingSecret).build()
         val proxyController = framework.messagesProxyController()
         val receiversController = framework.receiversController()
 

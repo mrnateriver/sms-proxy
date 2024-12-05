@@ -5,14 +5,16 @@ import io.ktor.server.netty.Netty
 import io.mrnateriver.smsproxy.server.framework.installApi
 
 fun main() {
+    val serverConfig = getServerConfigurationFromEnv()
+
     val server = embeddedServer(
         Netty,
         configure = {
-            configureConnection()
+            configureConnection(serverConfig)
         },
         module = {
             installAuth()
-            installApi()
+            installApi(serverConfig)
         },
     )
 

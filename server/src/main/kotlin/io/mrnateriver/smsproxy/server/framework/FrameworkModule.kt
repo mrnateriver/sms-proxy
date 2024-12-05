@@ -5,6 +5,7 @@ import dagger.Component
 import dagger.Module
 import io.ktor.util.logging.Logger
 import io.mrnateriver.smsproxy.server.usecases.UsecasesModule
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module(includes = [UsecasesModule::class])
@@ -20,6 +21,15 @@ interface Framework {
     interface Builder {
         @BindsInstance
         fun logger(logger: Logger): Builder
+
+        @BindsInstance
+        fun hashingSecret(@HashingSecret secret: String): Builder
+
         fun build(): Framework
     }
 }
+
+@Qualifier
+@MustBeDocumented
+@Retention(AnnotationRetention.RUNTIME)
+annotation class HashingSecret

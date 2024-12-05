@@ -8,6 +8,8 @@ import io.ktor.server.auth.Principal
 import io.ktor.server.auth.bearer
 
 fun Application.installAuth() {
+    // API key is passed as a system property because it is synced with Android apps at build time
+    // and embedded in the server's build artifacts
     val packageName = ::main.javaClass.packageName
     val apiKey = System.getProperty("$packageName.apiKey")
     require(apiKey != null) {
