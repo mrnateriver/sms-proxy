@@ -34,10 +34,10 @@ import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as Observab
 
 class MessageStatsServiceTest {
     private val messagesRepository = mock<MessageRepositoryContract> {
-        onBlocking { getCountByStatus(anyVararg(MessageRelayStatus::class)) } doAnswer { 42 }
-        onBlocking { getLastEntryByStatus(anyVararg(MessageRelayStatus::class)) } doAnswer { createTestMessageEntry() }
-        onBlocking { getCount() } doAnswer { 42 }
         onBlocking { getLastEntries(1) } doAnswer { listOf(createTestMessageEntry()) }
+        onBlocking { getLastEntryByStatus(anyVararg(MessageRelayStatus::class)) } doAnswer { createTestMessageEntry() }
+        onBlocking { getCountByStatus(anyVararg(MessageRelayStatus::class)) } doAnswer { 42 }
+        onBlocking { getCount() } doAnswer { 42 }
     }
     private val observabilityService =
         mock<ObservabilityServiceContract> {
@@ -47,7 +47,9 @@ class MessageStatsServiceTest {
                 invocation.getArgument<suspend () -> Any>(1)()
             }
         }
-    private val messageStatsRepository = mock<MessageStatsRepositoryContract> {}
+    private val messageStatsRepository = mock<MessageStatsRepositoryContract> {
+        onBlocking { getProcessingErrors() } doAnswer { flowOf(MessageStatsEntry(42, nowLocal)) }
+    }
 
     private val now = Instant.fromEpochMilliseconds(1723996071981)
     private val nowLocal = now.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -61,14 +63,14 @@ class MessageStatsServiceTest {
     @Test
     fun messageStatsService_shouldEmitUpdates() = runTest(timeout = 100.milliseconds) {
         // If statsUpdates does not emit without triggering it manually, the test would time out
-        subject.statsUpdates.first()
+        subject.getStats().first()
         assertTrue(true)
     }
 
     @Test
     fun messageStatsService_shouldEmitUpdatesOnManualTrigger() = runTest {
         var emits = 0
-        subject.statsUpdates.onEach { emits++ }.launchIn(CoroutineScope(Dispatchers.Unconfined))
+        subject.getStats().onEach { emits++ }.launchIn(CoroutineScope(Dispatchers.Unconfined))
         subject.triggerUpdate()
         assertEquals(2, emits)
     }

@@ -182,7 +182,7 @@ class AppViewModelTest {
                 on { showRecentMessages } doReturn flowOf(true)
             },
             statsService = mock<MessageStatsService> {
-                on { statsUpdates } doReturn flowOf(Unit)
+                on { getStats() } doReturn flowOf(MessageStatsData())
             },
             messagesRepository = mock<MessageRepositoryContract> {
                 onBlocking { getLastEntries(any()) } doReturn stubMessageRecords

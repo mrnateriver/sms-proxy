@@ -10,7 +10,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -32,8 +31,6 @@ class MessageStatsService @Inject constructor(
     private val messagesRepository: MessageRepositoryContract,
 ) : MessageStatsServiceContract {
     private val updateTrigger = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
-
-    override val statsUpdates: Flow<Unit> = updateTrigger.asSharedFlow()
 
     override fun triggerUpdate() {
         updateTrigger.tryEmit(Unit)
@@ -68,6 +65,10 @@ class MessageStatsService @Inject constructor(
         return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.FAILED) }
     }
 
+    internal fun getRelayedMessages(): Flow<MessageStatsEntry> {
+        return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.SUCCESS) }
+    }
+
     internal fun getProcessedMessages(): Flow<MessageStatsEntry> {
         return updateTrigger.map {
             coroutineScope {
@@ -83,10 +84,6 @@ class MessageStatsService @Inject constructor(
                 )
             }
         }
-    }
-
-    internal fun getRelayedMessages(): Flow<MessageStatsEntry> {
-        return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.SUCCESS) }
     }
 
     private suspend fun getMessageEntryCountByStatus(vararg status: MessageRelayStatus): MessageStatsEntry =

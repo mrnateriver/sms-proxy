@@ -42,7 +42,7 @@ class AppViewModel @Inject constructor(
     val messageRecordsRecent: Flow<List<MessageEntry>> =
         settingsService.showRecentMessages.flatMapLatest { showRecentMessages ->
             if (showRecentMessages) {
-                statsService.statsUpdates.map {
+                statsService.getStats().map {
                     messagesRepository.getLastEntries(MESSAGE_RECORDS_RECENT_COUNT)
                 }
             } else {

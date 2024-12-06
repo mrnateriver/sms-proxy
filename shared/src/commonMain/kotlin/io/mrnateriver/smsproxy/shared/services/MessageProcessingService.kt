@@ -94,7 +94,7 @@ class MessageProcessingService(
     private inline fun checkTimeout(entry: MessageEntry, cont: (entry: MessageEntry) -> Unit) {
         if (entry.sendStatus == MessageRelayStatus.IN_PROGRESS) {
             check(entry.updatedAt == null || entry.updatedAt.plus(config.timeout) >= clock.now()) {
-                observability.log(LogLevel.WARNING, "Entry ${entry.guid} is stuck in progress")
+                observability.log(LogLevel.ERROR, "Entry ${entry.guid} is stuck in progress")
                 "Entry is stuck in progress"
             }
 
@@ -112,7 +112,7 @@ class MessageProcessingService(
 
         val retries = entry.sendRetries
         if (retries >= config.maxRetries) {
-            observability.log(LogLevel.WARNING, "Entry ${entry.guid} reached max retries")
+            observability.log(LogLevel.ERROR, "Entry ${entry.guid} reached max retries")
             return repository.update(
                 entry.copy(
                     sendStatus = MessageRelayStatus.FAILED,
