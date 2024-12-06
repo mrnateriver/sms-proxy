@@ -22,6 +22,10 @@ class ReceiversRepository @Inject constructor(
         return receiversQueries.insert(hmacSha512(key), publicKey.encoded, fcmKey).executeAsOne().toReceiver()
     }
 
+    override suspend fun updateReceiverFcmKey(key: String, fcmKey: String): Receiver? {
+        return receiversQueries.updateReceiverFcmKey(fcmKey, hmacSha512(key)).executeAsOneOrNull()?.toReceiver()
+    }
+
     override suspend fun findReceiverByKey(key: String): Receiver? {
         return receiversQueries.findReceiverByKey(hmacSha512(key)).executeAsOneOrNull()?.toReceiver()
     }

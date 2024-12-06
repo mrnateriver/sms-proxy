@@ -49,10 +49,7 @@ class MessageProxyUseCase @Inject constructor(
         }
 
         if (errors.isNotEmpty()) {
-            throw ValidationException(
-                errors = errors,
-                message = "Invalid message data",
-            )
+            throw ValidationException(errors)
         }
     }
 

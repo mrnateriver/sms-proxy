@@ -4,6 +4,12 @@ VALUES (?, ?, ?, NOW(), NOW())
 ON CONFLICT (receiverKeyHash) DO UPDATE SET receiverKeyHash = EXCLUDED.receiverKeyHash
 RETURNING *;
 
+updateReceiverFcmKey:
+UPDATE receivers
+SET fcmKey = ?, updatedAt = NOW()
+WHERE receiverKeyHash = ?
+RETURNING *;
+
 findReceiverByKey:
 SELECT receiverKeyHash, publicKey, fcmKey, createdAt, updatedAt
 FROM receivers

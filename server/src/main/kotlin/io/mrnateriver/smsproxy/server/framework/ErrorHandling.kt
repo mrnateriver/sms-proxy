@@ -37,7 +37,7 @@ fun Application.installErrorHandling() {
         exception<ValidationException> { call, cause ->
             call.respondApiError(
                 code = HttpStatusCode.UnprocessableEntity,
-                message = cause.message,
+                message = "Validation failed",
                 logLevel = Level.WARN,
                 errors = cause.errors,
                 cause = cause,

@@ -18,7 +18,13 @@ class ReceiversController @Inject constructor(private val receiversUseCase: Rece
         principal: Principal,
         call: ApplicationCall,
     ) {
-        TODO("Not yet implemented")
+        receiversUseCase.updateReceiverFcmKey(
+            ReceiversUseCase.UpdateReceiverFcmKeyRequest(
+                receiverKey = receiverKey,
+                notificationsId = receiverTransientParams.notificationsId,
+            ),
+        )
+        call.response.status(HttpStatusCode.NoContent)
     }
 
     override suspend fun receiversRegister(
@@ -38,3 +44,4 @@ private fun RegisterReceiverRequest.toUseCaseRequest(): ReceiversUseCase.Registe
         publicKey = publicKey,
     )
 }
+
