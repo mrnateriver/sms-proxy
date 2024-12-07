@@ -58,6 +58,8 @@ dependencies {
     implementation(libs.ktor.server.contentNegotiation)
     implementation(libs.ktor.server.serializationKotlinxJson)
     implementation(libs.ktor.server.statusPages)
+    implementation(libs.ktor.server.callId)
+    implementation(libs.ktor.server.callLogging)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.driver.jdbc)
     implementation(libs.postgresql.jdbc)
