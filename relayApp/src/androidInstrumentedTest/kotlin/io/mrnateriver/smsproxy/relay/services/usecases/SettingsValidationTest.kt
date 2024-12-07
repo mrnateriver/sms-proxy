@@ -36,13 +36,6 @@ class SettingsValidationTest {
     fun validateReceiverKey_emptyKey_shouldReturnError() {
         val url = ""
         val result = validateReceiverKey(url)
-        assertEquals(ReceiverKeyValidationResult.INVALID_FORMAT, result)
-    }
-
-    @Test
-    fun validateReceiverKey_invalidKey_shouldReturnError() {
-        val url = "test1234test"
-        val result = validateReceiverKey(url)
-        assertEquals(ReceiverKeyValidationResult.INVALID_FORMAT, result)
+        assertEquals(ReceiverKeyValidationResult.INVALID_EMPTY, result)
     }
 }

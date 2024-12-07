@@ -13,7 +13,7 @@
     <string name="settings_page_entry_recent_messages_title">Vis siste meldinger</string>
     <string name="settings_page_entry_recent_messages_summary">Vis nylige meldinger på hjemmeskjermen</string>
     <string name="settings_page_entry_receiver_key_title">Mottaker-nøkkel</string>
-    <string name="settings_page_entry_receiver_key_error_format">Ugyldig mottakernøkkel</string>
+    <string name="settings_page_entry_receiver_key_error_empty">Mottakernøkkel må angis</string>
     <string name="settings_page_address_and_key_warning_message">Serveradresse og mottakernøkkel må være satt for å videresende meldinger.</string>
     <string name="dashboard_stats_title">Statistikk</string>
     <string name="dashboard_stats_card_title_processed">Prosessert</string>

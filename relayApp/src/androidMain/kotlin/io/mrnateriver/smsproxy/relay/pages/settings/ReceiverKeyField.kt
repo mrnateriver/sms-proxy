@@ -16,7 +16,7 @@ fun LazyListScope.receiverKeyPreference(
 ) {
     item(key = "api-receiver-key-preferences-key", contentType = "ValidatedStringFieldPreference") {
         Box(modifier = Modifier.fillMaxWidth()) {
-            val validationError = stringResource(R.string.settings_page_entry_receiver_key_error_format)
+            val validationError = stringResource(R.string.settings_page_entry_receiver_key_error_empty)
 
             ValidatedStringFieldPreference(
                 value = value,
@@ -25,7 +25,7 @@ fun LazyListScope.receiverKeyPreference(
                 validate = {
                     when (validateReceiverKey(it)) {
                         ReceiverKeyValidationResult.VALID -> null
-                        ReceiverKeyValidationResult.INVALID_FORMAT -> validationError
+                        ReceiverKeyValidationResult.INVALID_EMPTY -> validationError
                     }
                 },
             )

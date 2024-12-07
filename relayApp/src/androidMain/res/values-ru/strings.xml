@@ -14,7 +14,7 @@
     <string name="settings_page_entry_recent_messages_title">Отображать последние сообщения</string>
     <string name="settings_page_entry_recent_messages_summary">Отображать ли недавние входящие сообщения на главном экране</string>
     <string name="settings_page_entry_receiver_key_title">Ключ адресата</string>
-    <string name="settings_page_entry_receiver_key_error_format">Некорректный ключ адресата</string>
+    <string name="settings_page_entry_receiver_key_error_empty">Ключ адресата должен быть задан</string>
     <string name="settings_page_address_and_key_warning_message">Адрес сервера и ключ адресата должны быть заданы для переадресации сообщений.</string>
     <string name="dashboard_stats_title">Статистика</string>
     <string name="dashboard_stats_card_title_processed">Обработано</string>

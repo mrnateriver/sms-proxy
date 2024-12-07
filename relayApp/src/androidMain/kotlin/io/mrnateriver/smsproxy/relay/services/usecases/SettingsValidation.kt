@@ -24,12 +24,13 @@ fun validateBaseApiUrl(value: String): ApiBaseUrlValidationResult {
 
 enum class ReceiverKeyValidationResult {
     VALID,
-    INVALID_FORMAT,
+    INVALID_EMPTY,
 }
 
 fun validateReceiverKey(value: String): ReceiverKeyValidationResult {
-    return value.matches(RECEIVER_KEY_REGEX)
-        .let { if (!it) ReceiverKeyValidationResult.INVALID_FORMAT else ReceiverKeyValidationResult.VALID }
+    return if (value.isEmpty()) {
+        ReceiverKeyValidationResult.INVALID_EMPTY
+    } else {
+        ReceiverKeyValidationResult.VALID
+    }
 }
-
-private val RECEIVER_KEY_REGEX = Regex("""^[a-zA-Z0-9]{16}$""")
