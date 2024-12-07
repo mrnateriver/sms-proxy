@@ -152,5 +152,6 @@ room = { id = "androidx.room", version.ref = "room" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentry" }
+sentry-jvm = { id = "io.sentry.jvm.gradle", version.ref = "sentry" }
 sentry-kotlin = { id = "io.sentry.kotlin.compiler.gradle", version.ref = "sentry" }
 fabrikt = { id = "ch.acanda.gradle.fabrikt", version = "1.7.0" }

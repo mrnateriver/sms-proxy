@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ktor)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.sentry.jvm)
     application
 }
 
@@ -45,6 +46,18 @@ detekt {
         "src/test/kotlin",
         "./build.gradle.kts",
     )
+}
+
+sentry {
+    org = getProperty("sentry.org")
+    projectName = getProperty("sentry.projectNamePrefix").let { "$it-server" }
+    authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: getProperty("sentry.authToken")
+    includeSourceContext = true
+    telemetry = false
+}
+
+tasks.named("generateSentryBundleIdJava") {
+    dependsOn("generateMainDatabaseInterface", "kspKotlin")
 }
 
 dependencies {

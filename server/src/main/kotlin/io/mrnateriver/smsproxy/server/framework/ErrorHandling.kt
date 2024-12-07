@@ -9,14 +9,28 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
 import io.mrnateriver.smsproxy.server.entities.ApiError
 import io.mrnateriver.smsproxy.server.entities.exceptions.ValidationException
+import io.mrnateriver.smsproxy.server.ktorDevMode
+import io.sentry.Sentry
 import org.slf4j.event.Level
 
+fun initErrorHandling() {
+    val sentryDsn = System.getenv("SENTRY_DSN")
+    if (!sentryDsn.isNullOrBlank()) {
+        Sentry.init { options ->
+            options.dsn = sentryDsn
+            options.tracesSampleRate = 1.0
+            options.isDebug = ktorDevMode
+            options.setLogger(SentryLogger())
+        }
+    }
+}
+
 fun Application.installErrorHandling() {
-    val ktorDevMode = System.getProperty("io.ktor.development") == "true"
     install(StatusPages) {
         // TODO: metrics
 
         exception<Throwable> { call, cause ->
+            Sentry.captureException(cause)
             call.respondApiError(
                 code = HttpStatusCode.InternalServerError,
                 message = (if (ktorDevMode) cause.message else null) ?: "Internal server error",
