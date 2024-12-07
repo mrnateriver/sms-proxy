@@ -9,8 +9,8 @@ import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as Observab
 class ObservabilityService @Inject constructor(private val logger: Logger) : ObservabilityServiceContract {
     // TODO: OTEL for spans and metrics
 
-    override fun log(level: LogLevel, message: String) {
-        logger.atLevel(level).log(message)
+    override fun log(level: LogLevel, message: String, tag: String) {
+        logger.atLevel(level).addKeyValue("tag", tag).log(message)
     }
 
     override fun reportException(exception: Throwable) {

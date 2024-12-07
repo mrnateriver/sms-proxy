@@ -16,9 +16,6 @@ class MessageProxyUseCase @Inject constructor(
     suspend fun proxyMessage(request: ProxyMessageRequest): UUID {
         validateProxyRequest(request)
 
-        // TODO: do the processing in the background -- how to return ID then considering the shared service?
-        // TODO: how to retry processing if receiverKey is encrypted together with the message data?
-        //  -- perhaps storing the receiver+encrpted data in a background work dispatcher system, what about security?
         return messageProcessingService.process(request.toMessageData()).guid
     }
 

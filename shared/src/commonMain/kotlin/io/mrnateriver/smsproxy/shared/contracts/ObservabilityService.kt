@@ -8,7 +8,7 @@ enum class LogLevel {
 }
 
 interface ObservabilityService {
-    fun log(level: LogLevel, message: String)
+    fun log(level: LogLevel, message: String, tag: String = "shared")
     fun reportException(exception: Throwable)
     suspend fun <T> runSpan(name: String, body: suspend () -> T): T
     suspend fun incrementCounter(metricName: String)
