@@ -35,7 +35,7 @@ class MessageBackgroundProcessingService @Inject constructor(
                 else -> MessageBackgroundProcessingResult.SUCCESS
             }
 
-            repeat(results.count { it == MessageRelayStatus.ERROR }) {
+            repeat(results.count { it == MessageRelayStatus.ERROR || it == MessageRelayStatus.FAILED }) {
                 statsService.incrementProcessingErrors()
             }
 
