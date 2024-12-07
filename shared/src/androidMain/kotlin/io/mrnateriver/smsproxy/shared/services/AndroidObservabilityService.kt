@@ -5,8 +5,8 @@ import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 open class AndroidObservabilityService : ObservabilityServiceContract {
-    override fun log(level: LogLevel, message: String) {
-        Log.println(mapLogLevel(level), "shared", message)
+    override fun log(level: LogLevel, message: String, tag: String) {
+        Log.println(mapLogLevel(level), tag, message)
     }
 
     override fun reportException(exception: Throwable) {

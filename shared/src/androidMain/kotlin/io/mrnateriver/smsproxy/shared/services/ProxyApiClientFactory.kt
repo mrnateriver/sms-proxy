@@ -7,6 +7,7 @@ import io.mrnateriver.smsproxy.shared.BuildConfig
 import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import okhttp3.OkHttpClient
 import okhttp3.internal.tls.OkHostnameVerifier
+import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import okhttp3.tls.decodeCertificatePem
@@ -31,14 +32,15 @@ fun createProxyApiClient(
 ): ProxyApi {
     return ApiClient(
         baseApiUrl,
-        createOkHttpClientBuilder(serverCertificatePem, clientCertificatePem, clientPrivateKeyPem),
+        createOkHttpClientBuilder(
+            serverCertificatePem,
+            clientCertificatePem,
+            clientPrivateKeyPem,
+            observabilityService,
+            apiKey,
+            loggingEnabled,
+        ),
     )
-        .addAuthorization("Bearer", HttpBearerAuth(apiKey))
-        .apply {
-            if (loggingEnabled) {
-                logger = { message -> observabilityService.log(LogLevel.DEBUG, message) }
-            }
-        }
         .createService(ProxyApi::class.java)
 }
 
@@ -46,17 +48,28 @@ private fun createOkHttpClientBuilder(
     serverCertificatePem: String?,
     clientCertificatePem: String?,
     clientPrivateKeyPem: String?,
+    observabilityService: ObservabilityServiceContract,
+    apiKey: String = BuildConfig.API_KEY,
+    loggingEnabled: Boolean = BuildConfig.DEBUG,
 ): OkHttpClient.Builder {
     return OkHttpClient.Builder()
         .readTimeout(BuildConfig.API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
         .connectTimeout(BuildConfig.API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
         .writeTimeout(BuildConfig.API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+        .addInterceptor(HttpBearerAuth(schema = "Bearer", bearerToken = apiKey))
         .apply {
             val clientCertificates = createHandshakeCertificates(
                 serverCertificatePem,
                 clientCertificatePem,
                 clientPrivateKeyPem,
             )
+
+            if (loggingEnabled) {
+                addInterceptor(
+                    HttpLoggingInterceptor { message -> observabilityService.log(LogLevel.DEBUG, message) }
+                        .apply { level = HttpLoggingInterceptor.Level.BODY },
+                )
+            }
 
             sslSocketFactory(clientCertificates.sslSocketFactory(), clientCertificates.trustManager)
             hostnameVerifier { _, session -> verifySelfSignedCertificateHost(session) }
