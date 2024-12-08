@@ -3,9 +3,10 @@ services:
     image: redgate/flyway
     command: -url=jdbc:postgresql://db:5432/ -schemas=sms-proxy -user=sms-proxy -password=sms-proxy -connectRetries=60 migrate
     volumes:
-      - ./build/resources/main/migrations:/flyway/sql
+      - ./server/build/resources/main/migrations:/flyway/sql
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -19,6 +20,9 @@ services:
       - "5432:5432"
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sms-proxy" ]
+      interval: 1s
 
   adminer:
     image: adminer

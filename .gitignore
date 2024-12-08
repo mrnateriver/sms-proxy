@@ -20,3 +20,4 @@ captures
 release.keystore
 **/*.pem
 **/*.jks
+.env.local

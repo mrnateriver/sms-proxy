@@ -16,8 +16,8 @@ import org.slf4j.event.Level
 
 fun initErrorHandling() {
     val logger = LoggerFactory.getLogger("UncaughtExceptionHandler")
-    Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-        logger.error("[${thread.name}] ${throwable.message}", throwable)
+    Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
+        logger.error("${throwable.message}", throwable)
     }
 
     val sentryDsn = System.getenv("SENTRY_DSN")

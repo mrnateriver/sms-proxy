@@ -1,0 +1,10 @@
+.git
+.idea
+.kotlin
+.run
+.github
+.vscode
+.fleet
+**/.gradle
+**/build
+docs
