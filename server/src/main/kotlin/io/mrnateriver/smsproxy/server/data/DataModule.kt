@@ -8,6 +8,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import io.ktor.util.logging.Logger
+import io.mrnateriver.smsproxy.server.ServerConfiguration
 import io.mrnateriver.smsproxy.server.db.Database
 import io.mrnateriver.smsproxy.server.db.Messages
 import io.mrnateriver.smsproxy.server.db.MessagesQueries
@@ -52,14 +53,14 @@ interface DataModule {
 
         @Provides
         @Singleton
-        fun provideDataSource(): DataSource {
+        fun provideDataSource(serverConfig: ServerConfiguration): DataSource {
             val config = HikariConfig()
             config.addDataSourceProperty("cachePrepStmts", "true")
             config.addDataSourceProperty("prepStmtCacheSize", "250")
             config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
-            config.jdbcUrl = System.getenv("DB_JDBC_URI")
-            config.username = System.getenv("DB_USER")
-            config.password = System.getenv("DB_PASSWORD")
+            config.jdbcUrl = serverConfig.db.url
+            config.username = serverConfig.db.user
+            config.password = serverConfig.db.password
 
             return HikariDataSource(config)
         }

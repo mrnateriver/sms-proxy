@@ -11,10 +11,18 @@ data class TlsConfiguration(
     val clientsKeysPath: String,
 )
 
+data class DatabaseConfiguration(
+    val url: String,
+    val user: String,
+    val password: String,
+)
+
 data class ServerConfiguration(
+    val apiKey: String,
     val hashingSecret: String,
     val host: String,
     val port: Int,
+    val db: DatabaseConfiguration,
     val tlsConfig: TlsConfiguration? = null,
 )
 
@@ -50,10 +58,32 @@ fun getServerConfigurationFromEnv(): ServerConfiguration {
         "HASHING_SECRET must be set"
     }
 
+    // API key is passed as a system property in addition to an env var because it is synced with Android apps at
+    // build time and embedded in the server's build artifacts in dev mode
+    val packageName = ::main.javaClass.packageName
+    val apiKey = System.getenv("API_KEY") ?: System.getProperty("$packageName.apiKey")
+    require(apiKey != null) {
+        "API_KEY environment variable or a system property $packageName.apiKey must be set"
+    }
+
+    val jdbcUrl = System.getenv("DB_JDBC_URI")
+    val dbUsername = System.getenv("DB_USER")
+    val dbPassword = System.getenv("DB_PASSWORD")
+    require(!jdbcUrl.isNullOrEmpty()) { "DB_JDBC_URI must be set" }
+    require(!dbUsername.isNullOrEmpty()) { "DB_USER must be set" }
+    require(!dbPassword.isNullOrEmpty()) { "DB_PASSWORD must be set" }
+
     val host = System.getenv("SERVER_HOST") ?: DEFAULT_SERVER_HOST
     val port = System.getenv("SERVER_PORT")?.toInt() ?: DEFAULT_SERVER_PORT
 
     val tlsConfig = getTlsConfigurationFromEnv()
 
-    return ServerConfiguration(hashingSecret = hashingSecret, host = host, port = port, tlsConfig = tlsConfig)
+    return ServerConfiguration(
+        host = host,
+        port = port,
+        apiKey = apiKey,
+        tlsConfig = tlsConfig,
+        hashingSecret = hashingSecret,
+        db = DatabaseConfiguration(url = jdbcUrl, user = dbUsername, password = dbPassword),
+    )
 }

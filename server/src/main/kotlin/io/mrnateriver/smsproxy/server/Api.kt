@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.server.framework
+package io.mrnateriver.smsproxy.server
 
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
@@ -14,7 +14,7 @@ import io.ktor.server.routing.routing
 import io.mrnateriver.smsproxy.controllers.MessagesProxyController.Companion.messagesProxyRoutes
 import io.mrnateriver.smsproxy.controllers.ReceiversController.Companion.receiversRoutes
 import io.mrnateriver.smsproxy.controllers.ReceiversRegisterController.Companion.receiversRegisterRoutes
-import io.mrnateriver.smsproxy.server.ServerConfiguration
+import io.mrnateriver.smsproxy.server.framework.DaggerFramework
 import org.slf4j.event.Level
 
 fun Application.installApi(serverConfig: ServerConfiguration) {
@@ -36,7 +36,11 @@ fun Application.installApi(serverConfig: ServerConfiguration) {
     }
 
     routing {
-        val framework = DaggerFramework.builder().logger(log).hashingSecret(serverConfig.hashingSecret).build()
+        val framework = DaggerFramework.builder()
+            .logger(log)
+            .hashingSecret(serverConfig.hashingSecret)
+            .serverConfig(serverConfig)
+            .build()
         val proxyController = framework.messagesProxyController()
         val receiversController = framework.receiversController()
 
