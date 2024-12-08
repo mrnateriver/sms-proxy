@@ -6,9 +6,8 @@ import io.sentry.SentryLevel
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 
-class SentryLogger : ILogger {
-    private val logger: Logger = LoggerFactory.getLogger(SentryLogger::class.java)
-
+class SentryLogger(private val logger: Logger = LoggerFactory.getLogger(SentryLogger::class.java.simpleName)) :
+    ILogger {
     override fun log(level: SentryLevel, message: String, vararg args: Any?) {
         logger.atLevel(level.toSL4JLevel()).log(message, *args)
     }

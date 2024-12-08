@@ -1,4 +1,4 @@
-package io.mrnateriver.smsproxy.server.framework
+package io.mrnateriver.smsproxy.server
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -9,17 +9,24 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
 import io.mrnateriver.smsproxy.server.entities.ApiError
 import io.mrnateriver.smsproxy.server.entities.exceptions.ValidationException
-import io.mrnateriver.smsproxy.server.ktorDevMode
+import io.mrnateriver.smsproxy.server.framework.SentryLogger
 import io.sentry.Sentry
+import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 
 fun initErrorHandling() {
+    val logger = LoggerFactory.getLogger("UncaughtExceptionHandler")
+    Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+        logger.error("[${thread.name}] ${throwable.message}", throwable)
+    }
+
     val sentryDsn = System.getenv("SENTRY_DSN")
     if (!sentryDsn.isNullOrBlank()) {
         Sentry.init { options ->
             options.dsn = sentryDsn
             options.tracesSampleRate = 1.0
             options.isDebug = ktorDevMode
+            options.isPrintUncaughtStackTrace = true
             options.setLogger(SentryLogger())
         }
     }

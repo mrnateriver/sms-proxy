@@ -9,7 +9,7 @@
             <withSequenceNumber>false</withSequenceNumber>
         </encoder>
     </appender>
-    <root level="${KTOR_LOG_LEVEL}">
+    <root level="${KTOR_LOG_LEVEL:-debug}">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
