@@ -1,21 +1,15 @@
 package io.mrnateriver.smsproxy.server
 
-import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.application.log
-import io.ktor.server.plugins.callid.CallId
-import io.ktor.server.plugins.callid.callIdMdc
-import io.ktor.server.plugins.callid.generate
-import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
 import io.mrnateriver.smsproxy.controllers.MessagesProxyController.Companion.messagesProxyRoutes
 import io.mrnateriver.smsproxy.controllers.ReceiversController.Companion.receiversRoutes
 import io.mrnateriver.smsproxy.controllers.ReceiversRegisterController.Companion.receiversRegisterRoutes
 import io.mrnateriver.smsproxy.server.framework.DaggerFramework
-import org.slf4j.event.Level
 
 fun Application.installApi(serverConfig: ServerConfiguration) {
     install(ContentNegotiation) {
@@ -24,16 +18,7 @@ fun Application.installApi(serverConfig: ServerConfiguration) {
 
     installErrorHandling()
 
-    install(CallId) {
-        retrieveFromHeader(HttpHeaders.XRequestId)
-        replyToHeader(HttpHeaders.XRequestId)
-        generate(length = 32, dictionary = "0123456789abcdef")
-    }
-
-    install(CallLogging) {
-        callIdMdc(HttpHeaders.XRequestId)
-        level = Level.DEBUG
-    }
+    installTracing()
 
     routing {
         val framework = DaggerFramework.builder()
