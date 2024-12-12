@@ -36,6 +36,14 @@ fun Application.installErrorHandling() {
     install(StatusPages) {
         // TODO: metrics
 
+        status(HttpStatusCode.NotFound) { call, status ->
+            call.respondApiError(
+                code = HttpStatusCode.NotFound,
+                message = "Not found",
+                logLevel = Level.DEBUG,
+            )
+        }
+
         exception<Throwable> { call, cause ->
             Sentry.captureException(cause)
             call.respondApiError(
