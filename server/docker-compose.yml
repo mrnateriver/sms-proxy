@@ -1,0 +1,73 @@
+services:
+  reverse-proxy:
+    image: traefik:v3.2
+    command: "--api.insecure=true --providers.docker --providers.docker.exposedByDefault=false --entryPoints.server.address=:3000 --entryPoints.server.asDefault=true --tracing=true --metrics.otlp=true"
+    ports:
+      - "3000:3000"
+      - "8081:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - sms-proxy
+
+  server:
+    build:
+      context: ./..
+      dockerfile: ./server/Dockerfile
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    networks:
+      - sms-proxy
+    environment:
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 3000
+      DB_JDBC_URI: jdbc:postgresql://db:5432/sms-proxy
+      DB_PASSWORD: sms-proxy
+      DB_USER: sms-proxy
+      HASHING_SECRET: super-secret-value
+      KTOR_LOG_LEVEL: debug
+      SENTRY_DSN: ${SENTRY_DSN}
+      API_KEY: ${API_KEY}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server.rule=PathPrefix(`/`)"
+      - "traefik.http.services.server.loadBalancer.server.port=3000"
+
+  flyway:
+    image: redgate/flyway
+    command: -url=jdbc:postgresql://db:5432/ -schemas=sms-proxy -user=sms-proxy -password=sms-proxy -connectRetries=60 migrate
+    volumes:
+      - ./build/resources/main/migrations:/flyway/sql
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - sms-proxy
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: sms-proxy
+      POSTGRES_PASSWORD: sms-proxy
+      POSTGRES_DB: sms-proxy
+    networks:
+      - sms-proxy
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sms-proxy" ]
+      interval: 1s
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - sms-proxy
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_PLUGINS: tables-filter
+
+networks:
+  sms-proxy:
