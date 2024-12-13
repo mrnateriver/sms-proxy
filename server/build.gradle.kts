@@ -25,29 +25,17 @@ application {
 
 tasks {
     register<GenerateCertificatesTask>("generateProxyApiCertificate") {
+        val apiServerPubKeyPath = "src/androidMain/assets/proxy-api-server-certificate.pem"
+
         applicationName = validateNonEmpty("serverCN")
-        format = CertificateStorageFormat.JKS
 
         outputKeyStoreFile = "src/main/assets/server.jks"
-        val apiServerPubKeyPath = "src/androidMain/assets/proxy-api-server-certificate.pem"
+        outputPrivateKeyFile = "src/main/assets/server-private-key.pem"
         outputCertificatesFiles = listOf(
+            resolveProjectFilePath("server", "src/main/assets/server.pem"),
             resolveProjectFilePath("relayApp", apiServerPubKeyPath),
             resolveProjectFilePath("receiverApp", apiServerPubKeyPath),
         )
-    }
-
-    register<GenerateCertificatesTask>("generateProxyApiCertificatePem") {
-        applicationName = validateNonEmpty("serverCN")
-        format = CertificateStorageFormat.PEM
-
-        outputPrivateKeyFile = "src/main/assets/server-private-key.pem"
-        outputCertificatesFiles =
-            listOf(
-                resolveProjectFilePath(
-                    "server",
-                    "src/main/assets/server.pem",
-                ),
-            )
     }
 }
 

@@ -1,5 +1,4 @@
 import io.ktor.network.tls.certificates.saveToFile
-import io.ktor.util.encodeBase64
 import io.ktor.util.toCharArray
 import org.bouncycastle.asn1.x500.RDN
 import org.bouncycastle.asn1.x500.X500Name
@@ -27,17 +26,11 @@ import java.math.BigInteger
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.KeyStore
-import java.security.MessageDigest
 import java.security.cert.CertificateFactory
 import java.time.Instant
 import java.util.Date
 
 typealias FilePath = String
-
-enum class CertificateStorageFormat {
-    PEM,
-    JKS,
-}
 
 open class GenerateCertificatesTask : DefaultTask() {
     init {
@@ -48,12 +41,6 @@ open class GenerateCertificatesTask : DefaultTask() {
 
     @Input
     val applicationName = project.objects.property<String>()
-
-    @Input
-    @Optional
-    val format: Property<CertificateStorageFormat> =
-        project.objects.property<CertificateStorageFormat>()
-            .convention(CertificateStorageFormat.PEM)
 
     @Input
     @Optional
@@ -116,13 +103,19 @@ open class GenerateCertificatesTask : DefaultTask() {
     fun run() {
         validateInputs()
 
+        val err = System.err
+        err.println("\n\n***************************************************")
+        err.println("WARNING!")
+        err.println("***************************************************")
+        err.println("DO NOT USE FOR PRODUCTION TLS!")
+        err.println("This Gradle task generates certificates with insecure CNs and potentially insecure ciphers.\n\n")
+
         val keyPair = generateKeys()
         val cert = generateCertificate(keyPair)
 
-        @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-        when (format.get()) {
-            CertificateStorageFormat.PEM -> createPrivateKeyPem(keyPair)
-            CertificateStorageFormat.JKS -> createJavaKeyStore(cert, keyPair)
+        createPrivateKeyPem(keyPair)
+        if (outputKeyStoreFile.isPresent) {
+            createJavaKeyStore(cert, keyPair)
         }
 
         createCertificatesPem(cert)
@@ -195,7 +188,14 @@ open class GenerateCertificatesTask : DefaultTask() {
             subPubKeyInfo,
         )
 
-        val generalNames = GeneralNames(arrayOf(GeneralName(GeneralName.dNSName, serverCN)))
+        val generalNames = GeneralNames(
+            arrayOf(
+                GeneralName(GeneralName.dNSName, serverCN),
+                GeneralName(GeneralName.dNSName, "localhost"),
+                GeneralName(GeneralName.iPAddress, "127.0.0.1"),
+                GeneralName(GeneralName.iPAddress, "::1"),
+            ),
+        )
         certBuilder.addExtension(Extension.subjectAlternativeName, false, generalNames)
 
         val signer = JcaContentSignerBuilder("SHA256WithRSA")
@@ -211,11 +211,6 @@ open class GenerateCertificatesTask : DefaultTask() {
             .genKeyPair()
     }
 
-    private fun KeyPair.publicKeySha256(): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        return digest.digest(public.encoded).encodeBase64()
-    }
-
     private fun validateInputs() {
         if (applicationName.get().isBlank()) {
             throw IllegalArgumentException("applicationName must not be blank")
@@ -225,16 +220,14 @@ open class GenerateCertificatesTask : DefaultTask() {
             throw IllegalArgumentException("validForDays must be greater than 0")
         }
 
-        if (format.get() == CertificateStorageFormat.JKS) {
-            if (keyAlias.get().isBlank()) {
-                throw IllegalArgumentException("keyAlias must not be blank when using JKS format")
-            }
-            if (certPassword.get().isBlank()) {
-                throw IllegalArgumentException("certPassword must not be blank")
-            }
-            if (storePassword.get().isBlank()) {
-                throw IllegalArgumentException("storePassword must not be blank")
-            }
+        if (keyAlias.get().isBlank()) {
+            throw IllegalArgumentException("keyAlias must not be blank when using JKS format")
+        }
+        if (certPassword.get().isBlank()) {
+            throw IllegalArgumentException("certPassword must not be blank")
+        }
+        if (storePassword.get().isBlank()) {
+            throw IllegalArgumentException("storePassword must not be blank")
         }
     }
 }
