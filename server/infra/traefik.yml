@@ -1,0 +1,32 @@
+log:
+  level: DEBUG
+
+api:
+  insecure: true
+
+providers:
+  file:
+    filename: /etc/traefik/traefik.yml
+    watch: false
+  docker:
+    exposedByDefault: false
+
+entryPoints:
+  server:
+    address: ":3000"
+    asDefault: true
+
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/server.pem
+        keyFile: /etc/traefik/certs/server-private-key.pem
+  options:
+    default:
+      minVersion: VersionTLS12
+
+metrics:
+  otlp: true
+
+tracing: true

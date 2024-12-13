@@ -1,12 +1,13 @@
 services:
   reverse-proxy:
-    image: traefik:v3.2
-    command: "--api.insecure=true --providers.docker --providers.docker.exposedByDefault=false --entryPoints.server.address=:3000 --entryPoints.server.asDefault=true --tracing=true --metrics.otlp=true"
+    image: traefik:latest
     ports:
       - "3000:3000"
       - "8081:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./infra/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./src/main/assets:/etc/traefik/certs:ro
     networks:
       - sms-proxy
 
@@ -35,6 +36,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.server.rule=PathPrefix(`/`)"
       - "traefik.http.services.server.loadBalancer.server.port=3000"
+      - "traefik.http.routers.server.tls=true"
 
   flyway:
     image: redgate/flyway
