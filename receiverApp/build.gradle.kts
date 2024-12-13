@@ -39,7 +39,7 @@ tasks {
                 ),
                 resolveProjectFilePath(
                     "server",
-                    "src/main/resources/clients/proxy-api-receiver-app.pem",
+                    "src/main/assets/clients/proxy-api-receiver-app.pem",
                 ),
             )
     }

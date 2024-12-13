@@ -36,7 +36,7 @@ typealias FilePath = String
 
 enum class CertificateStorageFormat {
     PEM,
-    JKS
+    JKS,
 }
 
 open class GenerateCertificatesTask : DefaultTask() {
@@ -63,7 +63,7 @@ open class GenerateCertificatesTask : DefaultTask() {
                 ?: (project.rootProject.extra["basePackageName"]?.toString() ?: "")
                     .split('.')
                     .dropLast(1)
-                    .joinToString(".")
+                    .joinToString("."),
         )
 
     @Input
@@ -160,7 +160,7 @@ open class GenerateCertificatesTask : DefaultTask() {
                 keyAlias.get(),
                 keyPair.private,
                 certPassword.get().toCharArray(),
-                arrayOf(javaCert)
+                arrayOf(javaCert),
             )
 
             val outputKeyStoreFile = project.file(outputKeyStoreFile)
@@ -192,7 +192,7 @@ open class GenerateCertificatesTask : DefaultTask() {
             validFrom,
             validTo,
             x500Name,
-            subPubKeyInfo
+            subPubKeyInfo,
         )
 
         val generalNames = GeneralNames(arrayOf(GeneralName(GeneralName.dNSName, serverCN)))

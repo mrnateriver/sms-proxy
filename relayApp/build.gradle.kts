@@ -38,7 +38,7 @@ tasks {
             ),
             resolveProjectFilePath(
                 "server",
-                "src/main/resources/clients/proxy-api-relay-app.pem",
+                "src/main/assets/proxy-api-relay-app.pem",
             ),
         )
     }
