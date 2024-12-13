@@ -25,6 +25,11 @@ tls:
   options:
     default:
       minVersion: VersionTLS12
+      clientAuth:
+        caFiles:
+          - /etc/traefik/certs/clients/proxy-api-relay-app.pem
+          - /etc/traefik/certs/clients/proxy-api-receiver-app.pem
+        clientAuthType: RequireAndVerifyClientCert
 
 metrics:
   otlp: true
