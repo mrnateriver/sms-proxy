@@ -1,17 +1,19 @@
 services:
   reverse-proxy:
     image: traefik:latest
+    restart: no
     ports:
       - "3000:3000"
       - "8081:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./infra/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./infra/local/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./src/main/assets:/etc/traefik/certs:ro
     networks:
       - sms-proxy
 
   server:
+    restart: no
     build:
       context: ./..
       dockerfile: ./server/Dockerfile
@@ -38,8 +40,10 @@ services:
       - "traefik.http.services.server.loadBalancer.server.port=3000"
       - "traefik.http.routers.server.tls=true"
 
+  # TODO: this requires that migrations have already been built on host; a more reliable way would be to build them during image build
   flyway:
     image: redgate/flyway
+    restart: no
     command: -url=jdbc:postgresql://db:5432/ -schemas=sms-proxy -user=sms-proxy -password=sms-proxy -connectRetries=60 migrate
     volumes:
       - ./build/resources/main/migrations:/flyway/sql
@@ -51,18 +55,23 @@ services:
 
   db:
     image: postgres:17
+    restart: no
     environment:
       POSTGRES_USER: sms-proxy
       POSTGRES_PASSWORD: sms-proxy
-      POSTGRES_DB: sms-proxy
+      POSTGRES_ADDITIONAL_DATABASES: grafana
     networks:
       - sms-proxy
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U sms-proxy" ]
       interval: 1s
+    volumes:
+      - ./infra/local/multiple-databases.sh:/docker-entrypoint-initdb.d/multiple-databases.sh
+      - db-data:/var/lib/postgresql/data
 
   adminer:
     image: adminer
+    restart: no
     ports:
       - "8080:8080"
     networks:
@@ -70,6 +79,102 @@ services:
     environment:
       ADMINER_DEFAULT_SERVER: postgres
       ADMINER_PLUGINS: tables-filter
+    labels:
+      - "io.mrnateriver.group=monitoring"
+
+  # Observability setup is very heavily inspired by:
+  # https://github.com/stefanprodan/dockprom
+
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    container_name: prometheus
+    restart: no
+    volumes:
+      - ./infra/local/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      - sms-proxy
+    labels:
+      - "io.mrnateriver.group=monitoring"
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    restart: no
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - sms-proxy
+    labels:
+      - "io.mrnateriver.group=monitoring"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.51.0
+    restart: no
+    privileged: true
+    command:
+      - '--docker_only=true'
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    # - /cgroup:/cgroup:ro # Doesn't work on Mac
+    ports:
+      - "8082:8080"
+    networks:
+      - sms-proxy
+    labels:
+      - "io.mrnateriver.group=monitoring"
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    restart: no
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./infra/local/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./infra/local/grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=db
+      - GF_DATABASE_NAME=grafana
+      - GF_DATABASE_USER=grafana
+      - GF_DATABASE_PASSWORD=grafana
+    ports:
+      - "8083:3000"
+    networks:
+      - sms-proxy
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      - "io.mrnateriver.group=monitoring"
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  db-data:
 
 networks:
   sms-proxy:

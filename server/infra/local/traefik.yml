@@ -15,6 +15,8 @@ entryPoints:
   server:
     address: ":3000"
     asDefault: true
+  prometheus:
+    address: ":9100"
 
 tls:
   stores:
@@ -32,6 +34,8 @@ tls:
         clientAuthType: RequireAndVerifyClientCert
 
 metrics:
-  otlp: true
+  addInternals: true
+  prometheus:
+    entryPoint: prometheus
 
-tracing: true
+#tracing: true
