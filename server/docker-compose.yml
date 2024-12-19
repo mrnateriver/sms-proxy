@@ -171,9 +171,37 @@ services:
     labels:
       - "io.mrnateriver.group=monitoring"
 
+  loki:
+    image: grafana/loki:3.3.2
+    restart: no
+    networks:
+      - sms-proxy
+    labels:
+      - "io.mrnateriver.group=monitoring"
+
+  alloy:
+    image: grafana/alloy:v1.5.1
+    restart: no
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    volumes:
+      - ./infra/local/alloy.cfg:/etc/alloy/config.alloy
+      - alloy-data:/var/lib/alloy/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "8084:12345"
+    networks:
+      - sms-proxy
+    labels:
+      - "io.mrnateriver.group=monitoring"
+
 volumes:
   prometheus-data:
   grafana-data:
+  alloy-data:
   db-data:
 
 networks:
