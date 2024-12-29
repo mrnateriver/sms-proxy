@@ -100,7 +100,7 @@ services:
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
     ports:
-      - "9090:9090"
+      - "8085:9090"
     networks:
       - sms-proxy
     labels:
@@ -198,10 +198,43 @@ services:
     labels:
       - "io.mrnateriver.group=monitoring"
 
+  # Tempo runs as user 10001, and Docker Compose creates the volume as root.
+  # As such, we need to chown the volume in order for Tempo to start correctly.
+  # Source: https://github.com/grafana/tempo/blob/main/example/docker-compose/alloy/docker-compose.yaml
+  init:
+    image: &tempoImage grafana/tempo:latest
+    user: root
+    restart: no
+    entrypoint:
+      - "chown"
+      - "10001:10001"
+      - "/var/tempo"
+    volumes:
+      - tempo-data:/var/tempo
+    networks:
+      - sms-proxy
+    labels:
+      - "io.mrnateriver.group=monitoring"
+
+  tempo:
+    image: *tempoImage
+    command: [ "-config.file=/etc/tempo.yml" ]
+    restart: no
+    volumes:
+      - ./infra/local/tempo.yml:/etc/tempo.yml
+      - tempo-data:/var/tempo
+    depends_on:
+      - init
+    networks:
+      - sms-proxy
+    labels:
+      - "io.mrnateriver.group=monitoring"
+
 volumes:
   postgres-data:
   prometheus-data:
   grafana-data:
+  tempo-data:
   alloy-data:
 
 networks:
