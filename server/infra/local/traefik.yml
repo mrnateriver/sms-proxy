@@ -1,6 +1,6 @@
 log:
   level: DEBUG
-  format: json
+  format: common
 
 api:
   insecure: true
@@ -35,12 +35,12 @@ tls:
         clientAuthType: RequireAndVerifyClientCert
 
 metrics:
-  addInternals: true
+  addInternals: false
   prometheus:
     entryPoint: prometheus
 
 tracing:
-  addInternals: true
+  addInternals: false
   capturedResponseHeaders:
     - X-Request-ID
   otlp:
