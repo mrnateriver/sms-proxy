@@ -28,7 +28,7 @@ kotlinGradlePlugin = "1.4.10"
 ktor = "3.0.1"
 logback = "1.5.12"
 kotlinx-datetime = "0.6.0"
-kotlinx-coroutines = "1.9.0"
+kotlinx-coroutines = "1.10.1"
 kotlinx-serialization-json = "1.7.3"
 hilt = "2.52"
 dagger = "2.52"
@@ -48,6 +48,10 @@ sentry-android = "7.17.0"
 hikari = "6.2.1"
 postgres = "42.7.3"
 arrow = "1.2.4"
+otel-instrumentation = "2.11.0-alpha"
+otel-sdk = "1.45.0"
+otel-semconv = "1.29.0-alpha"
+micrometer = "1.14.2"
 
 [libraries]
 # Android Runtime
@@ -110,12 +114,23 @@ ktor-server-statusPages = { module = "io.ktor:ktor-server-status-pages", version
 ktor-network-tls-certificates = { module = "io.ktor:ktor-network-tls-certificates", version.ref = "ktor" }
 ktor-server-callId = { module = "io.ktor:ktor-server-call-id", version.ref = "ktor" }
 ktor-server-callLogging = { module = "io.ktor:ktor-server-call-logging", version.ref = "ktor" }
+ktor-server-metrics-micrometer = { module = "io.ktor:ktor-server-metrics-micrometer", version.ref = "ktor" }
+micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
 sqldelight-dialect-postgresql = { module = "app.cash.sqldelight:postgresql-dialect", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { group = "app.cash.sqldelight", name = "jdbc-driver", version.ref = "sqldelight" }
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
 hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
 postgresql-jdbc = { group = "org.postgresql", name = "postgresql", version.ref = "postgres" }
+opentelemetry-sdk = { group = "io.opentelemetry", name = "opentelemetry-sdk", version.ref = "otel-sdk" }
+opentelemetry-extension-kotlin = { group = "io.opentelemetry", name = "opentelemetry-extension-kotlin", version.ref = "otel-sdk" }
+opentelemetry-exporter-logging = { group = "io.opentelemetry", name = "opentelemetry-exporter-logging", version.ref = "otel-sdk" }
+opentelemetry-exporter-otlp = { group = "io.opentelemetry", name = "opentelemetry-exporter-otlp", version.ref = "otel-sdk" }
+opentelemetry-exporter-prometheus = { group = "io.opentelemetry", name = "opentelemetry-exporter-prometheus", version = "1.45.0-alpha" }
+opentelemetry-instrumentation-ktor = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version.ref = "otel-instrumentation" }
+opentelemetry-instrumentation-logbackMdc = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-logback-mdc-1.0", version.ref = "otel-instrumentation" }
+opentelemetry-instrumentation-micrometer = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-micrometer-1.5", version.ref = "otel-instrumentation" }
+opentelemetry-semconv-incubating = { group = "io.opentelemetry.semconv", name = "opentelemetry-semconv-incubating", version.ref = "otel-semconv" }
 
 # Server Tests
 ktor-server-tests = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }

@@ -41,8 +41,6 @@ metrics:
 
 tracing:
   addInternals: false
-  capturedResponseHeaders:
-    - X-Request-ID
   otlp:
     grpc:
       insecure: true

@@ -18,13 +18,13 @@ fun Application.installApi(serverConfig: ServerConfiguration) {
 
     installErrorHandling()
 
-    installTracing()
-
+    val telemetryServices = installTelemetry(serverConfig.telemetryConfig)
     routing {
         val framework = DaggerFramework.builder()
             .logger(log)
             .hashingSecret(serverConfig.hashingSecret)
             .serverConfig(serverConfig)
+            .telemetryServices(telemetryServices)
             .build()
         val proxyController = framework.messagesProxyController()
         val receiversController = framework.receiversController()

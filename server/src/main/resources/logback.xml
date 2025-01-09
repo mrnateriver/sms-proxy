@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!--FIXME: param string is nicer than JSON, but newlines make ingestion harder-->
+        <!--<encoder>
+            <pattern>ts=%d{yyyy-MM-dd'T'HH:mm:ss.SSS} %prefix(%thread %level %logger %X) %msg%n</pattern>
+        </encoder>-->
         <encoder class="ch.qos.logback.classic.encoder.JsonEncoder">
             <withFormattedMessage>true</withFormattedMessage>
             <withMessage>false</withMessage>
@@ -9,7 +13,10 @@
             <withSequenceNumber>false</withSequenceNumber>
         </encoder>
     </appender>
-    <root level="${KTOR_LOG_LEVEL:-debug}">
+    <appender name="OTEL" class="io.opentelemetry.instrumentation.logback.mdc.v1_0.OpenTelemetryAppender">
         <appender-ref ref="STDOUT" />
+    </appender>
+    <root level="${KTOR_LOG_LEVEL:-debug}">
+        <appender-ref ref="OTEL" />
     </root>
 </configuration>

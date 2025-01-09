@@ -31,7 +31,7 @@ scrape_configs:
   - job_name: 'sms-proxy'
     scrape_interval: 5s
     static_configs:
-      - targets: [ 'sms-proxy:3000' ]
+      - targets: [ 'sms-proxy:4000' ]
 
 # Used for short-running jobs
 #  - job_name: 'pushgateway'

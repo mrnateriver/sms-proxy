@@ -2,12 +2,24 @@ package io.mrnateriver.smsproxy.server.data
 
 import io.ktor.util.logging.Logger
 import io.mrnateriver.smsproxy.shared.contracts.LogLevel
+import io.opentelemetry.api.common.AttributeKey
+import io.opentelemetry.api.metrics.LongCounter
+import io.opentelemetry.api.metrics.Meter
+import io.opentelemetry.api.trace.SpanKind
+import io.opentelemetry.api.trace.Tracer
+import io.opentelemetry.context.Context
+import io.opentelemetry.extension.kotlin.asContextElement
+import kotlinx.coroutines.withContext
 import org.slf4j.event.Level
 import javax.inject.Inject
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
-class ObservabilityService @Inject constructor(private val logger: Logger) : ObservabilityServiceContract {
-    // TODO: OTEL for spans and metrics
+class ObservabilityService @Inject constructor(
+    private val tracer: Tracer?,
+    private val meter: Meter?,
+    private val logger: Logger,
+) : ObservabilityServiceContract {
+    private val cachedMeters: MutableMap<String, LongCounter> = mutableMapOf()
 
     override fun log(level: LogLevel, message: String, tag: String) {
         logger.atLevel(level).addKeyValue("tag", tag).log(message)
@@ -18,14 +30,35 @@ class ObservabilityService @Inject constructor(private val logger: Logger) : Obs
     }
 
     override suspend fun <T> runSpan(name: String, body: suspend () -> T): T {
-        log(LogLevel.DEBUG, "Starting span: $name")
-        val result = body()
-        log(LogLevel.DEBUG, "Ending span: $name")
-        return result
+        if (tracer == null) {
+            return body()
+        }
+
+        // TODO: debug threading with Contexts by adding a custom attribute to Context with Thread ID, or perhaps with arbitrary random ID to check if context is leaked
+        val context = Context.current()
+        val span = tracer.spanBuilder(name)
+            .setSpanKind(SpanKind.INTERNAL)
+            .setAttribute(AttributeKey.longKey("thread.id"), Thread.currentThread().id)
+            .startSpan()
+        val newContext = context.with(span)
+        try {
+            return withContext(newContext.asContextElement()) {
+                body()
+            }
+        } catch (e: Throwable) {
+            span.recordException(e)
+            throw e
+        } finally {
+            span.end()
+        }
     }
 
     override suspend fun incrementCounter(metricName: String) {
-        log(LogLevel.DEBUG, "Incrementing counter: $metricName")
+        if (meter == null) {
+            return
+        }
+
+        cachedMeters.getOrPut(metricName) { meter.counterBuilder(metricName).build() }.add(1)
     }
 
     private fun Logger.atLevel(level: LogLevel) = atLevel(

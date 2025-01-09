@@ -9,6 +9,7 @@ import dagger.Module
 import dagger.Provides
 import io.ktor.util.logging.Logger
 import io.mrnateriver.smsproxy.server.ServerConfiguration
+import io.mrnateriver.smsproxy.server.TelemetryServices
 import io.mrnateriver.smsproxy.server.db.Database
 import io.mrnateriver.smsproxy.server.db.Messages
 import io.mrnateriver.smsproxy.server.db.MessagesQueries
@@ -47,8 +48,11 @@ interface DataModule {
     companion object {
         @Provides
         @Singleton
-        fun provideObservabilityService(logger: Logger): ObservabilityServiceContract {
-            return ObservabilityService(logger)
+        fun provideObservabilityService(
+            telemetryServices: TelemetryServices?,
+            logger: Logger,
+        ): ObservabilityServiceContract {
+            return ObservabilityService(telemetryServices?.tracer, telemetryServices?.meter, logger)
         }
 
         @Provides
