@@ -4,7 +4,7 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import io.ktor.util.logging.Logger
-import io.mrnateriver.smsproxy.server.ServerConfiguration
+import io.mrnateriver.smsproxy.server.DatabaseConfiguration
 import io.mrnateriver.smsproxy.server.TelemetryServices
 import io.mrnateriver.smsproxy.server.usecases.UsecasesModule
 import javax.inject.Qualifier
@@ -28,7 +28,7 @@ interface Framework {
         fun hashingSecret(@HashingSecret secret: String): Builder
 
         @BindsInstance
-        fun serverConfig(serverConfig: ServerConfiguration): Builder
+        fun databaseConfig(databaseConfig: DatabaseConfiguration): Builder
 
         @BindsInstance
         fun telemetryServices(services: TelemetryServices?): Builder

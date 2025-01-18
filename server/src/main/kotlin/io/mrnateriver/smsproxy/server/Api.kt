@@ -11,19 +11,16 @@ import io.mrnateriver.smsproxy.controllers.ReceiversController.Companion.receive
 import io.mrnateriver.smsproxy.controllers.ReceiversRegisterController.Companion.receiversRegisterRoutes
 import io.mrnateriver.smsproxy.server.framework.DaggerFramework
 
-fun Application.installApi(serverConfig: ServerConfiguration) {
+fun Application.installApi(serverConfig: ServerConfiguration, telemetryServices: TelemetryServices) {
     install(ContentNegotiation) {
         json()
     }
 
-    installErrorHandling()
-
-    val telemetryServices = installTelemetry(serverConfig.telemetryConfig)
     routing {
         val framework = DaggerFramework.builder()
             .logger(log)
             .hashingSecret(serverConfig.hashingSecret)
-            .serverConfig(serverConfig)
+            .databaseConfig(serverConfig.db)
             .telemetryServices(telemetryServices)
             .build()
         val proxyController = framework.messagesProxyController()

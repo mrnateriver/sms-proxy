@@ -32,9 +32,10 @@ fun initErrorHandling() {
     }
 }
 
-fun Application.installErrorHandling() {
+fun Application.installErrorHandling(telemetryServices: TelemetryServices) {
     install(StatusPages) {
-        // TODO: metrics
+        // TODO: error metrics
+        val meter = telemetryServices.meter
 
         status(HttpStatusCode.NotFound) { call, status ->
             call.respondApiError(

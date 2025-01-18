@@ -16,8 +16,10 @@ fun main() {
             configureConnection(serverConfig)
         },
         module = {
+            val telemetryServices = installTelemetry(serverConfig.telemetryConfig)
+            installErrorHandling(telemetryServices)
             installAuth(serverConfig)
-            installApi(serverConfig)
+            installApi(serverConfig, telemetryServices)
         },
     )
 

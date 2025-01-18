@@ -34,7 +34,6 @@ class ObservabilityService @Inject constructor(
             return body()
         }
 
-        // TODO: debug threading with Contexts by adding a custom attribute to Context with Thread ID, or perhaps with arbitrary random ID to check if context is leaked
         val context = Context.current()
         val span = tracer.spanBuilder(name)
             .setSpanKind(SpanKind.INTERNAL)
