@@ -5,13 +5,18 @@ import java.security.PublicKey
 import javax.crypto.Cipher
 import javax.inject.Inject
 import io.mrnateriver.smsproxy.server.data.contracts.MessageEncrypter as MessageEncrypterContract
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
-class MessageEncrypter @Inject constructor() : MessageEncrypterContract {
+class MessageEncrypter @Inject constructor(private val observabilityService: ObservabilityServiceContract) :
+    MessageEncrypterContract {
     override suspend fun encrypt(publicKey: PublicKey, message: MessageData): ByteArray {
-        // TODO: move to shared module and reuse the encryption configuration between server and receiverApp
-        val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey)
-        return cipher.doFinal(message.toByteArray())
+        return observabilityService.runSpan("MessageEncrypter.encrypt") {
+            // TODO: move to shared module and reuse the encryption configuration between server and receiverApp
+            val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey)
+
+            cipher.doFinal(message.toByteArray())
+        }
     }
 }
 

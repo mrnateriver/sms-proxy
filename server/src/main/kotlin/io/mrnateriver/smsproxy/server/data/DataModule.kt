@@ -71,8 +71,12 @@ interface DataModule {
 
         @Provides
         @Singleton
-        fun provideSqlDriver(dataSource: DataSource, logger: Logger): SqlDriver {
-            return LoggingJdbcDriver(dataSource, logger)
+        fun provideSqlDriver(
+            dataSource: DataSource,
+            logger: Logger,
+            observabilityService: ObservabilityServiceContract,
+        ): SqlDriver {
+            return LoggingJdbcDriver(dataSource, logger, observabilityService)
         }
 
         @Provides

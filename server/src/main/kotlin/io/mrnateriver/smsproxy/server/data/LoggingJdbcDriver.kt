@@ -6,10 +6,16 @@ import app.cash.sqldelight.db.SqlCursor
 import app.cash.sqldelight.db.SqlPreparedStatement
 import app.cash.sqldelight.driver.jdbc.JdbcDriver
 import io.ktor.util.logging.Logger
+import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
+import kotlinx.coroutines.runBlocking
 import java.sql.Connection
 import javax.sql.DataSource
 
-class LoggingJdbcDriver(private val dataSource: DataSource, private val logger: Logger) : JdbcDriver() {
+class LoggingJdbcDriver(
+    private val dataSource: DataSource,
+    private val logger: Logger,
+    private val observabilityService: ObservabilityService,
+) : JdbcDriver() {
     override fun getConnection(): Connection {
         return dataSource.connection
     }
@@ -36,8 +42,12 @@ class LoggingJdbcDriver(private val dataSource: DataSource, private val logger: 
         parameters: Int,
         binders: (SqlPreparedStatement.() -> Unit)?,
     ): QueryResult<Long> {
-        logQuery(sql, binders)
-        return super.execute(identifier, sql, parameters, binders)
+        return runBlocking {
+            observabilityService.runSpan(parseQuerySpanName(sql), mapOf("sql" to sql)) {
+                logQuery(sql, binders)
+                super.execute(identifier, sql, parameters, binders)
+            }
+        }
     }
 
     override fun <R> executeQuery(
@@ -47,8 +57,12 @@ class LoggingJdbcDriver(private val dataSource: DataSource, private val logger: 
         parameters: Int,
         binders: (SqlPreparedStatement.() -> Unit)?,
     ): QueryResult<R> {
-        logQuery(sql, binders)
-        return super.executeQuery(identifier, sql, mapper, parameters, binders)
+        return runBlocking {
+            observabilityService.runSpan(parseQuerySpanName(sql), mapOf("sql" to sql)) {
+                logQuery(sql, binders)
+                super.executeQuery(identifier, sql, mapper, parameters, binders)
+            }
+        }
     }
 
     private fun logQuery(
@@ -59,6 +73,21 @@ class LoggingJdbcDriver(private val dataSource: DataSource, private val logger: 
         //       substitute to stringify param values is not possible; however, it might still be possible to inject
         //       a proxy in the execute/executeQuery methods to log the parameters before they are bound
         logger.debug("SQL: $sql")
+    }
+
+    private fun parseQuerySpanName(sql: String): String {
+        val lowercaseSql = sql.lowercase()
+        if (lowercaseSql.contains("insert")) {
+            return "insertDbQuery"
+        } else if (lowercaseSql.contains("update")) {
+            return "updateDbQuery"
+        } else if (lowercaseSql.contains("delete")) {
+            return "deleteDbQuery"
+        } else if (lowercaseSql.contains("select")) {
+            return "selectDbQuery"
+        } else {
+            return "unknownDbQuery"
+        }
     }
 }
 

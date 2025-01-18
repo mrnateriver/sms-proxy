@@ -32,10 +32,15 @@ fun initErrorHandling() {
     }
 }
 
+const val METRIC_API_SERVER_ERRORS = "sms_proxy_api_server_errors"
+const val METRIC_API_CLIENT_ERRORS = "sms_proxy_api_client_errors"
+
 fun Application.installErrorHandling(telemetryServices: TelemetryServices) {
     install(StatusPages) {
-        // TODO: error metrics
         val meter = telemetryServices.meter
+
+        val serverErrors = meter.counterBuilder(METRIC_API_SERVER_ERRORS).build()
+        val clientErrors = meter.counterBuilder(METRIC_API_CLIENT_ERRORS).build()
 
         status(HttpStatusCode.NotFound) { call, status ->
             call.respondApiError(
@@ -46,6 +51,7 @@ fun Application.installErrorHandling(telemetryServices: TelemetryServices) {
         }
 
         exception<Throwable> { call, cause ->
+            serverErrors.add(1)
             Sentry.captureException(cause)
             call.respondApiError(
                 code = HttpStatusCode.InternalServerError,
@@ -56,6 +62,7 @@ fun Application.installErrorHandling(telemetryServices: TelemetryServices) {
         }
 
         exception<BadRequestException> { call, cause ->
+            clientErrors.add(1)
             call.respondApiError(
                 code = HttpStatusCode.BadRequest,
                 message = (if (ktorDevMode) cause.message else null) ?: "Bad request",
@@ -65,6 +72,7 @@ fun Application.installErrorHandling(telemetryServices: TelemetryServices) {
         }
 
         exception<ValidationException> { call, cause ->
+            clientErrors.add(1)
             call.respondApiError(
                 code = HttpStatusCode.UnprocessableEntity,
                 message = "Validation failed",
