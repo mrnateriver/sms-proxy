@@ -1,6 +1,13 @@
 log:
   level: DEBUG
-  format: common
+  format: json
+
+accessLog:
+  format: json
+  fields:
+    defaultMode: keep
+    headers:
+      defaultMode: keep
 
 api:
   insecure: true
