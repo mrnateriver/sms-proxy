@@ -1,16 +1,16 @@
 package io.mrnateriver.smsproxy.server
 
 import io.ktor.server.application.Application
+import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.application.install
-import io.ktor.server.application.log
 import io.ktor.server.metrics.micrometer.MicrometerMetrics
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
-import io.ktor.server.routing.routing
+import io.ktor.server.response.header
 import io.opentelemetry.api.common.Attributes
 import io.opentelemetry.api.metrics.Meter
+import io.opentelemetry.api.trace.Span
 import io.opentelemetry.api.trace.Tracer
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator
+import io.opentelemetry.context.Context
 import io.opentelemetry.context.propagation.ContextPropagators
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter
 import io.opentelemetry.exporter.prometheus.PrometheusHttpServer
@@ -40,32 +40,32 @@ fun Application.installTelemetry(config: TelemetryConfiguration): TelemetryServi
         registry = meterRegistry
     }
 
-    routing {
-        get("test") {
-            val tp = call.request.headers.get("traceparent")
-            log.info("incoming traceparent: $tp")
-            call.respondText("OK")
-        }
-    }
+    // Required due to:
+    // https://youtrack.jetbrains.com/issue/KTOR-6802/Consistent-ThreadLocal-coroutine-context-leak-with-SuspendFunctionGun
+    // https://github.com/Kotlin/kotlinx.coroutines/issues/2930
+    System.setProperty("io.ktor.internal.disable.sfg", "true")
 
     install(KtorServerTelemetry) {
         setOpenTelemetry(openTelemetry)
-
-        attributesExtractor {
-            onStart {
-                log.debug("request start context: $parentContext")
-            }
-
-            onEnd {
-                log.debug("request end context: $parentContext")
-            }
-        }
     }
+
+    install(ResponseTraceIdPlugin)
 
     return TelemetryServices(
         tracer = openTelemetry.getTracer(packageName),
         meter = openTelemetry.getMeter(packageName),
     )
+}
+
+private val ResponseTraceIdPlugin = createApplicationPlugin(name = "ResponseTraceIdPlugin") {
+    onCallRespond { call ->
+        Context.current()?.let {
+            val spanContext = Span.fromContext(it).getSpanContext()
+            if (spanContext.isValid()) {
+                call.response.header("X-Trace-Id", spanContext.traceId)
+            }
+        }
+    }
 }
 
 private fun initOpenTelemetry(config: TelemetryConfiguration): OpenTelemetrySdk {
@@ -86,7 +86,9 @@ private fun initOpenTelemetry(config: TelemetryConfiguration): OpenTelemetrySdk 
                 .setResource(serviceNameResource)
                 .build()
 
-        sdkBuilder.setTracerProvider(sdkTracerProvider)
+        sdkBuilder
+            .setTracerProvider(sdkTracerProvider)
+            .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
 
         Runtime.getRuntime().addShutdownHook(Thread(sdkTracerProvider::close))
     }
@@ -99,7 +101,6 @@ private fun initOpenTelemetry(config: TelemetryConfiguration): OpenTelemetrySdk 
     val sdk =
         sdkBuilder
             .setMeterProvider(sdkMeterProvider)
-            .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
             .build()
 
     return sdk
