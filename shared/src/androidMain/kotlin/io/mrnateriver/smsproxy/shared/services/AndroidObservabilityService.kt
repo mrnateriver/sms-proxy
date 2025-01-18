@@ -13,8 +13,8 @@ open class AndroidObservabilityService : ObservabilityServiceContract {
         Log.println(Log.ERROR, "shared", exception.stackTraceToString())
     }
 
-    override suspend fun <T> runSpan(name: String, body: suspend () -> T): T {
-        log(LogLevel.DEBUG, "Starting span: $name")
+    override suspend fun <T> runSpan(name: String, attrs: Map<String, String>, body: suspend () -> T): T {
+        log(LogLevel.DEBUG, "Starting span: $name attrs: $attrs")
         val result = body()
         log(LogLevel.DEBUG, "Ending span: $name")
         return result

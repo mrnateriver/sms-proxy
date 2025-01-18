@@ -10,7 +10,7 @@ class AndroidSentryObservabilityService : AndroidObservabilityService() {
         super.reportException(exception)
     }
 
-    override suspend fun <T> runSpan(name: String, body: suspend () -> T): T {
+    override suspend fun <T> runSpan(name: String, attrs: Map<String, String>, body: suspend () -> T): T {
         val scopeSpan = Sentry.getSpan()
         val tx = if (scopeSpan == null) {
             val txOptions = TransactionOptions()
@@ -20,6 +20,11 @@ class AndroidSentryObservabilityService : AndroidObservabilityService() {
         } else {
             scopeSpan.startChild(name)
         }
+
+        for ((key, value) in attrs) {
+            tx.setTag(key, value)
+        }
+
         try {
             val result = body()
             return result

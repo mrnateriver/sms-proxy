@@ -54,7 +54,7 @@ class MessageProcessingService(
     }
 
     private suspend fun processEntry(entry: MessageEntry): Pair<MessageEntry, Exception?> =
-        withContext(Dispatchers.IO) { // FIXME: breaks OTEL contexts
+        withContext(Dispatchers.IO) {
             observability.runSpan("MessageProcessingService.processEntry") {
                 var updated = entry
                 try {

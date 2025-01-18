@@ -29,16 +29,21 @@ class ObservabilityService @Inject constructor(
         log(LogLevel.ERROR, "${exception.message}\n${exception.stackTraceToString()}")
     }
 
-    override suspend fun <T> runSpan(name: String, body: suspend () -> T): T {
+    override suspend fun <T> runSpan(name: String, attrs: Map<String, String>, body: suspend () -> T): T {
         if (tracer == null) {
             return body()
         }
 
         val context = Context.current()
-        val span = tracer.spanBuilder(name)
+        val spanBuilder = tracer.spanBuilder(name)
             .setSpanKind(SpanKind.INTERNAL)
-            .setAttribute(AttributeKey.longKey("thread.id"), Thread.currentThread().id)
-            .startSpan()
+            .setAttribute(AttributeKey.longKey("thread.id"), Thread.currentThread().threadId())
+
+        for ((key, value) in attrs) {
+            spanBuilder.setAttribute(key, value)
+        }
+
+        val span = spanBuilder.startSpan()
         val newContext = context.with(span)
         try {
             return withContext(newContext.asContextElement()) {
