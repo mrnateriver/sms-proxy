@@ -13,11 +13,13 @@ import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageProcessi
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageReceiverService as MessageReceiverServiceContract
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsRepository as MessageStatsRepositoryContract
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService as MessageStatsServiceContract
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageWatchService as MessageWatchServiceContract
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsRepository as SettingsRepositoryContract
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService as SettingsServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
+import io.mrnateriver.smsproxy.shared.contracts.MessageStatsService as SharedMessageStatsServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 @Module
@@ -29,6 +31,10 @@ abstract class UsecasesModule {
         impl: MessageBackgroundProcessingService,
     ): MessageBackgroundProcessingServiceContract
 
+    @Binds
+    @Singleton
+    abstract fun bindsMessageStatsService(impl: MessageStatsServiceContract): SharedMessageStatsServiceContract
+
     @Module
     @InstallIn(SingletonComponent::class)
     object MessageProcessingModule {
@@ -36,13 +42,11 @@ abstract class UsecasesModule {
         @Singleton
         fun providesMessageReceiverService(
             smsProcessingService: MessageProcessingServiceContract,
-            statsService: MessageStatsServiceContract,
             observabilityService: ObservabilityServiceContract,
             workerScheduler: MessageProcessingSchedulerContract,
         ): MessageReceiverServiceContract {
             return MessageReceiverService(
                 smsProcessingService,
-                statsService,
                 observabilityService,
                 workerScheduler,
             )
@@ -64,8 +68,9 @@ abstract class UsecasesModule {
             observabilityService: ObservabilityServiceContract,
             statsRepository: MessageStatsRepositoryContract,
             messagesRepository: MessageRepositoryContract,
+            messagesWatchService: MessageWatchServiceContract,
         ): MessageStatsServiceContract {
-            return MessageStatsService(observabilityService, statsRepository, messagesRepository)
+            return MessageStatsService(observabilityService, statsRepository, messagesRepository, messagesWatchService)
         }
 
         @Provides
@@ -82,10 +87,12 @@ abstract class UsecasesModule {
             repository: MessageRepositoryContract,
             relay: MessageRelayServiceContract,
             observability: ObservabilityServiceContract,
+            stats: SharedMessageStatsServiceContract,
         ): MessageProcessingServiceContract = MessageProcessingService(
             repository = repository,
             relay = relay,
             observability = observability,
+            stats = stats,
         )
     }
 }

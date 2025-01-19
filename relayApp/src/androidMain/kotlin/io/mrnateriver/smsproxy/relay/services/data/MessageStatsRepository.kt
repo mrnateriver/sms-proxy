@@ -19,30 +19,46 @@ import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as Observab
 internal val KEY_PROCESSING_ERRORS = intPreferencesKey("processing_failures")
 internal val KEY_PROCESSING_ERROR_TIMESTAMP = longPreferencesKey("processing_failure_timestamp")
 
+internal val KEY_PROCESSING_SUCCESSES = intPreferencesKey("processing_successes")
+internal val KEY_PROCESSING_SUCCESSES_TIMESTAMP = longPreferencesKey("processing_successes_timestamp")
+
 class MessageStatsRepository(
     private val observabilityService: ObservabilityServiceContract,
     private val dataStore: DataStore<Preferences>,
     private val clock: Clock = Clock.System,
 ) : MessageStatsRepositoryContract {
     override suspend fun incrementProcessingErrors() {
-        dataStore.edit { preferences ->
-            val currentFailures = preferences[KEY_PROCESSING_ERRORS] ?: 0
-            val now = clock.now()
+        increment(KEY_PROCESSING_ERRORS, KEY_PROCESSING_ERROR_TIMESTAMP)
+    }
 
-            observabilityService.log(
-                LogLevel.DEBUG,
-                "Updating failure count: ${currentFailures + 1} at $now",
-            )
-
-            preferences[KEY_PROCESSING_ERRORS] = currentFailures + 1
-            preferences[KEY_PROCESSING_ERROR_TIMESTAMP] = now.toEpochMilliseconds()
-        }
+    override suspend fun incrementProcessingSuccesses() {
+        increment(KEY_PROCESSING_SUCCESSES, KEY_PROCESSING_SUCCESSES_TIMESTAMP)
     }
 
     override fun getProcessingErrors(): Flow<MessageStatsEntry> {
+        return stats(KEY_PROCESSING_ERRORS, KEY_PROCESSING_ERROR_TIMESTAMP)
+    }
+
+    override fun getProcessingSuccesses(): Flow<MessageStatsEntry> {
+        return stats(KEY_PROCESSING_SUCCESSES, KEY_PROCESSING_SUCCESSES_TIMESTAMP)
+    }
+
+    private suspend fun increment(keyVal: Preferences.Key<Int>, keyTs: Preferences.Key<Long>) {
+        dataStore.edit { preferences ->
+            val curVal = preferences[keyVal] ?: 0
+            val now = clock.now()
+
+            observabilityService.log(LogLevel.DEBUG, "Updating count: ${curVal + 1} at $now")
+
+            preferences[keyVal] = curVal + 1
+            preferences[keyTs] = now.toEpochMilliseconds()
+        }
+    }
+
+    private fun stats(keyVal: Preferences.Key<Int>, keyTs: Preferences.Key<Long>): Flow<MessageStatsEntry> {
         return dataStore.data.map { preferences ->
-            val value = preferences[KEY_PROCESSING_ERRORS] ?: 0
-            val tsValue = preferences[KEY_PROCESSING_ERROR_TIMESTAMP]
+            val value = preferences[keyVal] ?: 0
+            val tsValue = preferences[keyTs]
             val ts = if (tsValue != null) {
                 Instant.fromEpochMilliseconds(tsValue)
                     .toLocalDateTime(TimeZone.currentSystemDefault())

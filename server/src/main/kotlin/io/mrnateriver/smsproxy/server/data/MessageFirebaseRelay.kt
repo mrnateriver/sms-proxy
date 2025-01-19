@@ -7,7 +7,6 @@ import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRe
 
 class MessageFirebaseRelay @Inject constructor() : MessageRelayServiceContract {
     override suspend fun relay(entry: MessageEntry) {
-        return
 //        TODO("Not yet implemented")
         send("", entry.messageData.leftOrNull()!!)
     }

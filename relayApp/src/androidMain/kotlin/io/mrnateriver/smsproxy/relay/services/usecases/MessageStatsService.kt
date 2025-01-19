@@ -4,7 +4,10 @@ import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsEntry
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -15,43 +18,53 @@ import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsRepository as MessageStatsRepositoryContract
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService as MessageStatsServiceContract
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageWatchService as MessageWatchServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 internal const val METRICS_NAME_PROCESSING_ERRORS = "processing_failures"
+internal const val METRICS_NAME_PROCESSING_SUCCESSES = "processing_successes"
 
 class MessageStatsService @Inject constructor(
     private val observabilityService: ObservabilityServiceContract,
     private val statsRepository: MessageStatsRepositoryContract,
     private val messagesRepository: MessageRepositoryContract,
+    private val messagesWatchService: MessageWatchServiceContract,
 ) : MessageStatsServiceContract {
     private val updateTrigger = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
 
-    override fun triggerUpdate() {
-        updateTrigger.tryEmit(Unit)
+    override fun incrementProcessingErrors() {
+        CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
+            statsRepository.incrementProcessingErrors()
+            launch { observabilityService.incrementCounter(METRICS_NAME_PROCESSING_ERRORS) }
+
+            triggerUpdate()
+        }
     }
 
-    override suspend fun incrementProcessingErrors(): Unit = supervisorScope {
-        // We don't want to fail storage operation if observability fails, hence the supervisorScope
-        launch { observabilityService.incrementCounter(METRICS_NAME_PROCESSING_ERRORS) }
-        statsRepository.incrementProcessingErrors()
+    override fun incrementProcessingSuccesses() {
+        CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
+            statsRepository.incrementProcessingSuccesses()
+            launch { observabilityService.incrementCounter(METRICS_NAME_PROCESSING_SUCCESSES) }
+
+            triggerUpdate()
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getStats(): Flow<MessageStatsData> {
-                getRelayedMessages(),
         return merge(messagesWatchService.watchLastEntries(1), updateTrigger)
             .flatMapMerge {
                 combine(
                     statsRepository.getProcessingErrors(),
                     getProcessingFailures(),
                     getProcessedMessages(),
+                    statsRepository.getProcessingSuccesses(),
                 ) { errors, failures, processed, relayed ->
                     MessageStatsData(
                         processed = processed,
@@ -65,10 +78,6 @@ class MessageStatsService @Inject constructor(
 
     internal fun getProcessingFailures(): Flow<MessageStatsEntry> {
         return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.FAILED) }
-    }
-
-    internal fun getRelayedMessages(): Flow<MessageStatsEntry> {
-        return updateTrigger.map { getMessageEntryCountByStatus(MessageRelayStatus.SUCCESS) }
     }
 
     internal fun getProcessedMessages(): Flow<MessageStatsEntry> {
@@ -100,4 +109,8 @@ class MessageStatsService @Inject constructor(
                 (entry as MessageEntry?)?.updatedAt?.toLocalDateTime(TimeZone.currentSystemDefault()),
             )
         }
+
+    private fun triggerUpdate() {
+        updateTrigger.tryEmit(Unit)
+    }
 }

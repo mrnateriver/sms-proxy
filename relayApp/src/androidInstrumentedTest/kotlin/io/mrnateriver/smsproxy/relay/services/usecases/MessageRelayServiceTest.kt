@@ -42,9 +42,9 @@ class MessageRelayServiceTest {
     private val observabilityService =
         mock<ObservabilityServiceContract> {
             onBlocking<ObservabilityServiceContract, Any> {
-                runSpan(any<String>(), any<suspend () -> Unit>())
+                runSpan(any<String>(), any<Map<String, String>>(), any<suspend () -> Unit>())
             } doSuspendableAnswer { invocation ->
-                invocation.getArgument<suspend () -> Any>(1)()
+                invocation.getArgument<suspend () -> Any>(2)()
             }
         }
 

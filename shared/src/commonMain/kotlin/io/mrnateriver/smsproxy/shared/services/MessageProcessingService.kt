@@ -15,6 +15,7 @@ import kotlin.time.Duration.Companion.seconds
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService as MessageRelayServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
+import io.mrnateriver.smsproxy.shared.contracts.MessageStatsService as MessageStatsServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 data class MessageProcessingConfig(
@@ -26,12 +27,21 @@ class MessageProcessingService(
     private val repository: MessageRepositoryContract,
     private val relay: MessageRelayServiceContract,
     private val observability: ObservabilityServiceContract,
+    private val stats: MessageStatsServiceContract,
     private val config: MessageProcessingConfig = MessageProcessingConfig(maxRetries = 3),
     private val clock: Clock = Clock.System,
 ) : MessageProcessingServiceContract {
     override suspend fun process(msg: MessageData): MessageEntry {
         return observability.runSpan("MessageProcessingService.process") {
-            val entry = repository.insert(msg)
+            val entry = withContext(Dispatchers.IO) {
+                try {
+                    repository.insert(msg)
+                } catch (e: Throwable) {
+                    stats.incrementProcessingErrors()
+                    observability.log(LogLevel.ERROR, "Failed to insert message: $e")
+                    throw e
+                }
+            }
             val (result, exception) = processEntry(entry)
             if (exception != null) {
                 throw exception
@@ -72,6 +82,7 @@ class MessageProcessingService(
         }
 
     private suspend fun recordProcessingSuccess(entry: MessageEntry): MessageEntry {
+        stats.incrementProcessingSuccesses()
         return repository.update(entry.copy(sendStatus = MessageRelayStatus.SUCCESS))
     }
 
@@ -106,9 +117,10 @@ class MessageProcessingService(
         entry: MessageEntry,
         exception: Exception,
     ): MessageEntry {
-        observability.reportException(exception)
+        stats.incrementProcessingErrors()
 
         observability.log(LogLevel.WARNING, "Failed to process entry ${entry.guid}: $exception")
+        observability.reportException(exception)
 
         val retries = entry.sendRetries
         if (retries >= config.maxRetries) {

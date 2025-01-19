@@ -38,9 +38,9 @@ class MessageStatsRepositoryTest {
     private val observabilityService =
         mock<ObservabilityServiceContract> {
             onBlocking<ObservabilityServiceContract, Any> {
-                runSpan(any<String>(), any<suspend () -> Unit>())
+                runSpan(any<String>(), any<Map<String, String>>(), any<suspend () -> Unit>())
             } doSuspendableAnswer { invocation ->
-                invocation.getArgument<suspend () -> Any>(1)()
+                invocation.getArgument<suspend () -> Any>(2)()
             }
         }
     private val now = Instant.fromEpochMilliseconds(1723996071981)
@@ -77,6 +77,29 @@ class MessageStatsRepositoryTest {
     }
 
     @Test
+    fun messageStatsService_shouldIncrementProcessingSuccesses() = runTest {
+        var statsData = subject.getProcessingSuccesses().first()
+        assertEquals(0, statsData.value)
+        assertEquals(null, statsData.lastEvent)
+
+        subject.incrementProcessingSuccesses()
+        statsData = subject.getProcessingSuccesses().first()
+        assertEquals(1, statsData.value)
+        assertEquals(nowLocal, statsData.lastEvent)
+    }
+
+    @Test
+    fun messageStatsService_shouldIncrementProcessingSuccessesInDataStore() = runTest {
+        subject.incrementProcessingSuccesses()
+        subject.incrementProcessingSuccesses()
+        subject.incrementProcessingSuccesses()
+
+        val prefs = testDataStore.data.first().asMap()
+        assertEquals(3, prefs[KEY_PROCESSING_SUCCESSES])
+        assertEquals(now.toEpochMilliseconds(), prefs[KEY_PROCESSING_SUCCESSES_TIMESTAMP])
+    }
+
+    @Test
     fun messageStatsService_shouldGetProcessingErrorsFromDataStore() = runTest {
         testDataStore.edit { prefs ->
             prefs[KEY_PROCESSING_ERRORS] = 42
@@ -84,6 +107,18 @@ class MessageStatsRepositoryTest {
         }
 
         val statsData = subject.getProcessingErrors().first()
+        assertEquals(42, statsData.value)
+        assertEquals(nowLocal, statsData.lastEvent)
+    }
+
+    @Test
+    fun messageStatsService_shouldGetProcessingSuccessesFromDataStore() = runTest {
+        testDataStore.edit { prefs ->
+            prefs[KEY_PROCESSING_SUCCESSES] = 42
+            prefs[KEY_PROCESSING_SUCCESSES_TIMESTAMP] = now.toEpochMilliseconds()
+        }
+
+        val statsData = subject.getProcessingSuccesses().first()
         assertEquals(42, statsData.value)
         assertEquals(nowLocal, statsData.lastEvent)
     }

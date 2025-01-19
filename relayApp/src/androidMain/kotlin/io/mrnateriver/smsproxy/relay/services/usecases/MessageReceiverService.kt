@@ -9,13 +9,11 @@ import kotlinx.datetime.Clock
 import javax.inject.Inject
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageProcessingScheduler as MessageProcessingSchedulerContract
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageReceiverService as MessageReceiverServiceContract
-import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService as MessageStatsServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
 class MessageReceiverService @Inject constructor(
     private val smsProcessingService: MessageProcessingServiceContract,
-    private val statsService: MessageStatsServiceContract,
     private val observabilityService: ObservabilityServiceContract,
     private val workerScheduler: MessageProcessingSchedulerContract,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -36,16 +34,12 @@ class MessageReceiverService @Inject constructor(
                         ),
                     )
                 } catch (e: Exception) {
-                    statsService.incrementProcessingErrors()
-
                     observabilityService.log(
                         LogLevel.WARNING,
                         "Failed to process message: $e\nScheduling background job to retry.",
                     )
 
                     workerScheduler.scheduleBackgroundMessageProcessing()
-                } finally {
-                    statsService.triggerUpdate()
                 }
             }
         }

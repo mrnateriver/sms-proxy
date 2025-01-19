@@ -26,6 +26,21 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
     }
 
     @Test
+    fun `when processing entry and saving to repository fails should increment error count`() = runTest {
+        val msgData = createTestMessageData()
+
+        whenever(mockRepository.insert(any())).thenThrow(RuntimeException("test"))
+
+        try {
+            subject.process(msgData)
+        } catch (e: Exception) {
+            //
+        }
+
+        verify(mockStatsService, times(1)).incrementProcessingErrors()
+    }
+
+    @Test
     fun `when processing entry should set its status to in progress`() = runTest {
         val msgData = createTestMessageData()
         val msgEntry = createTestMessageEntry(msgData)
@@ -77,6 +92,18 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
     }
 
     @Test
+    fun `when processing entry is successful should increment success counter`() = runTest {
+        val msgData = createTestMessageData()
+        val msgEntry = createTestMessageEntry(msgData)
+
+        whenever(mockRepository.insert(any())).thenReturn(msgEntry)
+
+        subject.process(msgData)
+
+        verify(mockStatsService, times(1)).incrementProcessingSuccesses()
+    }
+
+    @Test
     fun `when processing entry should return entry with updated values`() = runTest {
         val msgData = createTestMessageData()
         val msgEntry = createTestMessageEntry(msgData)
@@ -112,6 +139,23 @@ class MessageProcessingServiceProcessEntryTest : MessageProcessingServiceTestBas
                 ),
             ),
         )
+    }
+
+    @Test
+    fun `when processing entry and relaying fails should increment error counter`() = runTest {
+        val msgData = createTestMessageData()
+        val msgEntry = createTestMessageEntry(msgData, MessageRelayStatus.PENDING)
+
+        whenever(mockRepository.insert(any())).thenReturn(msgEntry)
+        whenever(mockRelayService.relay(any())).thenThrow(RuntimeException("test"))
+
+        try {
+            subject.process(msgData)
+        } catch (e: Exception) {
+            //
+        }
+
+        verify(mockStatsService, times(1)).incrementProcessingErrors()
     }
 
     @Test

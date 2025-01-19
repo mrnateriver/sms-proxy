@@ -14,11 +14,9 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.UUID
-import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService as MessageStatsServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageProcessingService as MessageProcessingServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
 
@@ -26,20 +24,18 @@ class MessageBackgroundProcessingServiceTest {
     private val processingService = mock<MessageProcessingServiceContract> {
         onBlocking { handleUnprocessedMessages() }.thenReturn(emptyList())
     }
-    private val statsService = mock<MessageStatsServiceContract> {}
     private val observabilityService =
         mock<ObservabilityServiceContract> {
             onBlocking<ObservabilityServiceContract, Any> {
-                runSpan(any<String>(), any<suspend () -> Unit>())
+                runSpan(any<String>(), any<Map<String, String>>(), any<suspend () -> Unit>())
             } doSuspendableAnswer { invocation ->
-                invocation.getArgument<suspend () -> Any>(1)()
+                invocation.getArgument<suspend () -> Any>(2)()
             }
         }
 
     private val subject =
         MessageBackgroundProcessingService(
             processingService,
-            statsService,
             observabilityService,
         )
 
@@ -48,7 +44,7 @@ class MessageBackgroundProcessingServiceTest {
     @Test
     fun handleUnprocessedMessages_shouldRunASpan() = runTest {
         subject.handleUnprocessedMessages()
-        verify(observabilityService).runSpan(any<String>(), any())
+        verify(observabilityService).runSpan(any<String>(), any(), any())
     }
 
     @Test
@@ -98,27 +94,6 @@ class MessageBackgroundProcessingServiceTest {
 
         val result = subject.handleUnprocessedMessages()
         assertEquals(FAILURE, result)
-    }
-
-    @Test
-    fun handleUnprocessedMessages_shouldIncrementProcessingFailuresForAllErrors() = runTest {
-        whenever(processingService.handleUnprocessedMessages()).thenReturn(
-            listOf(
-                createTestMessageEntry(MessageRelayStatus.ERROR),
-                createTestMessageEntry(MessageRelayStatus.FAILED),
-                createTestMessageEntry(MessageRelayStatus.ERROR),
-                createTestMessageEntry(MessageRelayStatus.SUCCESS),
-            ),
-        )
-
-        subject.handleUnprocessedMessages()
-        verify(statsService, times(2)).incrementProcessingErrors()
-    }
-
-    @Test
-    fun handleUnprocessedMessages_shouldCallStatsServiceToTriggerDownstreamUpdates() = runTest {
-        subject.handleUnprocessedMessages()
-        verify(statsService).triggerUpdate()
     }
 
     private fun createTestMessageEntry(

@@ -66,7 +66,9 @@ class ObservabilityService @Inject constructor(
             return
         }
 
-        cachedMeters.getOrPut(metricName) { meter.counterBuilder(metricName).build() }.add(1)
+        val processedMetricName =
+            "sms_proxy_${metricName.replace(Regex("[^a-zA-Z0-9_]"), "_").replace(Regex("^_+"), "_").lowercase()}"
+        cachedMeters.getOrPut(processedMetricName) { meter.counterBuilder(processedMetricName).build() }.add(1)
     }
 
     private fun Logger.atLevel(level: LogLevel) = atLevel(

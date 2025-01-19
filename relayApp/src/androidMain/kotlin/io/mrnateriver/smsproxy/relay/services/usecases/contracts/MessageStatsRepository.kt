@@ -5,5 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface MessageStatsRepository {
     suspend fun incrementProcessingErrors()
+    suspend fun incrementProcessingSuccesses()
     fun getProcessingErrors(): Flow<MessageStatsEntry>
+    fun getProcessingSuccesses(): Flow<MessageStatsEntry>
 }

@@ -3,6 +3,7 @@ package io.mrnateriver.smsproxy.shared
 import arrow.core.left
 import io.mrnateriver.smsproxy.shared.contracts.MessageRelayService
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository
+import io.mrnateriver.smsproxy.shared.contracts.MessageStatsService
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
@@ -26,10 +27,15 @@ abstract class MessageProcessingServiceTestBase {
     protected val mockObservabilityService =
         mock<ObservabilityService> {
             onBlocking<ObservabilityService, Any> {
-                runSpan(any<String>(), any<suspend () -> Unit>())
+                runSpan(any<String>(), any<Map<String, String>>(), any<suspend () -> Unit>())
             } doSuspendableAnswer {
-                it.getArgument<suspend () -> Any>(1)()
+                it.getArgument<suspend () -> Any>(2)()
             }
+        }
+    protected val mockStatsService =
+        mock<MessageStatsService> {
+            onBlocking { incrementProcessingSuccesses() }.then { }
+            onBlocking { incrementProcessingErrors() }.then { }
         }
     protected val mockClock = mock<Clock> { on(it.now()).thenReturn(Clock.System.now()) }
 
@@ -37,6 +43,7 @@ abstract class MessageProcessingServiceTestBase {
         mockRepository,
         mockRelayService,
         mockObservabilityService,
+        mockStatsService,
         mockProcessingConfig,
         mockClock,
     )
