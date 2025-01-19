@@ -4,10 +4,12 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.application.install
 import io.ktor.server.metrics.micrometer.MicrometerMetrics
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.uri
 import io.ktor.server.response.header
+import io.ktor.util.AttributeKey
 import io.opentelemetry.api.common.Attributes
 import io.opentelemetry.api.metrics.Meter
-import io.opentelemetry.api.trace.Span
 import io.opentelemetry.api.trace.Tracer
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator
 import io.opentelemetry.context.Context
@@ -22,7 +24,14 @@ import io.opentelemetry.sdk.resources.Resource
 import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
 import io.opentelemetry.semconv.ServiceAttributes
+import io.sentry.BaggageHeader
+import io.sentry.Sentry
+import io.sentry.SentryTraceHeader
+import io.sentry.TransactionContext
+import io.sentry.TransactionOptions
 import java.util.concurrent.TimeUnit
+import io.opentelemetry.api.trace.Span as OpenTelemetrySpan
+import io.sentry.ISpan as SentrySpan
 
 private const val OTLP_GRPC_PUSH_TIMEOUT_SECONDS = 30L
 
@@ -50,6 +59,7 @@ fun Application.installTelemetry(config: TelemetryConfiguration): TelemetryServi
     }
 
     install(ResponseTraceIdPlugin)
+    install(SentryTracingPlugin)
 
     return TelemetryServices(
         tracer = openTelemetry.getTracer(packageName),
@@ -57,10 +67,59 @@ fun Application.installTelemetry(config: TelemetryConfiguration): TelemetryServi
     )
 }
 
+private val SentryTracingPlugin = createApplicationPlugin(name = "SentryTracingPlugin") {
+    val requestSpanKey = AttributeKey<SentrySpan>("RequestSentrySpan")
+
+    val logger = application.environment.log
+
+    onCall { call ->
+        val sentryTraceHeader = call.request.headers.get(SentryTraceHeader.SENTRY_TRACE_HEADER)
+
+        @Suppress("UnstableApiUsage")
+        val baggageHeader = call.request.headers.getAll(BaggageHeader.BAGGAGE_HEADER)
+
+        val txOptions = TransactionOptions()
+        txOptions.isBindToScope = true
+
+        val txName = "${call.request.httpMethod.value} ${call.request.uri}"
+        val txOperation = "http"
+
+        var txContext = Sentry.continueTrace(sentryTraceHeader, baggageHeader)
+        txContext = if (txContext != null) {
+            logger.debug(
+                "Request Sentry trace ID: {} span ID: {}",
+                txContext.traceId,
+                txContext.spanId,
+            )
+
+            txContext.name = txName
+            txContext.operation = txOperation
+
+            txContext
+        } else {
+            TransactionContext(txName, txOperation)
+        }
+
+        val parentSpan = Sentry.startTransaction(txContext, txOptions)
+        call.attributes.put(requestSpanKey, parentSpan)
+    }
+
+    onCallRespond { call ->
+        call.attributes.getOrNull(requestSpanKey)?.finish()
+    }
+}
+
 private val ResponseTraceIdPlugin = createApplicationPlugin(name = "ResponseTraceIdPlugin") {
+    val logger = application.environment.log
+    onCall { call ->
+        call.request.headers.get("traceparent")?.let {
+            logger.debug("Request traceparent: $it")
+        }
+    }
+
     onCallRespond { call ->
         Context.current()?.let {
-            val spanContext = Span.fromContext(it).getSpanContext()
+            val spanContext = OpenTelemetrySpan.fromContext(it).getSpanContext()
             if (spanContext.isValid()) {
                 call.response.header("X-Trace-Id", spanContext.traceId)
             }

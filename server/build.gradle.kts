@@ -90,6 +90,7 @@ dependencies {
     implementation(libs.opentelemetry.instrumentation.micrometer)
     implementation(libs.opentelemetry.extension.kotlin)
     implementation(libs.opentelemetry.semconv.incubating)
+    implementation(libs.sentry.kotlin)
 
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)

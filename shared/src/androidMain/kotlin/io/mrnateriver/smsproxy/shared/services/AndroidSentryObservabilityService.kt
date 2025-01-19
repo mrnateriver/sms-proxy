@@ -22,7 +22,7 @@ class AndroidSentryObservabilityService : AndroidObservabilityService() {
         }
 
         for ((key, value) in attrs) {
-            tx.setTag(key, value)
+            tx.setData(key, value)
         }
 
         try {

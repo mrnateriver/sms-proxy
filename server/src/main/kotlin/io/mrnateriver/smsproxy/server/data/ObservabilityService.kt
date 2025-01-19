@@ -9,10 +9,16 @@ import io.opentelemetry.api.trace.SpanKind
 import io.opentelemetry.api.trace.Tracer
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
+import io.sentry.Sentry
+import io.sentry.TransactionOptions
+import io.sentry.kotlin.SentryContext
 import kotlinx.coroutines.withContext
 import org.slf4j.event.Level
 import javax.inject.Inject
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
+import io.opentelemetry.api.trace.Span as OpenTelemetrySpan
+import io.sentry.ISpan as SentrySpan
+import io.sentry.SpanStatus as SentrySpanStatus
 
 class ObservabilityService @Inject constructor(
     private val tracer: Tracer?,
@@ -34,26 +40,24 @@ class ObservabilityService @Inject constructor(
             return body()
         }
 
-        val context = Context.current()
-        val spanBuilder = tracer.spanBuilder(name)
-            .setSpanKind(SpanKind.INTERNAL)
-            .setAttribute(AttributeKey.longKey("thread.id"), Thread.currentThread().threadId())
+        val otelSpan = createOpenTelemetrySpan(name, attrs)
+        val sentrySpan = createSentrySpan(name, attrs)
 
-        for ((key, value) in attrs) {
-            spanBuilder.setAttribute(key, value)
-        }
-
-        val span = spanBuilder.startSpan()
-        val newContext = context.with(span)
+        val newContext = Context.current().with(otelSpan)
         try {
-            return withContext(newContext.asContextElement()) {
+            return withContext(newContext.asContextElement() + SentryContext()) {
                 body()
             }
         } catch (e: Throwable) {
-            span.recordException(e)
+            otelSpan.recordException(e)
+
+            sentrySpan.throwable = e
+            sentrySpan.status = SentrySpanStatus.INTERNAL_ERROR
+
             throw e
         } finally {
-            span.end()
+            sentrySpan.finish()
+            otelSpan.end()
         }
     }
 
@@ -73,4 +77,43 @@ class ObservabilityService @Inject constructor(
             LogLevel.ERROR -> Level.ERROR
         },
     )
+
+    private fun createOpenTelemetrySpan(name: String, attrs: Map<String, String>): OpenTelemetrySpan {
+        val spanBuilder = tracer!!.spanBuilder(name)
+            .setSpanKind(SpanKind.INTERNAL)
+            .setAttribute(AttributeKey.longKey("thread.id"), Thread.currentThread().threadId())
+
+        for ((key, value) in attrs) {
+            spanBuilder.setAttribute(key, value)
+        }
+
+        return spanBuilder.startSpan()
+    }
+
+    private fun createSentrySpan(name: String, attrs: Map<String, String>): SentrySpan {
+        val scopeSpan = Sentry.getSpan()
+        val tx = if (scopeSpan == null) {
+            log(LogLevel.DEBUG, "Creating Sentry transaction", "sentry")
+
+            val txOptions = TransactionOptions()
+            txOptions.isBindToScope = true
+
+            Sentry.startTransaction(name, "runSpan", txOptions)
+        } else {
+            log(
+                LogLevel.DEBUG,
+                "Creating Sentry child span for trace ID: ${scopeSpan.spanContext.traceId}" +
+                    " parent span ID: ${scopeSpan.spanContext.spanId}",
+                "sentry",
+            )
+
+            scopeSpan.startChild(name)
+        }
+
+        for ((key, value) in attrs) {
+            tx.setData(key, value)
+        }
+
+        return tx
+    }
 }
