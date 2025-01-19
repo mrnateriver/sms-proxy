@@ -1,18 +1,22 @@
 package io.mrnateriver.smsproxy.relay.services.data
 
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.map
 import arrow.core.left
 import io.mrnateriver.smsproxy.shared.models.MessageData
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
+import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
 import java.util.UUID
 import javax.inject.Inject
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageWatchService as MessageWatchServiceContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 class MessageRepository @Inject constructor(
     private val messageDao: MessageDao,
     private val clock: Clock = Clock.System,
-) : MessageRepositoryContract {
+) : MessageRepositoryContract, MessageWatchServiceContract {
     override suspend fun insert(entry: MessageData): MessageEntry {
         val now = clock.now()
         val result = MessageEntry(
@@ -55,6 +59,10 @@ class MessageRepository @Inject constructor(
 
     override suspend fun getCount(): Int {
         return messageDao.getCount()
+    }
+
+    override fun watchLastEntries(limit: Int): Flow<List<MessageEntry>> {
+        return messageDao.observeLastEntries(limit).map { it.map { it.toDomainEntity() } }.asFlow()
     }
 }
 

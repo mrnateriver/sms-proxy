@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.relay.services.data
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -19,6 +20,9 @@ abstract class MessageDao {
 
     @Query("SELECT * FROM MessageDaoEntity ORDER BY updatedAt DESC LIMIT :limit")
     abstract suspend fun getLastEntries(limit: Int): List<MessageDaoEntity>
+
+    @Query("SELECT * FROM MessageDaoEntity ORDER BY updatedAt DESC LIMIT :limit")
+    abstract fun observeLastEntries(limit: Int): LiveData<List<MessageDaoEntity>>
 
     @Query("SELECT * FROM MessageDaoEntity WHERE sendStatus IN (:statuses) ORDER BY updatedAt DESC LIMIT 1")
     abstract suspend fun getLastEntryByStatus(vararg statuses: MessageRelayStatus): MessageDaoEntity?

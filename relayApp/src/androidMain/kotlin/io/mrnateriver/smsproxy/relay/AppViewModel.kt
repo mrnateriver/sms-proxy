@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService as MessageStatsServiceContract
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageWatchService as MessageWatchServiceContract
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService as SettingsServiceContract
-import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 private const val MESSAGE_RECORDS_RECENT_COUNT = 5
 
@@ -22,7 +22,7 @@ private const val MESSAGE_RECORDS_RECENT_COUNT = 5
 class AppViewModel @Inject constructor(
     val settingsService: SettingsServiceContract,
     statsService: MessageStatsServiceContract,
-    messagesRepository: MessageRepositoryContract,
+    messageWatchService: MessageWatchServiceContract,
     apiCertificates: ProxyApiCertificates,
 ) : ViewModel() {
     // Used in tests
@@ -42,9 +42,7 @@ class AppViewModel @Inject constructor(
     val messageRecordsRecent: Flow<List<MessageEntry>> =
         settingsService.showRecentMessages.flatMapLatest { showRecentMessages ->
             if (showRecentMessages) {
-                statsService.getStats().map {
-                    messagesRepository.getLastEntries(MESSAGE_RECORDS_RECENT_COUNT)
-                }
+                messageWatchService.watchLastEntries(MESSAGE_RECORDS_RECENT_COUNT)
             } else {
                 flowOf(emptyList())
             }

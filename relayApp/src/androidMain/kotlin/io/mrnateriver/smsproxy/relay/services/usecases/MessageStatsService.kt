@@ -11,8 +11,9 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.datetime.TimeZone
@@ -44,21 +45,22 @@ class MessageStatsService @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getStats(): Flow<MessageStatsData> {
-        return updateTrigger.flatMapLatest {
-            combine(
-                statsRepository.getProcessingErrors(),
-                getProcessingFailures(),
-                getProcessedMessages(),
                 getRelayedMessages(),
-            ) { errors, failures, processed, relayed ->
-                MessageStatsData(
-                    processed = processed,
-                    relayed = relayed,
-                    errors = errors,
-                    failures = failures,
-                )
+        return merge(messagesWatchService.watchLastEntries(1), updateTrigger)
+            .flatMapMerge {
+                combine(
+                    statsRepository.getProcessingErrors(),
+                    getProcessingFailures(),
+                    getProcessedMessages(),
+                ) { errors, failures, processed, relayed ->
+                    MessageStatsData(
+                        processed = processed,
+                        relayed = relayed,
+                        errors = errors,
+                        failures = failures,
+                    )
+                }
             }
-        }
     }
 
     internal fun getProcessingFailures(): Flow<MessageStatsEntry> {

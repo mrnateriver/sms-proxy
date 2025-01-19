@@ -15,6 +15,7 @@ import io.mrnateriver.smsproxy.shared.contracts.LogLevel
 import java.util.concurrent.Executors
 import javax.inject.Singleton
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsRepository as MessageStatsRepositoryContract
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageWatchService as MessageWatchServiceContract
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsRepository as SettingsRepositoryContract
 import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 import io.mrnateriver.smsproxy.shared.contracts.ObservabilityService as ObservabilityServiceContract
@@ -54,6 +55,11 @@ object DataModule {
     @Singleton
     fun providesMessageRepository(dao: MessageDao): MessageRepositoryContract =
         MessageRepository(dao)
+
+    @Provides
+    @Singleton
+    fun providesMessageWatchService(messageRepository: MessageRepositoryContract): MessageWatchServiceContract =
+        messageRepository as MessageWatchServiceContract
 
     @Provides
     @Singleton

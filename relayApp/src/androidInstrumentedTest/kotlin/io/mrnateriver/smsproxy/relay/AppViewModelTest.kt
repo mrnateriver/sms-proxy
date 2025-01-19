@@ -3,6 +3,7 @@ package io.mrnateriver.smsproxy.relay
 import arrow.core.left
 import io.mrnateriver.smsproxy.relay.services.data.ProxyApiCertificates
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageStatsService
+import io.mrnateriver.smsproxy.relay.services.usecases.contracts.MessageWatchService
 import io.mrnateriver.smsproxy.relay.services.usecases.contracts.SettingsService
 import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import io.mrnateriver.smsproxy.shared.models.MessageData
@@ -19,7 +20,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import java.util.UUID
-import io.mrnateriver.smsproxy.shared.contracts.MessageRepository as MessageRepositoryContract
 
 class AppViewModelTest {
     private val now = Instant.fromEpochMilliseconds(1723996071981)
@@ -29,7 +29,7 @@ class AppViewModelTest {
         val viewModel = AppViewModel(
             settingsService = mock<SettingsService>(),
             statsService = mock<MessageStatsService>(),
-            messagesRepository = mock<MessageRepositoryContract>(),
+            messageWatchService = mock<MessageWatchService>(),
             apiCertificates = ProxyApiCertificates(),
         )
         viewModel.apiKey = ""
@@ -45,7 +45,7 @@ class AppViewModelTest {
             AppViewModel(
                 settingsService = mock<SettingsService>(),
                 statsService = mock<MessageStatsService>(),
-                messagesRepository = mock<MessageRepositoryContract>(),
+                messageWatchService = mock<MessageWatchService>(),
                 apiCertificates = ProxyApiCertificates(),
             ).showMissingCertificatesError,
         )
@@ -54,7 +54,7 @@ class AppViewModelTest {
             AppViewModel(
                 settingsService = mock<SettingsService>(),
                 statsService = mock<MessageStatsService>(),
-                messagesRepository = mock<MessageRepositoryContract>(),
+                messageWatchService = mock<MessageWatchService>(),
                 apiCertificates = ProxyApiCertificates(serverCertificatePem = "test"),
             ).showMissingCertificatesError,
         )
@@ -63,7 +63,7 @@ class AppViewModelTest {
             AppViewModel(
                 settingsService = mock<SettingsService>(),
                 statsService = mock<MessageStatsService>(),
-                messagesRepository = mock<MessageRepositoryContract>(),
+                messageWatchService = mock<MessageWatchService>(),
                 apiCertificates = ProxyApiCertificates(clientCertificatePem = "test"),
             ).showMissingCertificatesError,
         )
@@ -72,7 +72,7 @@ class AppViewModelTest {
             AppViewModel(
                 settingsService = mock<SettingsService>(),
                 statsService = mock<MessageStatsService>(),
-                messagesRepository = mock<MessageRepositoryContract>(),
+                messageWatchService = mock<MessageWatchService>(),
                 apiCertificates = ProxyApiCertificates(clientPrivateKeyPem = "test"),
             ).showMissingCertificatesError,
         )
@@ -81,7 +81,7 @@ class AppViewModelTest {
             AppViewModel(
                 settingsService = mock<SettingsService>(),
                 statsService = mock<MessageStatsService>(),
-                messagesRepository = mock<MessageRepositoryContract>(),
+                messageWatchService = mock<MessageWatchService>(),
                 apiCertificates = ProxyApiCertificates(
                     clientCertificatePem = "test",
                     clientPrivateKeyPem = "test",
@@ -93,7 +93,7 @@ class AppViewModelTest {
             AppViewModel(
                 settingsService = mock<SettingsService>(),
                 statsService = mock<MessageStatsService>(),
-                messagesRepository = mock<MessageRepositoryContract>(),
+                messageWatchService = mock<MessageWatchService>(),
                 apiCertificates = ProxyApiCertificates(
                     serverCertificatePem = "test",
                     clientCertificatePem = "test",
@@ -111,7 +111,7 @@ class AppViewModelTest {
                     on { isApiConfigured } doReturn flowOf(false)
                 },
                 statsService = mock<MessageStatsService>(),
-                messagesRepository = mock<MessageRepositoryContract>(),
+                messageWatchService = mock<MessageWatchService>(),
                 apiCertificates = ProxyApiCertificates(),
             ).showServerSettingsHint.first(),
         )
@@ -122,7 +122,7 @@ class AppViewModelTest {
                     on { isApiConfigured } doReturn flowOf(true)
                 },
                 statsService = mock<MessageStatsService>(),
-                messagesRepository = mock<MessageRepositoryContract>(),
+                messageWatchService = mock<MessageWatchService>(),
                 apiCertificates = ProxyApiCertificates(),
             ).showServerSettingsHint.first(),
         )
@@ -139,7 +139,7 @@ class AppViewModelTest {
             AppViewModel(
                 settingsService = mock<SettingsService>(),
                 statsService = statsService,
-                messagesRepository = mock<MessageRepositoryContract>(),
+                messageWatchService = mock<MessageWatchService>(),
                 apiCertificates = ProxyApiCertificates(),
             ).messageStats.first() === stubStatsData,
         )
@@ -161,8 +161,8 @@ class AppViewModelTest {
             AppViewModel(
                 settingsService = settingsServiceMock,
                 statsService = mock<MessageStatsService>(),
-                messagesRepository = mock<MessageRepositoryContract> {
-                    onBlocking { getLastEntries(any()) } doReturn stubMessageRecords
+                messageWatchService = mock<MessageWatchService> {
+                    onBlocking { watchLastEntries(any()) } doReturn flowOf(stubMessageRecords)
                 },
                 apiCertificates = ProxyApiCertificates(),
             ).messageRecordsRecent.first().isEmpty(),
@@ -184,8 +184,8 @@ class AppViewModelTest {
             statsService = mock<MessageStatsService> {
                 on { getStats() } doReturn flowOf(MessageStatsData())
             },
-            messagesRepository = mock<MessageRepositoryContract> {
-                onBlocking { getLastEntries(any()) } doReturn stubMessageRecords
+            messageWatchService = mock<MessageWatchService> {
+                onBlocking { watchLastEntries(any()) } doReturn flowOf(stubMessageRecords)
             },
             apiCertificates = ProxyApiCertificates(),
         ).messageRecordsRecent.first()
