@@ -109,6 +109,8 @@ private val SentryTracingPlugin = createApplicationPlugin(name = "SentryTracingP
     }
 }
 
+private const val HEADER_TRACE_ID = "X-Trace-Id"
+
 private val ResponseTraceIdPlugin = createApplicationPlugin(name = "ResponseTraceIdPlugin") {
     val logger = application.environment.log
     onCall { call ->
@@ -120,8 +122,8 @@ private val ResponseTraceIdPlugin = createApplicationPlugin(name = "ResponseTrac
     onCallRespond { call ->
         Context.current()?.let {
             val spanContext = OpenTelemetrySpan.fromContext(it).getSpanContext()
-            if (spanContext.isValid()) {
-                call.response.header("X-Trace-Id", spanContext.traceId)
+            if (spanContext.isValid() && !call.response.headers.contains(HEADER_TRACE_ID)) {
+                call.response.header(HEADER_TRACE_ID, spanContext.traceId)
             }
         }
     }
