@@ -357,8 +357,8 @@
                         "uid": "prometheus"
                     },
                     "disableTextWrap": false,
-                    "editorMode": "code",
-                    "expr": "sum(http_server_request_duration_seconds_bucket) by (le)",
+                    "editorMode": "builder",
+                    "expr": "sum by(le) (http_server_request_duration_seconds_bucket{http_response_status_code=~\"200|201\"})",
                     "format": "heatmap",
                     "fullMetaSearch": false,
                     "hide": false,
@@ -773,6 +773,6 @@
     "timezone": "browser",
     "title": "System Status",
     "uid": "aeahzjwam74e8d",
-    "version": 27,
+    "version": 29,
     "weekStart": ""
 }
