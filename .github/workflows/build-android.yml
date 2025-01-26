@@ -10,10 +10,6 @@ on:
         description: 'Name of the Gradle project to build.'
         type: string
         required: true
-      app-private-key:
-        description: 'Private key of a TLS certificate that the app will use for mTLS with the server.'
-        type: string
-        required: true
       app-certificate:
         description: 'TLS certificate that the app will use for mTLS with the server.'
         type: string
@@ -22,6 +18,28 @@ on:
         description: 'Sentry DSN.'
         type: string
         required: false
+    secrets:
+      app-private-key:
+        description: 'Private key of a TLS certificate that the app will use for mTLS with the server.'
+        required: true
+      release-keystore:
+        description: Base64-encoded keystore file.
+        required: true
+      release-store-key-alias:
+        description: Alias of the key in the keystore.
+        required: true
+      release-store-key-password:
+        description: Password of the key in the keystore.
+        required: true
+      release-store-password:
+        description: Password of the keystore.
+        required: true
+      sentry-auth-token:
+        description: Sentry authentication token.
+        required: true
+      api-key:
+        description: API key that is used on the server.
+        required: true
 
 jobs:
   build-app:
@@ -34,15 +52,15 @@ jobs:
       - name: Build the app
         uses: ./.github/actions/build-android
         with:
+          server-certificate: ${{ vars.SERVER_CERTIFICATE_PEM }}
           project: ${{ inputs.project }}
           release: ${{ inputs.release }}
-          release-keystore: ${{ secrets.RELEASE_STORE_BASE64 }}
           app-private-key: ${{ inputs.app-private-key }}
           app-certificate: ${{ inputs.app-certificate }}
-          server-certificate: ${{ vars.SERVER_CERTIFICATE_PEM }}
-          release-store-key-alias: ${{ secrets.RELEASE_STORE_KEY_ALIAS }}
-          release-store-key-password: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
-          release-store-password: ${{ secrets.RELEASE_STORE_PASSWORD }}
-          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           sentry-dsn: ${{ inputs.sentry-dsn }}
-          api-key: ${{ secrets.SERVER_API_KEY }}
+          release-keystore: ${{ inputs.release-keystore }}
+          release-store-key-alias: ${{ inputs.release-store-key-alias }}
+          release-store-key-password: ${{ inputs.release-store-key-password }}
+          release-store-password: ${{ inputs.release-store-password }}
+          sentry-auth-token: ${{ inputs.sentry-auth-token }}
+          api-key: ${{ inputs.api-key }}

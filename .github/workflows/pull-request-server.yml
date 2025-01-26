@@ -16,7 +16,7 @@ jobs:
     with:
       pr: true
     secrets:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      snyk-token: ${{ secrets.SNYK_TOKEN }}
 
   check-codegen:
     name: Codegen

@@ -2,7 +2,7 @@ name: Security Checks
 on:
   workflow_call:
     secrets:
-      SNYK_TOKEN:
+      snyk-token:
         description: 'Snyk API token for security scanning.'
         required: true
     inputs:
@@ -37,6 +37,6 @@ jobs:
       - name: Snyk
         uses: snyk/actions/gradle@master
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.snyk-token }}
         with:
           args: --severity-threshold=high --all-sub-projects

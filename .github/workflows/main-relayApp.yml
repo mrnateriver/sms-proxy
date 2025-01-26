@@ -14,7 +14,7 @@ jobs:
     name: Security
     uses: ./.github/workflows/security.yml
     secrets:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      snyk-token: ${{ secrets.SNYK_TOKEN }}
 
   check-codegen:
     name: Codegen
@@ -33,13 +33,19 @@ jobs:
     name: Builds
     uses: ./.github/workflows/build-android.yml
     needs: [ tests ]
-    secrets: inherit
     with:
       release: false # TODO: temporarily disabled until a secure release channel is created
       project: relayApp
       sentry-dsn: ${{ vars.SENTRY_DSN_RELAY }}
-      app-private-key: ${{ secrets.RELAY_APP_PRIVATE_KEY_PEM }}
       app-certificate: ${{ vars.RELAY_APP_CERTIFICATE_PEM }}
+    secrets:
+      release-keystore: ${{ secrets.RELEASE_STORE_BASE64 }}
+      release-store-key-alias: ${{ secrets.RELEASE_STORE_KEY_ALIAS }}
+      release-store-key-password: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
+      release-store-password: ${{ secrets.RELEASE_STORE_PASSWORD }}
+      sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      api-key: ${{ secrets.SERVER_API_KEY }}
+      app-private-key: ${{ secrets.RELAY_APP_PRIVATE_KEY_PEM }}
 
   publish:
     name: Release

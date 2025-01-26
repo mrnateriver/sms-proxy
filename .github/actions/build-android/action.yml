@@ -7,9 +7,6 @@ inputs:
   project:
     description: Module name.
     required: true
-  release-keystore:
-    description: Base64-encoded keystore file.
-    required: true
   app-private-key:
     description: Base64-encoded mTLS private key of the app.
     required: true
@@ -18,6 +15,9 @@ inputs:
     required: true
   server-certificate:
     description: Base64-encoded TLS certificate of the server.
+    required: true
+  release-keystore:
+    description: Base64-encoded keystore file.
     required: true
   release-store-key-alias:
     description: Alias of the key in the keystore.
