@@ -1,0 +1,28 @@
+name: Shared Unit Tests - JVM
+description: Clones the repo, sets up JDK and runs JVM unit tests for the shared module.
+runs:
+  using: composite
+  steps:
+    - name: Check out the repository
+      uses: actions/checkout@v4
+
+    - name: Setup JDK & Gradle
+      uses: ./.github/actions/prepare-gradle
+
+    - name: Run JVM tests
+      shell: sh
+      run: ./gradlew shared:jvmTest
+
+    - name: Upload test report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: shared-jvm-test-report
+        path: 'shared/build/reports/tests/jvmTest'
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: shared-jvm-test-results
+        path: 'shared/build/test-results/jvmTest/**.xml'

@@ -1,0 +1,27 @@
+name: Build - Receiver App
+on:
+  workflow_call:
+    inputs:
+      release:
+        description: 'Whether to build a signed release APK, or merely perform a build without assembling an APK.'
+        type: boolean
+        default: false
+
+jobs:
+  build-receiver:
+    name: Receiver Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Receiver Build
+        uses: ./.github/actions/build-android
+        with:
+          project: receiverApp
+          release: false # TODO: temporarily disabled until a secure release channel is created
+          release-keystore: ${{ secrets.RELEASE_STORE_BASE64 }}
+          app-private-key: ${{ secrets.RECEIVER_APP_PRIVATE_KEY_PEM }}
+          app-certificate: ${{ env.RECEIVER_APP_CERTIFICATE_PEM }}
+          server-certificate: ${{ env.SERVER_CERTIFICATE_PEM }}
+          release-store-key-alias: ${{ secrets.RELEASE_STORE_KEY_ALIAS }}
+          release-store-key-password: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
+          release-store-password: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}

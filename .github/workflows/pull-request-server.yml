@@ -1,8 +1,13 @@
-name: Pull Request
+name: Pull Request - Server
 
 on:
   pull_request:
     branches: [ "main" ]
+    paths:
+      - "proxyApiTypeSpec/**"
+      - "proxyApiClient/**"
+      - "server/**"
+      - "shared/**"
 
 jobs:
   security:
@@ -20,17 +25,19 @@ jobs:
 
   tests:
     name: Tests
-    uses: ./.github/workflows/tests.yml
+    uses: ./.github/workflows/tests-server.yml
     needs: [ check-codegen ]
 
   linting:
     name: Linting
     uses: ./.github/workflows/linting.yml
     needs: [ check-codegen ]
+    with:
+      project: server
 
   build:
     name: Builds
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/build-server.yml
     needs: [ check-codegen ]
     with:
       release: false

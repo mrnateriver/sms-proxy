@@ -1,0 +1,17 @@
+name: Create Release - Server
+on:
+  workflow_call:
+
+jobs:
+  release-server:
+    name: Server Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      # TODO: tag server container image with semantic version
+      # TODO: push server container image to registry
+      # TODO: update K8S manifest with new container image version (semantic)
+      # TODO: push K8S manifest to GitOps repo
+      - run: echo "TODO"

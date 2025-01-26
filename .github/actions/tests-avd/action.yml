@@ -1,0 +1,46 @@
+name: Shared Unit Tests - AVD
+description: Clones the repo, sets up JDK, prepares AVD and then runs the shared unit tests on it.
+inputs:
+  project:
+    description: Module name. Used to determine test output directory.
+    required: true
+  api-level:
+    description: 'API level of the Android Virtual Device.'
+    default: '26' # minSdk from libs.versions.toml
+runs:
+  using: composite
+  steps:
+    - name: Check out the repository
+      uses: actions/checkout@v4
+
+    - name: Setup JDK & Gradle
+      uses: ./.github/actions/prepare-gradle
+
+    - name: Setup AVD
+      uses: ./.github/actions/prepare-avd
+      with:
+        api-level: ${{ inputs.api-level }}
+
+    - name: Run Android tests
+      uses: reactivecircus/android-emulator-runner@v2
+      env:
+        ADB_INSTALL_TIMEOUT: 600 # 10 minutes (2 minutes by default)
+      with:
+        api-level: ${{ inputs.api-level }}
+        arch: x86_64
+        profile: Nexus 6
+        script: ./gradlew ${{ inputs.project }}:connectedDebugAndroidTest
+
+    - name: Upload test report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.project }}-avd-${{ inputs.api-level }}-test-report
+        path: '${{ inputs.project }}/build/reports/androidTests/connected/debug'
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.project }}-avd-${{ inputs.api-level }}-test-results
+        path: '${{ inputs.project }}/build/outputs/androidTest-results/connected/debug'

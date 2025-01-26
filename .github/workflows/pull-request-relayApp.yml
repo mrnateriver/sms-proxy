@@ -1,0 +1,45 @@
+name: Pull Request - Relay App
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "proxyApiTypeSpec/**"
+      - "proxyApiClient/**"
+      - "relayApp/**"
+      - "shared/**"
+
+jobs:
+  security:
+    name: Security
+    uses: ./.github/workflows/security.yml
+    with:
+      pr: true
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  check-codegen:
+    name: Codegen
+    uses: ./.github/workflows/check-codegen.yml
+    needs: [ security ]
+
+  tests:
+    name: Tests
+    uses: ./.github/workflows/tests-android.yml
+    needs: [ check-codegen ]
+    with:
+      project: relayApp
+
+  linting:
+    name: Linting
+    uses: ./.github/workflows/linting.yml
+    needs: [ check-codegen ]
+    with:
+      project: relayApp
+
+  build:
+    name: Builds
+    uses: ./.github/workflows/build-relayApp.yml
+    needs: [ check-codegen ]
+    with:
+      release: false

@@ -1,0 +1,80 @@
+name: Build Android App
+description: Build an Android app using Gradle.
+inputs:
+  release:
+    description: 'Whether to build a signed release APK, or perform a build without assembling an APK.'
+    default: 'false'
+  project:
+    description: Module name.
+    required: true
+  release-keystore:
+    description: Base64-encoded keystore file.
+    required: true
+  app-private-key:
+    description: Base64-encoded mTLS private key of the app.
+    required: true
+  app-certificate:
+    description: Base64-encoded mTLS certificate of the app.
+    required: true
+  server-certificate:
+    description: Base64-encoded TLS certificate of the server.
+    required: true
+  release-store-key-alias:
+    description: Alias of the key in the keystore.
+    required: true
+  release-store-key-password:
+    description: Password of the key in the keystore.
+    required: true
+  release-store-password:
+    description: Password of the keystore.
+    required: true
+  sentry-auth-token:
+    description: Sentry authentication token.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Check out the repository
+      uses: actions/checkout@v4
+
+    - name: Setup JDK & Gradle
+      uses: ./.github/actions/prepare-gradle
+
+    - name: Add TLS certificates and keys
+      if: ${{ inputs.release }}
+      env:
+        APP_PRIVATE_KEY_PEM: ${{ inputs.app-private-key }}
+        APP_CERTIFICATE_PEM: ${{ inputs.app-certificate }}
+        SERVER_CERTIFICATE_PEM: ${{ inputs.server-certificate }}
+      run: |
+        echo $APP_PRIVATE_KEY_PEM > ./${{ inputs.project }}/src/androidMain/assets/proxy-api-client-certificate-private-key.pem
+        echo $APP_CERTIFICATE_PEM > ./${{ inputs.project }}/src/androidMain/assets/proxy-api-client-certificate.pem
+        echo $SERVER_CERTIFICATE_PEM > ./${{ inputs.project }}/src/androidMain/assets/proxy-api-server-certificate.pem
+
+    - name: Decode keystore
+      if: ${{ inputs.release }}
+      env:
+        ENCODED_STRING: ${{ inputs.release-keystore }}
+      run: |
+        echo $ENCODED_STRING | base64 -d > release.keystore
+
+    - name: Build signed release APK
+      if: ${{ inputs.release }}
+      env:
+        RELEASE_STORE_PATH: release.keystore
+        RELEASE_STORE_KEY_ALIAS: ${{ inputs.release-store-key-alias }}
+        RELEASE_STORE_KEY_PASSWORD: ${{ inputs.release-store-key-password }}
+        RELEASE_STORE_PASSWORD: ${{ inputs.release-store-password }}
+        SENTRY_AUTH_TOKEN: ${{ inputs.sentry-auth-token }}
+      run: ./gradlew ${{ inputs.project }}:assembleRelease
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      if: ${{ inputs.release }}
+      with:
+        name: release-apk-${{ inputs.project }}
+        path: ${{ inputs.project }}/build/outputs/apk/release/${{ inputs.project }}-release.apk
+
+    - name: Check build
+      if: ${{ !inputs.release }}
+      run: ./gradlew ${{ inputs.project }}:build

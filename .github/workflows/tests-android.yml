@@ -1,0 +1,46 @@
+name: Unit Tests - Android
+on:
+  workflow_call:
+    project:
+      description: 'Name of the Gradle project to test.'
+      type: string
+      required: true
+
+jobs:
+  tests-shared-jvm:
+    name: Shared Unit Tests - JVM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Shared Unit Tests - JVM
+        uses: ./.github/actions/tests-shared-jvm
+
+  tests-shared-avd:
+    name: Shared Unit Tests - AVD
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      max-parallel: 1 # Looks like free tier of GH Actions cannot realistically run more than 1 AVD
+      matrix:
+        api-level: [ '26', '34' ]
+    steps:
+      - name: Shared Unit Tests - AVD
+        uses: ./.github/actions/tests-avd
+        with:
+          api-level: ${{ matrix.api-level }}
+          project: shared
+
+  tests-project:
+    name: ${{ inputs.project }} Unit Tests - AVD
+    runs-on: ubuntu-latest
+    needs: [ tests-shared-jvm, tests-shared-avd ]
+    strategy:
+      fail-fast: true
+      max-parallel: 1 # Looks like free tier of GH Actions cannot realistically run more than 1 AVD
+      matrix:
+        api-level: [ '26', '34' ]
+    steps:
+      - name: Receiver Unit Tests - AVD
+        uses: ./.github/actions/tests-avd
+        with:
+          api-level: ${{ matrix.api-level }}
+          project: ${{ inputs.project }}
