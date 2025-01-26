@@ -11,8 +11,6 @@ import io.mrnateriver.smsproxy.controllers.ReceiversController.Companion.receive
 import io.mrnateriver.smsproxy.controllers.ReceiversRegisterController.Companion.receiversRegisterRoutes
 import io.mrnateriver.smsproxy.server.framework.DaggerFramework
 
-// test change
-
 fun Application.installApi(serverConfig: ServerConfiguration, telemetryServices: TelemetryServices) {
     install(ContentNegotiation) {
         json()
