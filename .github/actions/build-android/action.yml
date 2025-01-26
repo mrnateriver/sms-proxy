@@ -44,7 +44,7 @@ runs:
       uses: ./.github/actions/prepare-gradle
 
     - name: Add TLS certificates and keys
-      if: ${{ inputs.release }}
+      if: ${{ inputs.release == 'true' }}
       env:
         APP_PRIVATE_KEY_PEM: ${{ inputs.app-private-key }}
         APP_CERTIFICATE_PEM: ${{ inputs.app-certificate }}
@@ -56,7 +56,7 @@ runs:
         echo $SERVER_CERTIFICATE_PEM > ./${{ inputs.project }}/src/androidMain/assets/proxy-api-server-certificate.pem
 
     - name: Decode keystore
-      if: ${{ inputs.release }}
+      if: ${{ inputs.release == 'true' }}
       env:
         ENCODED_STRING: ${{ inputs.release-keystore }}
       shell: sh
@@ -64,7 +64,7 @@ runs:
         echo $ENCODED_STRING | base64 -d > release.keystore
 
     - name: Build signed release APK
-      if: ${{ inputs.release }}
+      if: ${{ inputs.release == 'true' }}
       env:
         RELEASE_STORE_PATH: release.keystore
         RELEASE_STORE_KEY_ALIAS: ${{ inputs.release-store-key-alias }}
@@ -78,12 +78,12 @@ runs:
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
-      if: ${{ inputs.release }}
+      if: ${{ inputs.release == 'true' }}
       with:
         name: release-apk-${{ inputs.project }}
         path: ${{ inputs.project }}/build/outputs/apk/release/${{ inputs.project }}-release.apk
 
     - name: Check build
-      if: ${{ !inputs.release }}
+      if: ${{ inputs.release != 'true' }}
       shell: sh
       run: ./gradlew ${{ inputs.project }}:build
