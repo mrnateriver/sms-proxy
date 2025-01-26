@@ -62,6 +62,10 @@ tasks.named("generateSentryBundleIdJava") {
     dependsOn("generateMainDatabaseInterface", "kspKotlin")
 }
 
+tasks.named("sentryCollectSourcesJava") {
+    dependsOn("generateMainDatabaseInterface", "kspKotlin")
+}
+
 dependencies {
     implementation(projects.shared)
     implementation(projects.proxyApiServer)
