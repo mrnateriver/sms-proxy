@@ -3,9 +3,6 @@ description: Clones the repo, sets up JDK and runs JVM unit tests for the shared
 runs:
   using: composite
   steps:
-    - name: Check out the repository
-      uses: actions/checkout@v4
-
     - name: Setup JDK & Gradle
       uses: ./.github/actions/prepare-gradle
 

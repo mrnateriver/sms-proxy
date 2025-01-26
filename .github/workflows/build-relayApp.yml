@@ -12,6 +12,9 @@ jobs:
     name: Relay Build
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Relay Build
         uses: ./.github/actions/build-android
         with:

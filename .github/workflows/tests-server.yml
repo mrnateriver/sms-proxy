@@ -7,6 +7,9 @@ jobs:
     name: Shared Unit Tests - JVM
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Shared Unit Tests - JVM
         uses: ./.github/actions/tests-shared-jvm
 
