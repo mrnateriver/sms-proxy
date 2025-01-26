@@ -43,6 +43,7 @@ runs:
         APP_PRIVATE_KEY_PEM: ${{ inputs.app-private-key }}
         APP_CERTIFICATE_PEM: ${{ inputs.app-certificate }}
         SERVER_CERTIFICATE_PEM: ${{ inputs.server-certificate }}
+      shell: sh
       run: |
         echo $APP_PRIVATE_KEY_PEM > ./${{ inputs.project }}/src/androidMain/assets/proxy-api-client-certificate-private-key.pem
         echo $APP_CERTIFICATE_PEM > ./${{ inputs.project }}/src/androidMain/assets/proxy-api-client-certificate.pem
@@ -52,6 +53,7 @@ runs:
       if: ${{ inputs.release }}
       env:
         ENCODED_STRING: ${{ inputs.release-keystore }}
+      shell: sh
       run: |
         echo $ENCODED_STRING | base64 -d > release.keystore
 
@@ -63,6 +65,7 @@ runs:
         RELEASE_STORE_KEY_PASSWORD: ${{ inputs.release-store-key-password }}
         RELEASE_STORE_PASSWORD: ${{ inputs.release-store-password }}
         SENTRY_AUTH_TOKEN: ${{ inputs.sentry-auth-token }}
+      shell: sh
       run: ./gradlew ${{ inputs.project }}:assembleRelease
 
     - name: Upload artifact
@@ -74,4 +77,5 @@ runs:
 
     - name: Check build
       if: ${{ !inputs.release }}
+      shell: sh
       run: ./gradlew ${{ inputs.project }}:build
