@@ -1,10 +1,11 @@
 name: Unit Tests - Android
 on:
   workflow_call:
-    project:
-      description: 'Name of the Gradle project to test.'
-      type: string
-      required: true
+    inputs:
+      project:
+        description: 'Name of the Gradle project to lint.'
+        type: string
+        required: true
 
 jobs:
   tests-shared-jvm:
