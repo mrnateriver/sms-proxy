@@ -55,12 +55,12 @@ jobs:
           server-certificate: ${{ vars.SERVER_CERTIFICATE_PEM }}
           project: ${{ inputs.project }}
           release: ${{ inputs.release }}
-          app-private-key: ${{ inputs.app-private-key }}
-          app-certificate: ${{ inputs.app-certificate }}
           sentry-dsn: ${{ inputs.sentry-dsn }}
-          release-keystore: ${{ inputs.release-keystore }}
-          release-store-key-alias: ${{ inputs.release-store-key-alias }}
-          release-store-key-password: ${{ inputs.release-store-key-password }}
-          release-store-password: ${{ inputs.release-store-password }}
-          sentry-auth-token: ${{ inputs.sentry-auth-token }}
-          api-key: ${{ inputs.api-key }}
+          app-certificate: ${{ inputs.app-certificate }}
+          app-private-key: ${{ secrets.app-private-key }}
+          release-keystore: ${{ secrets.release-keystore }}
+          release-store-key-alias: ${{ secrets.release-store-key-alias }}
+          release-store-key-password: ${{ secrets.release-store-key-password }}
+          release-store-password: ${{ secrets.release-store-password }}
+          sentry-auth-token: ${{ secrets.sentry-auth-token }}
+          api-key: ${{ secrets.api-key }}
