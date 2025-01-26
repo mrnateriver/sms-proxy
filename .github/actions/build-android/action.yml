@@ -2,7 +2,7 @@ name: Build Android App
 description: Build an Android app using Gradle.
 inputs:
   release:
-    description: 'Whether to build a signed release APK, or perform a build without assembling an APK.'
+    description: Whether to build a signed release APK, or perform a build without assembling an APK.
     default: 'false'
   project:
     description: Module name.
@@ -30,6 +30,9 @@ inputs:
     required: true
   sentry-auth-token:
     description: Sentry authentication token.
+    required: true
+  sentry-dsn:
+    description: Sentry DSN.
     required: true
 runs:
   using: composite
@@ -65,6 +68,7 @@ runs:
         RELEASE_STORE_KEY_PASSWORD: ${{ inputs.release-store-key-password }}
         RELEASE_STORE_PASSWORD: ${{ inputs.release-store-password }}
         SENTRY_AUTH_TOKEN: ${{ inputs.sentry-auth-token }}
+        SENTRY_DSN: ${{ inputs.sentry-dsn }}
       shell: sh
       run: ./gradlew ${{ inputs.project }}:assembleRelease
 

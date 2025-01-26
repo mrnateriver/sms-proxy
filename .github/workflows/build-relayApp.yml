@@ -28,4 +28,4 @@ jobs:
           release-store-key-password: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
           release-store-password: ${{ secrets.RELEASE_STORE_PASSWORD }}
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-
+          sentry-dsn: ${{ env.SENTRY_DSN_RELAY }}
