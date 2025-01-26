@@ -27,14 +27,19 @@ jobs:
     needs: [ check-codegen ]
     with:
       project: relayApp
+      sentry-dsn: ${{ env.SENTRY_DSN_RELAY }}
 
   build:
     name: Builds
-    uses: ./.github/workflows/build-relayApp.yml
+    uses: ./.github/workflows/build-android.yml
     needs: [ tests ]
     secrets: inherit
     with:
       release: false # TODO: temporarily disabled until a secure release channel is created
+      project: relayApp
+      sentry-dsn: ${{ env.SENTRY_DSN_RELAY }}
+      app-private-key: ${{ secrets.RELAY_APP_PRIVATE_KEY_PEM }}
+      app-certificate: ${{ env.RELAY_APP_CERTIFICATE_PEM }}
 
   publish:
     name: Release

@@ -7,6 +7,9 @@ inputs:
   api-level:
     description: 'API level of the Android Virtual Device.'
     default: '26' # minSdk from libs.versions.toml
+  sentry-dsn:
+    description: Sentry DSN.
+    required: true
 runs:
   using: composite
   steps:
@@ -19,7 +22,6 @@ runs:
         echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
         sudo udevadm control --reload-rules
         sudo udevadm trigger --name-match=kvm
-        echo SENTRY_DSN=$SENTRY_DSN
 
     - name: AVD cache
       id: avd-cache
@@ -34,6 +36,7 @@ runs:
       uses: reactivecircus/android-emulator-runner@v2
       env:
         ADB_INSTALL_TIMEOUT: 600 # 10 minutes (2 minutes by default)
+        SENTRY_DSN: ${{ inputs.sentry-dsn }}
       with:
         api-level: ${{ inputs.api-level }}
         arch: x86_64
