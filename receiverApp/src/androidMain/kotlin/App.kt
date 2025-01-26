@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.mrnateriver.smsproxy.shared.composables.theme.AppMaterialTheme
 
+// test change
+
 @Composable
 fun App(modifier: Modifier = Modifier) {
     AppMaterialTheme {
