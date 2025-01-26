@@ -34,6 +34,9 @@ inputs:
   sentry-dsn:
     description: Sentry DSN.
     required: true
+  api-key:
+    description: API key that is used on the server.
+    required: true
 runs:
   using: composite
   steps:
@@ -69,6 +72,7 @@ runs:
         RELEASE_STORE_PASSWORD: ${{ inputs.release-store-password }}
         SENTRY_AUTH_TOKEN: ${{ inputs.sentry-auth-token }}
         SENTRY_DSN: ${{ inputs.sentry-dsn }}
+        API_KEY: ${{ inputs.api-key }}
       shell: sh
       run: ./gradlew ${{ inputs.project }}:assembleRelease
 
