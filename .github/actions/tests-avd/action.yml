@@ -13,10 +13,21 @@ runs:
     - name: Setup JDK & Gradle
       uses: ./.github/actions/prepare-gradle
 
-    - name: Setup AVD
-      uses: ./.github/actions/prepare-avd
+    - name: Enable KVM
+      shell: bash
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    - name: AVD cache
+      id: avd-cache
+      uses: actions/cache@v4
       with:
-        api-level: ${{ inputs.api-level }}
+        key: avd-${{ inputs.api-level }}
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
 
     - name: Run Android tests
       uses: reactivecircus/android-emulator-runner@v2
@@ -26,6 +37,9 @@ runs:
         api-level: ${{ inputs.api-level }}
         arch: x86_64
         profile: Nexus 6
+        force-avd-creation: false
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: false
         script: ./gradlew ${{ inputs.project }}:connectedDebugAndroidTest
 
     - name: Upload test report
