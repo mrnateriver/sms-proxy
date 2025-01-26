@@ -32,7 +32,6 @@ jobs:
   tests-project:
     name: ${{ inputs.project }} Unit Tests - AVD
     runs-on: ubuntu-latest
-    needs: [ tests-shared-jvm, tests-shared-avd ]
     strategy:
       fail-fast: true
       max-parallel: 1 # Looks like free tier of GH Actions cannot realistically run more than 1 AVD
