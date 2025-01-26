@@ -37,7 +37,7 @@ jobs:
           project: shared
 
   tests-project:
-    name: ${{ inputs.project }} Unit Tests - AVD
+    name: Unit Tests - AVD
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
