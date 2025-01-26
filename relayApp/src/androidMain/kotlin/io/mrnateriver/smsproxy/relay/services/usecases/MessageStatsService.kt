@@ -4,10 +4,7 @@ import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsData
 import io.mrnateriver.smsproxy.relay.services.usecases.models.MessageStatsEntry
 import io.mrnateriver.smsproxy.shared.models.MessageEntry
 import io.mrnateriver.smsproxy.shared.models.MessageRelayStatus
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -18,6 +15,7 @@ import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
@@ -39,7 +37,7 @@ class MessageStatsService @Inject constructor(
     private val updateTrigger = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
 
     override fun incrementProcessingErrors() {
-        CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
+        runBlocking {
             statsRepository.incrementProcessingErrors()
             launch { observabilityService.incrementCounter(METRICS_NAME_PROCESSING_ERRORS) }
 
@@ -48,7 +46,7 @@ class MessageStatsService @Inject constructor(
     }
 
     override fun incrementProcessingSuccesses() {
-        CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
+        runBlocking {
             statsRepository.incrementProcessingSuccesses()
             launch { observabilityService.incrementCounter(METRICS_NAME_PROCESSING_SUCCESSES) }
 
