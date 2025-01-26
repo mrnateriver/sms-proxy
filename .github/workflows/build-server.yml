@@ -32,7 +32,7 @@ jobs:
         if: ${{ inputs.release }}
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_DSN: ${{ env.SENTRY_DSN_SERVER }}
+          SENTRY_DSN: ${{ vars.SENTRY_DSN_SERVER }}
         run: ./gradlew server:assemble # FIXME: proper Gradle task name
 
       - name: Check build

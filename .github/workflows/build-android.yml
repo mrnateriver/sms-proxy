@@ -39,7 +39,7 @@ jobs:
           release-keystore: ${{ secrets.RELEASE_STORE_BASE64 }}
           app-private-key: ${{ inputs.app-private-key }}
           app-certificate: ${{ inputs.app-certificate }}
-          server-certificate: ${{ env.SERVER_CERTIFICATE_PEM }}
+          server-certificate: ${{ vars.SERVER_CERTIFICATE_PEM }}
           release-store-key-alias: ${{ secrets.RELEASE_STORE_KEY_ALIAS }}
           release-store-key-password: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
           release-store-password: ${{ secrets.RELEASE_STORE_PASSWORD }}

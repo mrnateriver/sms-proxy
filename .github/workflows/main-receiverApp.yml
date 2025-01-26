@@ -27,7 +27,7 @@ jobs:
     needs: [ check-codegen ]
     with:
       project: receiverApp
-      sentry-dsn: ${{ env.SENTRY_DSN_RECEIVER }}
+      sentry-dsn: ${{ vars.SENTRY_DSN_RECEIVER }}
 
   build:
     name: Builds
@@ -37,9 +37,9 @@ jobs:
     with:
       release: false # TODO: temporarily disabled until a secure release channel is created
       project: receiverApp
-      sentry-dsn: ${{ env.SENTRY_DSN_RECEIVER }}
+      sentry-dsn: ${{ vars.SENTRY_DSN_RECEIVER }}
       app-private-key: ${{ secrets.RECEIVER_APP_PRIVATE_KEY_PEM }}
-      app-certificate: ${{ env.RECEIVER_APP_CERTIFICATE_PEM }}
+      app-certificate: ${{ vars.RECEIVER_APP_CERTIFICATE_PEM }}
 
   publish:
     name: Release

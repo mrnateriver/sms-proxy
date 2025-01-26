@@ -27,7 +27,7 @@ jobs:
     needs: [ check-codegen ]
     with:
       project: relayApp
-      sentry-dsn: ${{ env.SENTRY_DSN_RELAY }}
+      sentry-dsn: ${{ vars.SENTRY_DSN_RELAY }}
 
   build:
     name: Builds
@@ -37,9 +37,9 @@ jobs:
     with:
       release: false # TODO: temporarily disabled until a secure release channel is created
       project: relayApp
-      sentry-dsn: ${{ env.SENTRY_DSN_RELAY }}
+      sentry-dsn: ${{ vars.SENTRY_DSN_RELAY }}
       app-private-key: ${{ secrets.RELAY_APP_PRIVATE_KEY_PEM }}
-      app-certificate: ${{ env.RELAY_APP_CERTIFICATE_PEM }}
+      app-certificate: ${{ vars.RELAY_APP_CERTIFICATE_PEM }}
 
   publish:
     name: Release
