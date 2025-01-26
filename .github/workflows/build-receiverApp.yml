@@ -19,7 +19,7 @@ jobs:
         uses: ./.github/actions/build-android
         with:
           project: receiverApp
-          release: false # TODO: temporarily disabled until a secure release channel is created
+          release: ${{ inputs.release }}
           release-keystore: ${{ secrets.RELEASE_STORE_BASE64 }}
           app-private-key: ${{ secrets.RECEIVER_APP_PRIVATE_KEY_PEM }}
           app-certificate: ${{ env.RECEIVER_APP_CERTIFICATE_PEM }}

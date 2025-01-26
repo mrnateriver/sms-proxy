@@ -30,6 +30,8 @@ jobs:
       # TODO: build container image, yield image hash
       - name: Build release image
         if: ${{ inputs.release }}
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: ./gradlew server:assemble # FIXME: proper Gradle task name
 
       - name: Check build

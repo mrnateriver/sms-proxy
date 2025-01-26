@@ -34,7 +34,7 @@ jobs:
     needs: [ tests ]
     secrets: inherit
     with:
-      release: true
+      release: false # TODO: temporarily disabled until a secure release channel is created
 
   publish:
     name: Release
