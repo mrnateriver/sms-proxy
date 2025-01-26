@@ -14,8 +14,6 @@ import io.mrnateriver.smsproxy.relay.pages.home.isHomePageRoute
 import io.mrnateriver.smsproxy.shared.composables.AppPreferencesProvider
 import io.mrnateriver.smsproxy.shared.composables.theme.AppMaterialTheme
 
-// test change
-
 @Composable
 fun App() {
     AppMaterialTheme {
