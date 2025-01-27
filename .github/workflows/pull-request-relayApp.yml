@@ -19,6 +19,7 @@ jobs:
       pr: true
     secrets:
       snyk-token: ${{ secrets.SNYK_TOKEN }}
+      sonar-token: ${{ secrets.SONAR_TOKEN }}
 
   check-codegen:
     name: Codegen

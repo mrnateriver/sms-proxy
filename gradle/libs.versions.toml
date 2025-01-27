@@ -53,6 +53,8 @@ otel-instrumentation = "2.11.0-alpha"
 otel-sdk = "1.45.0"
 otel-semconv = "1.29.0-alpha"
 micrometer = "1.14.2"
+fabrikt = "1.7.0"
+sonarqube = "6.0.1.5171"
 
 [libraries]
 # Android Runtime
@@ -171,4 +173,5 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentry" }
 sentry-jvm = { id = "io.sentry.jvm.gradle", version.ref = "sentry" }
 sentry-kotlin = { id = "io.sentry.kotlin.compiler.gradle", version.ref = "sentry" }
-fabrikt = { id = "ch.acanda.gradle.fabrikt", version = "1.7.0" }
+fabrikt = { id = "ch.acanda.gradle.fabrikt", version.ref = "fabrikt" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }

@@ -37,4 +37,7 @@ jobs:
 
       - name: Check build
         if: ${{ !inputs.release }}
-        run: ./gradlew server:assemble
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_DSN: ${{ vars.SENTRY_DSN_SERVER }}
+        run: ./gradlew server:compileKotlin

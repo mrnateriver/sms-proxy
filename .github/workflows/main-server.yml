@@ -18,6 +18,7 @@ jobs:
     uses: ./.github/workflows/security.yml
     secrets:
       snyk-token: ${{ secrets.SNYK_TOKEN }}
+      sonar-token: ${{ secrets.SONAR_TOKEN }}
 
   check-codegen:
     name: Codegen

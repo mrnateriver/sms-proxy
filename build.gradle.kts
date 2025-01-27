@@ -1,6 +1,8 @@
 extra["basePackageName"] = project.properties["basePackageName"]
 
 plugins {
+    alias(libs.plugins.sonarqube)
+
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
     alias(libs.plugins.androidApplication) apply false
@@ -16,6 +18,14 @@ plugins {
     alias(libs.plugins.room) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.detekt) apply false
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", getProperty("sonar.projectKey") ?: System.getenv("SONAR_PROJECT_KEY") ?: "server")
+        property("sonar.organization", getProperty("sonar.org") ?: System.getenv("SONAR_ORGANIZATION") ?: "org")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 subprojects {

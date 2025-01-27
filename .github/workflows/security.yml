@@ -5,6 +5,9 @@ on:
       snyk-token:
         description: 'Snyk API token for security scanning.'
         required: true
+      sonar-token:
+        description: 'SonarQube API token for security scanning.'
+        required: true
     inputs:
       pr:
         description: 'Whether the workflow is executed for a PR, as opposed to a protected branch.'
@@ -77,3 +80,32 @@ jobs:
         with:
           command: code test
           args: --severity-threshold=high --all-sub-projects
+
+  sonar:
+    name: SonarQube
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK & Gradle
+        uses: ./.github/actions/prepare-gradle
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.sonar-token }}
+        run: ./gradlew compileReleaseKotlinAndroid compileKotlin sonar
+
+      - name: Quality gate check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.sonar-token }}
+        with:
+          pollingTimeoutSec: 600

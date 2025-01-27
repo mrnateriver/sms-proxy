@@ -86,5 +86,5 @@ runs:
     - name: Check build
       if: ${{ inputs.release != 'true' }}
       shell: sh
-      # Using :assembleDebug to avoid creating a Sentry release, bundling resources and a few other operations
-      run: ./gradlew ${{ inputs.project }}:assembleDebug
+      # Using :compileReleaseKotlinAndroid to avoid creating a Sentry release, bundling resources and a few other operations
+      run: ./gradlew ${{ inputs.project }}:compileReleaseKotlinAndroid
