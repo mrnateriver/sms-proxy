@@ -20,19 +20,25 @@ plugins {
 
 subprojects {
     configurations.all {
-        resolutionStrategy.eachDependency {
-            when (requested.module.toString()) {
-                "com.google.protobuf:protobuf-java" -> {
-                    when {
-                        version.toString().startsWith("4.") -> useVersion("4.28.2")
-                        else -> useVersion("3.25.5")
-                    }
-                }
-
-                "io.netty:netty-codec-http2" -> {
-                    useVersion("4.1.100.Final")
-                }
-            }
-        }
+        resolutionStrategy.activateDependencyLocking()
     }
 }
+
+//subprojects {
+//    configurations.all {
+//        resolutionStrategy.eachDependency {
+//            when (requested.module.toString()) {
+//                "com.google.protobuf:protobuf-java" -> {
+//                    when {
+//                        version.toString().startsWith("4.") -> useVersion("4.28.2")
+//                        else -> useVersion("3.25.5")
+//                    }
+//                }
+//
+//                "io.netty:netty-codec-http2" -> {
+//                    useVersion("4.1.100.Final")
+//                }
+//            }
+//        }
+//    }
+//}
