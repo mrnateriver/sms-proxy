@@ -27,16 +27,47 @@ jobs:
           head: ${{ github.ref_name }}
           extra_args: --only-verified
 
-  sast:
-    name: Security Scan
+  snyk-test:
+    name: Snyk - OSS & License Checks
     runs-on: ubuntu-latest
+    env:
+      SNYK_TOKEN: ${{ secrets.snyk-token }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
 
-      - name: Snyk
+      - name: OSS & License Checks
         uses: snyk/actions/gradle@master
-        env:
-          SNYK_TOKEN: ${{ secrets.snyk-token }}
         with:
+          command: monitor
+          args: --severity-threshold=high --all-sub-projects
+
+  snyk-iac:
+    name: Snyk - IAC
+    runs-on: ubuntu-latest
+    env:
+      SNYK_TOKEN: ${{ secrets.snyk-token }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: IAC
+        uses: snyk/actions/gradle@master
+        with:
+          command: iac test
+          args: --severity-threshold=high --all-sub-projects
+
+  snyk-code:
+    name: Snyk - Code
+    runs-on: ubuntu-latest
+    env:
+      SNYK_TOKEN: ${{ secrets.snyk-token }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Code
+        uses: snyk/actions/gradle@master
+        with:
+          command: code test
           args: --severity-threshold=high --all-sub-projects
