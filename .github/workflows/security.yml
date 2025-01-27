@@ -55,7 +55,7 @@ jobs:
         uses: snyk/actions/gradle@master
         with:
           command: iac test
-          args: --severity-threshold=high --all-sub-projects
+          args: --severity-threshold=high
 
   snyk-code:
     name: Snyk - Code
