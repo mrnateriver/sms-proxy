@@ -8,6 +8,8 @@ on:
       - "proxyApiClient/**"
       - "server/**"
       - "shared/**"
+      - "settings.gradle.kts"
+      - "build.gradle.kts"
 
 jobs:
   security:

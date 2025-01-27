@@ -8,6 +8,8 @@ on:
       - "proxyApiClient/**"
       - "receiverApp/**"
       - "shared/**"
+      - "settings.gradle.kts"
+      - "build.gradle.kts"
 
 jobs:
   security:
@@ -27,16 +29,16 @@ jobs:
     needs: [ check-codegen ]
     with:
       project: receiverApp
+    secrets:
       sentry-dsn: ${{ vars.SENTRY_DSN_RECEIVER }}
 
   build:
-    name: Builds
+    name: Build
     uses: ./.github/workflows/build-android.yml
     needs: [ tests ]
     with:
       release: false # TODO: temporarily disabled until a secure release channel is created
       project: receiverApp
-      sentry-dsn: ${{ vars.SENTRY_DSN_RECEIVER }}
       app-certificate: ${{ vars.RECEIVER_APP_CERTIFICATE_PEM }}
     secrets:
       release-keystore: ${{ secrets.RELEASE_STORE_BASE64 }}
@@ -44,6 +46,7 @@ jobs:
       release-store-key-password: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
       release-store-password: ${{ secrets.RELEASE_STORE_PASSWORD }}
       sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      sentry-dsn: ${{ vars.SENTRY_DSN_RECEIVER }}
       api-key: ${{ secrets.SERVER_API_KEY }}
       app-private-key: ${{ secrets.RECEIVER_APP_PRIVATE_KEY_PEM }}
 

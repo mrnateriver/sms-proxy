@@ -8,6 +8,8 @@ on:
       - "proxyApiClient/**"
       - "relayApp/**"
       - "shared/**"
+      - "settings.gradle.kts"
+      - "build.gradle.kts"
 
 jobs:
   security:
@@ -29,6 +31,8 @@ jobs:
     needs: [ check-codegen ]
     with:
       project: relayApp
+    secrets:
+      sentry-dsn: ${{ vars.SENTRY_DSN_RELAY }}
 
   linting:
     name: Linting
@@ -38,8 +42,9 @@ jobs:
       project: relayApp
 
   build:
-    name: Builds
-    uses: ./.github/workflows/build-relayApp.yml
+    name: Build
+    uses: ./.github/workflows/build-android.yml
     needs: [ check-codegen ]
     with:
       release: false
+      project: relayApp

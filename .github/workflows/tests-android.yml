@@ -6,9 +6,9 @@ on:
         description: 'Name of the Gradle project to lint.'
         type: string
         required: true
+    secrets:
       sentry-dsn:
         description: 'Sentry DSN.'
-        type: string
         required: false
 
 jobs:
@@ -57,4 +57,4 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           project: ${{ inputs.project }}
-          sentry-dsn: ${{ inputs.sentry-dsn }}
+          sentry-dsn: ${{ secrets.sentry-dsn }}

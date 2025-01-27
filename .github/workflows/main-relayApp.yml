@@ -8,6 +8,8 @@ on:
       - "proxyApiClient/**"
       - "relayApp/**"
       - "shared/**"
+      - "settings.gradle.kts"
+      - "build.gradle.kts"
 
 jobs:
   security:
@@ -27,6 +29,7 @@ jobs:
     needs: [ check-codegen ]
     with:
       project: relayApp
+    secrets:
       sentry-dsn: ${{ vars.SENTRY_DSN_RELAY }}
 
   build:
@@ -36,7 +39,6 @@ jobs:
     with:
       release: false # TODO: temporarily disabled until a secure release channel is created
       project: relayApp
-      sentry-dsn: ${{ vars.SENTRY_DSN_RELAY }}
       app-certificate: ${{ vars.RELAY_APP_CERTIFICATE_PEM }}
     secrets:
       release-keystore: ${{ secrets.RELEASE_STORE_BASE64 }}
@@ -44,6 +46,7 @@ jobs:
       release-store-key-password: ${{ secrets.RELEASE_STORE_KEY_PASSWORD }}
       release-store-password: ${{ secrets.RELEASE_STORE_PASSWORD }}
       sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      sentry-dsn: ${{ vars.SENTRY_DSN_RELAY }}
       api-key: ${{ secrets.SERVER_API_KEY }}
       app-private-key: ${{ secrets.RELAY_APP_PRIVATE_KEY_PEM }}
 

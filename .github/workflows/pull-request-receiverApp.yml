@@ -8,6 +8,8 @@ on:
       - "proxyApiClient/**"
       - "receiverApp/**"
       - "shared/**"
+      - "settings.gradle.kts"
+      - "build.gradle.kts"
 
 jobs:
   security:
@@ -29,6 +31,8 @@ jobs:
     needs: [ check-codegen ]
     with:
       project: receiverApp
+    secrets:
+      sentry-dsn: ${{ vars.SENTRY_DSN_RECEIVER }}
 
   linting:
     name: Linting
@@ -38,8 +42,9 @@ jobs:
       project: receiverApp
 
   build:
-    name: Builds
-    uses: ./.github/workflows/build-receiverApp.yml
+    name: Build
+    uses: ./.github/workflows/build-android.yml
     needs: [ check-codegen ]
     with:
       release: false
+      project: receiverApp
