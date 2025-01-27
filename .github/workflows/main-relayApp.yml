@@ -1,6 +1,7 @@
 name: Main - Relay App
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
     paths:
