@@ -13,6 +13,14 @@ on:
         description: 'Whether the workflow is executed for a PR, as opposed to a protected branch.'
         type: boolean
         default: false
+      sonar-project-key:
+        description: 'SonarQube project key.'
+        type: string
+        required: true
+      sonar-organization:
+        description: 'SonarQube organization.'
+        type: string
+        required: true
 
 jobs:
   secrets:
@@ -101,11 +109,15 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.sonar-token }}
+          SONAR_PROJECT_KEY: ${{ inputs.sonar-project-key }}
+          SONAR_ORGANIZATION: ${{ inputs.sonar-organization }}
         run: ./gradlew compileReleaseKotlinAndroid compileKotlin sonar
 
       - name: Quality gate check
         uses: sonarsource/sonarqube-quality-gate-action@master
         env:
           SONAR_TOKEN: ${{ secrets.sonar-token }}
+          SONAR_PROJECT_KEY: ${{ inputs.sonar-project-key }}
+          SONAR_ORGANIZATION: ${{ inputs.sonar-organization }}
         with:
           pollingTimeoutSec: 600

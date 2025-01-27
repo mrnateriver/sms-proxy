@@ -19,6 +19,9 @@ jobs:
     secrets:
       snyk-token: ${{ secrets.SNYK_TOKEN }}
       sonar-token: ${{ secrets.SONAR_TOKEN }}
+    with:
+      sonar-project-key: ${{ vars.SONAR_PROJECT_KEY }}
+      sonar-organization: ${{ vars.SONAR_ORGANIZATION }}
 
   check-codegen:
     name: Codegen
