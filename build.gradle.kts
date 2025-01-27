@@ -36,7 +36,7 @@ subprojects {
                 }
 
                 "io.netty:netty-codec-http2" -> {
-                    useVersion("4.1.100.Final")
+                    useVersion("4.1.114.Final")
                 }
             }
         }
