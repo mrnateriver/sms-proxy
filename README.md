@@ -1,5 +1,9 @@
 # Message Proxy
 
+[![Server](https://github.com/mrnateriver/sms-proxy/actions/workflows/main-server.yml/badge.svg)](https://github.com/mrnateriver/sms-proxy/actions/workflows/main-server.yml)
+[![Relay](https://github.com/mrnateriver/sms-proxy/actions/workflows/main-relayApp.yml/badge.svg)](https://github.com/mrnateriver/sms-proxy/actions/workflows/main-relayApp.yml)
+[![Receiver](https://github.com/mrnateriver/sms-proxy/actions/workflows/main-receiverApp.yml/badge.svg)](https://github.com/mrnateriver/sms-proxy/actions/workflows/main-receiverApp.yml)
+
 Modules:
 
 - [`relayApp`](relayApp/) - Android [KMP](https://kotlinlang.org/docs/multiplatform.html) app that relays SMS messages
@@ -34,7 +38,7 @@ See [architecture documentation](docs/README.md).
 [Grafana](https://grafana.com/); [Prometheus](https://prometheus.io/); [Loki](https://grafana.com/oss/loki/); [Tempo](https://grafana.com/oss/tempo/);
 [Alloy](https://grafana.com/oss/alloy-opentelemetry-collector/); [cAdvisor](https://github.com/google/cadvisor);
 [node_exporter](https://github.com/prometheus/node_exporter); [Sentry](https://sentry.io/); [HashiCorp Vault](https://www.hashicorp.com/products/vault);
-[Kubernetes](https://kubernetes.io/); [FluxCD](https://fluxcd.io/); [Helm](https://helm.sh/);
+[Kubernetes](https://kubernetes.io/); [FluxCD](https://fluxcd.io/); [Helm](https://helm.sh/); [Snyk](https://snyk.io/)
 
 ## Running
 
