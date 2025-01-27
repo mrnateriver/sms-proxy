@@ -39,6 +39,12 @@ jobs:
       - name: OSS & License Checks
         uses: snyk/actions/gradle@master
         with:
+          command: test
+          args: --severity-threshold=high --all-sub-projects
+
+      - name: Report findings
+        uses: snyk/actions/gradle@master
+        with:
           command: monitor
           args: --severity-threshold=high --all-sub-projects
 
