@@ -13,7 +13,7 @@ Modules:
   pipeline.
 - [`server`](server/) - Server that receives relayed messages, stores them and proxies to registered receivers.
 - [`receiverApp`](receiverApp/) - Android [KMP](https://kotlinlang.org/docs/multiplatform.html) app that receives
-  relayed messages via FCM.
+  relayed messages via [FCM](https://firebase.google.com/docs/cloud-messaging/).
 
 ## Architecture
 
