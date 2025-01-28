@@ -14,16 +14,16 @@ version = "1.0.0"
 application {
     mainClass.set("$group.ApplicationKt")
 
+    val args = mutableListOf(
+        "-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}",
+    )
+
     val apiKey = System.getenv("API_KEY") ?: getProperty("apiKey")
-    check(!apiKey.isNullOrBlank()) {
-        "Project property 'apiKey' or environment variable API_KEY must be non-empty before build."
+    if (!apiKey.isNullOrBlank()) {
+        args.add("-D$group.apiKey=$apiKey")
     }
 
-    applicationDefaultJvmArgs =
-        listOf(
-            "-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}",
-            "-D$group.apiKey=$apiKey",
-        )
+    applicationDefaultJvmArgs = args
 }
 
 tasks {

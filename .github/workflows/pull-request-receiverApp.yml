@@ -22,7 +22,6 @@ jobs:
     secrets:
       snyk-token: ${{ secrets.SNYK_TOKEN }}
       sonar-token: ${{ secrets.SONAR_TOKEN }}
-      api-key: ${{ secrets.SERVER_API_KEY }}
 
   check-codegen:
     name: Codegen
@@ -52,3 +51,5 @@ jobs:
     with:
       release: false
       project: receiverApp
+    secrets:
+      api-key: ${{ secrets.SERVER_API_KEY }}

@@ -41,5 +41,4 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_DSN: ${{ vars.SENTRY_DSN_SERVER }}
-          API_KEY: ${{ secrets.SERVER_API_KEY }}
         run: ./gradlew server:compileKotlin
