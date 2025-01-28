@@ -112,26 +112,15 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      #      - name: Build and analyze
-      #        env:
-      #          SONAR_TOKEN: ${{ secrets.sonar-token }}
-      #          SONAR_PROJECT_KEY: ${{ inputs.sonar-project-key }}
-      #          SONAR_ORGANIZATION: ${{ inputs.sonar-organization }}
-      #          API_KEY: ${{ secrets.api-key }}
-      #        run: ./gradlew compileReleaseKotlinAndroid compileKotlin sonar
       - name: SonarQube scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.sonar-token }}
-          SONAR_PROJECT_KEY: ${{ inputs.sonar-project-key }}
-          SONAR_ORGANIZATION: ${{ inputs.sonar-organization }}
           API_KEY: ${{ secrets.api-key }}
 
       - name: SonarQube gate check
         uses: sonarsource/sonarqube-quality-gate-action@master
         env:
           SONAR_TOKEN: ${{ secrets.sonar-token }}
-          SONAR_PROJECT_KEY: ${{ inputs.sonar-project-key }}
-          SONAR_ORGANIZATION: ${{ inputs.sonar-organization }}
         with:
           pollingTimeoutSec: 600
