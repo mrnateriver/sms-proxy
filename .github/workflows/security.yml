@@ -8,6 +8,9 @@ on:
       sonar-token:
         description: 'SonarQube API token for security scanning.'
         required: true
+      api-key:
+        description: 'API key for the server.'
+        required: true
     inputs:
       pr:
         description: 'Whether the workflow is executed for a PR, as opposed to a protected branch.'
@@ -43,6 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SNYK_TOKEN: ${{ secrets.snyk-token }}
+      API_KEY: ${{ secrets.api-key }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4

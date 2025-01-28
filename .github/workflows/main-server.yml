@@ -19,6 +19,7 @@ jobs:
     secrets:
       snyk-token: ${{ secrets.SNYK_TOKEN }}
       sonar-token: ${{ secrets.SONAR_TOKEN }}
+      api-key: ${{ secrets.SERVER_API_KEY }}
     with:
       sonar-project-key: ${{ vars.SONAR_PROJECT_KEY }}
       sonar-organization: ${{ vars.SONAR_ORGANIZATION }}
