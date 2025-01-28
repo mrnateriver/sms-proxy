@@ -14,7 +14,10 @@ version = "1.0.0"
 application {
     mainClass.set("$group.ApplicationKt")
 
-    val apiKey = validateNonEmpty("apiKey")
+    val apiKey = System.getenv("API_KEY") ?: getProperty("apiKey")
+    check(!apiKey.isNullOrBlank()) {
+        "Project property 'apiKey' or environment variable API_KEY must be non-empty before build."
+    }
 
     applicationDefaultJvmArgs =
         listOf(

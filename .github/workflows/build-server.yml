@@ -33,6 +33,7 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_DSN: ${{ vars.SENTRY_DSN_SERVER }}
+          API_KEY: ${{ secrets.SERVER_API_KEY }}
         run: ./gradlew server:assemble # FIXME: proper Gradle task name
 
       - name: Check build
@@ -40,4 +41,5 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_DSN: ${{ vars.SENTRY_DSN_SERVER }}
+          API_KEY: ${{ secrets.SERVER_API_KEY }}
         run: ./gradlew server:compileKotlin

@@ -8,6 +8,9 @@ on:
       sonar-token:
         description: 'SonarQube API token for security scanning.'
         required: true
+      api-key:
+        description: 'API key for the server.'
+        required: true
     inputs:
       pr:
         description: 'Whether the workflow is executed for a PR, as opposed to a protected branch.'
@@ -119,5 +122,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.sonar-token }}
           SONAR_PROJECT_KEY: ${{ inputs.sonar-project-key }}
           SONAR_ORGANIZATION: ${{ inputs.sonar-organization }}
+          API_KEY: ${{ secrets.api-key }}
         with:
           pollingTimeoutSec: 600

@@ -86,5 +86,7 @@ runs:
     - name: Check build
       if: ${{ inputs.release != 'true' }}
       shell: sh
+      env:
+        API_KEY: ${{ inputs.api-key }}
       # Using :compileReleaseKotlinAndroid to avoid creating a Sentry release, bundling resources and a few other operations
       run: ./gradlew ${{ inputs.project }}:compileReleaseKotlinAndroid
