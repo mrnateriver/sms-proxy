@@ -75,10 +75,7 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
 
-        val apiKey = System.getenv("API_KEY") ?: getProperty("apiKey")
-        check(!apiKey.isNullOrBlank()) {
-            "Project property 'apiKey' or environment variable API_KEY must be non-empty before build."
-        }
+        val apiKey = System.getenv("API_KEY") ?: getProperty("apiKey") ?: ""
 
         buildConfigField("long", "API_TIMEOUT_MS", "${validateNonEmpty("apiTimeoutMs")}L")
         buildConfigField("String", "API_BASE_URL", "\"${validateUrl("apiBaseUrl")}\"")
