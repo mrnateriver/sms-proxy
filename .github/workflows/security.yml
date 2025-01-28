@@ -46,6 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SNYK_TOKEN: ${{ secrets.snyk-token }}
+      API_KEY: ${{ secrets.api-key }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
