@@ -99,6 +99,8 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup JDK & Gradle
         uses: ./.github/actions/prepare-gradle
@@ -110,15 +112,22 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Build and analyze
+      #      - name: Build and analyze
+      #        env:
+      #          SONAR_TOKEN: ${{ secrets.sonar-token }}
+      #          SONAR_PROJECT_KEY: ${{ inputs.sonar-project-key }}
+      #          SONAR_ORGANIZATION: ${{ inputs.sonar-organization }}
+      #          API_KEY: ${{ secrets.api-key }}
+      #        run: ./gradlew compileReleaseKotlinAndroid compileKotlin sonar
+      - name: SonarQube scan
+        uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.sonar-token }}
           SONAR_PROJECT_KEY: ${{ inputs.sonar-project-key }}
           SONAR_ORGANIZATION: ${{ inputs.sonar-organization }}
           API_KEY: ${{ secrets.api-key }}
-        run: ./gradlew compileReleaseKotlinAndroid compileKotlin sonar
 
-      - name: Quality gate check
+      - name: SonarQube gate check
         uses: sonarsource/sonarqube-quality-gate-action@master
         env:
           SONAR_TOKEN: ${{ secrets.sonar-token }}
