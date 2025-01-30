@@ -13,15 +13,15 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup JDK & Gradle
-      uses: ./.github/actions/prepare-gradle
-
     - name: Enable KVM
-      shell: bash
+      shell: sh
       run: |
         echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
         sudo udevadm control --reload-rules
         sudo udevadm trigger --name-match=kvm
+
+    - name: Setup JDK & Gradle
+      uses: ./.github/actions/prepare-gradle
 
     - name: AVD cache
       id: avd-cache
@@ -41,9 +41,6 @@ runs:
         api-level: ${{ inputs.api-level }}
         arch: x86_64
         profile: Nexus 6
-        force-avd-creation: false
-        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-        disable-animations: false
         script: ./gradlew ${{ inputs.project }}:connectedDebugAndroidTest
 
     - name: Upload test report
