@@ -35,8 +35,6 @@ jobs:
     needs: [ check-codegen ]
     with:
       project: receiverApp
-    secrets:
-      sentry-dsn: ${{ vars.SENTRY_DSN_RECEIVER }}
 
   build:
     name: Build
