@@ -35,7 +35,8 @@ See [relayApp](../relayApp/README.md) and [receiverApp](../receiverApp/README.md
 > This is a temporary step until a custom Containerfile is created for Flyway migrations that would build them as part
 > of container image build.
 
-Before running Flyway as part of the development [docker-compose.yml](docker-compose.yml), it's necessary to generate
+Before running Flyway as part of the development [docker-compose.yml](infra/local/docker-compose.yml), it's necessary to
+generate
 SQL migrations using SQLDelight's Gradle task:
 
 ```sh
@@ -74,6 +75,7 @@ synchronize the key between Android apps and the server.
 The server and all of the required infrastructure services can be run locally using Docker Compose:
 
 ```sh
+cd server/infra/local
 docker-compose up
 ```
 

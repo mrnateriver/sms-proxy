@@ -7,16 +7,16 @@ services:
       - "8081:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./infra/local/traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./src/main/assets:/etc/traefik/certs:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./../../src/main/assets:/etc/traefik/certs:ro
     networks:
       - sms-proxy
 
   sms-proxy:
     restart: no
     build:
-      context: ./..
-      dockerfile: ./server/Dockerfile
+      context: ../../..
+      dockerfile: ./server/infra/Dockerfile
     depends_on:
       flyway:
         condition: service_completed_successfully
@@ -48,7 +48,7 @@ services:
     restart: no
     command: -url=jdbc:postgresql://postgres:5432/ -schemas=sms-proxy -user=sms-proxy -password=sms-proxy -connectRetries=60 migrate
     volumes:
-      - ./build/resources/main/migrations:/flyway/sql
+      - ./../../build/resources/main/migrations:/flyway/sql
     depends_on:
       postgres:
         condition: service_healthy
@@ -70,7 +70,7 @@ services:
       test: [ "CMD-SHELL", "pg_isready -U sms-proxy" ]
       interval: 1s
     volumes:
-      - ./infra/local/multiple-databases.sh:/docker-entrypoint-initdb.d/multiple-databases.sh
+      - ./multiple-databases.sh:/docker-entrypoint-initdb.d/multiple-databases.sh
       - postgres-data:/var/lib/postgresql/data
 
   adminer:
@@ -94,7 +94,7 @@ services:
     container_name: prometheus
     restart: no
     volumes:
-      - ./infra/local/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -154,8 +154,8 @@ services:
     restart: no
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./infra/local/grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./infra/local/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
     environment:
       - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
@@ -192,7 +192,7 @@ services:
       - --storage.path=/var/lib/alloy/data
       - /etc/alloy/config.alloy
     volumes:
-      - ./infra/local/alloy.cfg:/etc/alloy/config.alloy
+      - ./alloy.cfg:/etc/alloy/config.alloy
       - alloy-data:/var/lib/alloy/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
@@ -226,7 +226,7 @@ services:
     command: [ "-config.file=/etc/tempo.yml" ]
     restart: no
     volumes:
-      - ./infra/local/tempo.yml:/etc/tempo.yml
+      - ./tempo.yml:/etc/tempo.yml
       - tempo-data:/var/tempo
     depends_on:
       - init
