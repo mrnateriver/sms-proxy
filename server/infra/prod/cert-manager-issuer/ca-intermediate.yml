@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ca-intermediate
+  namespace: sms-proxy-cert-manager
+spec:
+  isCA: true
+  secretName: ca-key-pair-intermediate
+  commonName: "mrnateriver.io"
+  duration: 8760h
+  renewBefore: 240h
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 4096
+  issuerRef:
+    name: issuer-intermediate
+    kind: ClusterIssuer
