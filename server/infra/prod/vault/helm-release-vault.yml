@@ -1,4 +1,3 @@
----
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -14,6 +13,7 @@ spec:
         kind: HelmRepository
         name: hashicorp
   targetNamespace: sms-proxy-vault
+  releaseName: sms-proxy-vault
   values:
     global:
       enabled: true
@@ -84,19 +84,19 @@ spec:
             storage "raft" {
               path = "/vault/data"
               retry_join {
-                leader_api_addr = "https://vault-0.vault-internal:8200"
+                leader_api_addr = "https://sms-proxy-vault-0.sms-proxy-vault-internal:8200"
                 leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
                 leader_client_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
                 leader_client_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
               }
               retry_join {
-                leader_api_addr = "https://vault-1.vault-internal:8200"
+                leader_api_addr = "https://sms-proxy-vault-1.sms-proxy-vault-internal:8200"
                 leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
                 leader_client_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
                 leader_client_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
               }
               retry_join {
-                leader_api_addr = "https://vault-2.vault-internal:8200"
+                leader_api_addr = "https://sms-proxy-vault-2.sms-proxy-vault-internal:8200"
                 leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
                 leader_client_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
                 leader_client_key_file = "/vault/userconfig/vault-tls-secret/tls.key"

@@ -9,7 +9,7 @@ spec:
     name: issuer-leaf
     kind: ClusterIssuer
   dnsNames:
-    - "*.vault-test-internal" # FIXME: proper DNS
+    - "*.sms-proxy-vault-internal"
   ipAddresses:
     - 127.0.0.1
   duration: 2160h
