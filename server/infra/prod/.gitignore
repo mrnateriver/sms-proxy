@@ -2,3 +2,6 @@
 *.tfstate
 terraform.tfstate
 terraform.tfstate.*
+cluster-keys.json
+*.crt
+*.key
