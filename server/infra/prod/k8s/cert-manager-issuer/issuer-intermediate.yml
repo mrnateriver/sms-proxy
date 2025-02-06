@@ -1,8 +1,8 @@
 apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
+kind: Issuer
 metadata:
   name: issuer-intermediate
-  namespace: sms-proxy-cert-manager
+  namespace: sms-proxy
 spec:
   ca:
     secretName: ca-key-pair-root

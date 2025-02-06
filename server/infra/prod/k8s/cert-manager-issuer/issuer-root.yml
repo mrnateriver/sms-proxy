@@ -1,7 +1,7 @@
 apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
+kind: Issuer
 metadata:
   name: issuer-root
-  namespace: sms-proxy-cert-manager
+  namespace: sms-proxy
 spec:
   selfSigned: { }

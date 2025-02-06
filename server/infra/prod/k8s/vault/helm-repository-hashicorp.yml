@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: hashicorp
-  namespace: sms-proxy-vault
+  namespace: sms-proxy
 spec:
   interval: 1m0s
   url: https://helm.releases.hashicorp.com

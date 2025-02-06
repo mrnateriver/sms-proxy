@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: ca-root
-  namespace: sms-proxy-cert-manager
+  namespace: sms-proxy
 spec:
   isCA: true
   secretName: ca-key-pair-root
@@ -15,4 +15,4 @@ spec:
     size: 4096
   issuerRef:
     name: issuer-root
-    kind: ClusterIssuer
+    kind: Issuer

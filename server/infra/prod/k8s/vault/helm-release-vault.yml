@@ -2,7 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: vault
-  namespace: sms-proxy-vault
+  namespace: sms-proxy
 spec:
   interval: 60m
   chart:
@@ -12,7 +12,6 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: hashicorp
-  targetNamespace: sms-proxy-vault
   releaseName: sms-proxy-vault
   values:
     global:
@@ -23,8 +22,8 @@ spec:
     injector:
       enabled: false
     ui:
-      enabled: true # FIXME: disable after prod config is complete
-      serviceNodePort: null
+      enabled: true
+      serviceNodePort: null # FIXME: `null` breaks Terraform, but value breaks HelmRelease controller...
       servicePort: 8200
       serviceType: ClusterIP
     server:
@@ -48,9 +47,6 @@ spec:
         path: /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
       standalone:
         enabled: false
-      # TODO: properly configured service account with role binding for assigning pod labels
-      #      serviceAccount:
-      #        name: vault-service-account
       # TODO: network security policy
       #      networkPolicy:
       #        enabled: false
@@ -68,7 +64,7 @@ spec:
           enabled: true
           setNodeId: true
           config: |
-            ui = true # FIXME: disable after prod config is complete
+            ui = true
             cluster_name = "sms-proxy-vault-cluster"
             listener "tcp" {
               address = "[::]:8200"
@@ -78,7 +74,7 @@ spec:
             }
             
             service_registration "kubernetes" {
-              namespace = "sms-proxy-vault"
+              namespace = "sms-proxy"
             }
 
             storage "raft" {
