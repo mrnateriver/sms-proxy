@@ -33,26 +33,26 @@ resource "kubernetes_namespace" "project_namespace" {
 
 module "cert_manager_issuer" {
   source     = "../modules/k8s-apply-all"
-  dirname    = "cert-manager-issuer"
+  filename   = "01-cert-manager-issuer.yml"
   namespace  = var.namespace
   depends_on = [kubernetes_namespace.project_namespace]
 }
 module "vault_tls" {
   source     = "../modules/k8s-apply-all"
-  dirname    = "vault-tls"
+  filename   = "02-vault-tls.yml"
   namespace  = var.namespace
-  depends_on = [kubernetes_namespace.project_namespace, module.cert_manager_issuer]
+  depends_on = [module.cert_manager_issuer]
 }
 module "vault" {
   source     = "../modules/k8s-apply-all"
-  dirname    = "vault"
+  filename   = "03-vault.yml"
   namespace  = var.namespace
-  depends_on = [kubernetes_namespace.project_namespace, module.vault_tls]
+  depends_on = [module.vault_tls]
 }
-# module "vault-init" {
-#     source     = "../modules/vault-init"
-#     test       = "test"
-#     depends_on = [module.vault]
-# }
+module "vault-init" {
+  source     = "../modules/vault-init"
+  namespace  = var.namespace
+  depends_on = [module.vault]
+}
 
 # TODO: app, observability, db etc

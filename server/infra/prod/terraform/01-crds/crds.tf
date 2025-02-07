@@ -34,7 +34,7 @@ resource "helm_release" "cert_manager" {
   create_namespace = true
 
   set {
-    name  = "installCRDs"
+    name  = "crds.enabled"
     value = "true"
   }
 }

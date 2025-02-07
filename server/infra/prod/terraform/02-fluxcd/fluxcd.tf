@@ -23,28 +23,13 @@ variable "namespace" {
 }
 
 module "setup" {
-  source    = "../local"
-  context   = var.context
-  namespace = var.namespace
+  source  = "../01-crds"
+  context = var.context
 }
 
-resource "kubernetes_manifest" "flux_sources" {
+module "cert_manager_issuer" {
+  source     = "../modules/k8s-apply-all"
+  filename   = "00-flux-cd.yml"
+  namespace  = var.namespace
   depends_on = [module.setup]
-
-  for_each = {
-    for value in [
-      for yaml in split(
-        "\n---\n",
-        "\n${replace(file("${path.module}/../../k8s/flux-cd.yml"), "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
-      ) :
-      yamldecode(yaml)
-      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
-    ] : "${value["kind"]}--${value["metadata"]["name"]}" => value
-  }
-
-  manifest = each.value
-
-  lifecycle {
-    ignore_changes = [metadata]
-  }
 }

@@ -12,22 +12,6 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cert-manager
-  namespace: sms-proxy
-spec:
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: github-mrnateriver
-  path: ./server/infra/prod/cert-manager
-  prune: true
-  wait: true
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
   name: cert-manager-issuer
   namespace: sms-proxy
 spec:
@@ -39,7 +23,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/cert-manager-issuer
+  path: ./server/infra/prod/k8s/01-cert-manager-issuer.yml
   prune: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -56,7 +40,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/vault-tls
+  path: ./server/infra/prod/k8s/02-vault-tls.yml
   prune: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -73,7 +57,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/vault
+  path: ./server/infra/prod/k8s/03-vault.yml
   prune: true
 
 # TODO: observability
