@@ -37,17 +37,11 @@ module "cert_manager_issuer" {
   namespace  = var.namespace
   depends_on = [kubernetes_namespace.project_namespace]
 }
-module "vault_tls" {
-  source     = "../modules/k8s-apply-all"
-  filename   = "02-vault-tls.yml"
-  namespace  = var.namespace
-  depends_on = [module.cert_manager_issuer]
-}
 module "vault" {
   source     = "../modules/k8s-apply-all"
   filename   = "03-vault.yml"
   namespace  = var.namespace
-  depends_on = [module.vault_tls]
+  depends_on = [module.cert_manager_issuer]
 }
 module "vault-init" {
   source     = "../modules/vault-init"
