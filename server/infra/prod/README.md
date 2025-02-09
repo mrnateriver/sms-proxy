@@ -1,5 +1,17 @@
 # Production Infrastructure
 
+## DISCLAIMER
+
+This implementation contains a few simplifications which must not be used in a real production environment:
+1. TODO: Vault is not deployed in a separate cluster
+1. TODO: Vault pod anti affinity is disabled, even though they should be deployed on separate nodes
+1. TODO: 1 Shamir key share for Vault
+1. TODO: Vault unseal keys are passed as CLI arguments, even though they should be provided via stdin/ui
+TODO: list the other issues
+x. TODO: OCI registry should not be part of the cluster for the sake of cluster penetration security
+
+## Structure
+
 * [k8s](./k8s) - Kubernetes manifests for all of the resources.
 * [terraform](./terraform) - Terraform configuration for the infrastructure and initial configuration of some of the
   resources (for example, HashiCorp Vault).
