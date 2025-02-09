@@ -31,6 +31,18 @@ variable "vault_replicas" {
   default     = 3
 }
 
+variable "vault_init_role" {
+  type        = string
+  description = "Name of the Vault auth role for provisioning Kubernetes resources using `vault-config-operator`"
+  default     = "vault-config-operator"
+}
+
+variable "vault_init_service_account" {
+  type        = string
+  description = "Name of the Kubernetes service account that is granted privileges for provisioning initial Vault resources"
+  default     = "vault-init-sa"
+}
+
 data "kubernetes_pod" "vault_pod_leader" {
   metadata {
     name      = "${var.vault_release_name}-0"
@@ -63,18 +75,19 @@ resource "null_resource" "init_vault" {
   }
 
   provisioner "local-exec" {
-    interpreter = ["/bin/bash", "-c"]
+    interpreter = ["/bin/sh", "-c"]
     command     = <<EOF
+        kubectl wait helmreleases.helm.toolkit.fluxcd.io/vault -n ${var.namespace} --for=condition=Ready --timeout=300s
         kubectl wait pods/${local.vault_pod_leader_name} -n ${var.namespace} --for=condition=Ready --timeout=300s
 
         initialized=$(kubectl get pod "${local.vault_pod_leader_name}" -n ${var.namespace} -o jsonpath="{.metadata.labels.vault-initialized}" 2>/dev/null)
         if [[ "$initialized" == "false" ]]; then
-            kubectl exec ${local.vault_pod_leader_name} -n ${var.namespace} -- vault operator init -key-shares=${var.shamir_key_shares} -key-threshold=${var.shamir_key_shares} -format=json > cluster-keys.json
+            kubectl exec ${local.vault_pod_leader_name} -n ${var.namespace} -- vault operator init -non-interactive -key-shares=${var.shamir_key_shares} -key-threshold=${var.shamir_key_shares} -format=json > cluster-keys.json
         fi
 
         sealed=$(kubectl get pod "${local.vault_pod_leader_name}" -n ${var.namespace} -o jsonpath="{.metadata.labels.vault-sealed}" 2>/dev/null)
         if [[ "$sealed" == "true" ]]; then
-            kubectl exec -it "pods/${local.vault_pod_leader_name}" -n ${var.namespace} -- vault operator unseal $(jq -r ".unseal_keys_b64[]" cluster-keys.json)
+            kubectl exec -it "pods/${local.vault_pod_leader_name}" -n ${var.namespace} -- vault operator unseal -non-interactive $(jq -r ".unseal_keys_b64[]" cluster-keys.json)
             sleep 5 # Let standby nodes to catch up
         fi
     EOF
@@ -97,22 +110,77 @@ resource "null_resource" "unseal_vault" {
   }
 
   provisioner "local-exec" {
-    interpreter = ["/bin/bash", "-c"]
+    interpreter = ["/bin/sh", "-c"]
     command     = <<EOF
         kubectl wait "pods/${each.key}" -n ${var.namespace} --for=condition=Ready --timeout=300s
 
         sealed=$(kubectl get pod "${each.key}" -n ${var.namespace} -o jsonpath="{.metadata.labels.vault-sealed}" 2>/dev/null)
         if [[ "$sealed" == "true" ]]; then
-            kubectl exec -it "pods/${each.key}" -n ${var.namespace} -- vault operator unseal $(jq -r ".unseal_keys_b64[]" cluster-keys.json)
+            kubectl exec -it "pods/${each.key}" -n ${var.namespace} -- vault operator unseal -non-interactive $(jq -r ".unseal_keys_b64[]" cluster-keys.json)
         fi
     EOF
   }
 }
 
-output "root_token" {
-  value = local.cluster_keys.root_token
+resource "null_resource" "init_vault_engines" {
+  depends_on = [null_resource.unseal_vault]
+
+  triggers = {
+    namespace    = var.namespace
+    release_name = var.vault_release_name
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<EOF
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault login -no-print -non-interactive $(jq -r ".root_token" cluster-keys.json)
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault write sys/mounts/kv2 type=kv options=version=2
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault write sys/mounts/kv type=kv
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- sh -c "rm ~/.vault-token"
+    EOF
+  }
 }
 
-output "unseal_keys_b64" {
-  value = local.cluster_keys.unseal_keys_b64
+resource "null_resource" "init_vault_auth" {
+  depends_on = [null_resource.init_vault_engines]
+
+  triggers = {
+    namespace    = var.namespace
+    release_name = var.vault_release_name
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<EOF
+        kubectl cp ${path.module}/vault-init-policy.hcl "${local.vault_pod_leader_name}":/tmp/vault-init-policy.hcl -n ${var.namespace}
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault login -no-print -non-interactive $(jq -r ".root_token" cluster-keys.json)
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault policy write vault-init-policy /tmp/vault-init-policy.hcl
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault auth enable kubernetes
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault write auth/kubernetes/config kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443"
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault write auth/kubernetes/role/${var.vault_init_role} \
+                                                                                    bound_service_account_names=${var.vault_init_service_account} \
+                                                                                    bound_service_account_namespaces=${var.namespace} \
+                                                                                    policies=vault-init-policy \
+                                                                                    ttl=1h
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- sh -c "rm ~/.vault-token"
+    EOF
+  }
+}
+
+resource "null_resource" "revoke_root_token" {
+  depends_on = [null_resource.init_vault_auth]
+
+  triggers = {
+    namespace    = var.namespace
+    release_name = var.vault_release_name
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<EOF
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault login -no-print -non-interactive $(jq -r ".root_token" cluster-keys.json)
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault token revoke $(jq -r ".root_token" cluster-keys.json)
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- sh -c "rm ~/.vault-token"
+    EOF
+  }
 }
