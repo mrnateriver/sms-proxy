@@ -46,13 +46,6 @@ resource "kubernetes_manifest" "kubernetes_manifests" {
     ignore_changes = [manifest.metadata.labels]
   }
 
-  wait {
-    condition {
-      type   = "Ready"
-      status = "True"
-    }
-  }
-
   timeouts {
     create = "5m"
     update = "5m"
