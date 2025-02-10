@@ -12,54 +12,19 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cert-manager-issuer
+  name: postgresql
   namespace: sms-proxy
 spec:
   dependsOn:
-    - name: cert-manager
-  interval: 1h
+    - name: vault
+  interval: 5m
   retryInterval: 1m
   timeout: 5m
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/01-cert-manager-issuer.yml
-  prune: true
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: vault-tls
-  namespace: sms-proxy
-spec:
-  dependsOn:
-    - name: cert-manager-issuer
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: github-mrnateriver
-  path: ./server/infra/prod/k8s/02-vault-tls.yml
-  prune: true
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: vault
-  namespace: sms-proxy
-spec:
-  dependsOn:
-    - name: vault-tls
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: github-mrnateriver
-  path: ./server/infra/prod/k8s/03-vault.yml
+  path: ./server/infra/prod/k8s/03-postgresql.yml
   prune: true
 
-# TODO: observability
-# TODO: infrastructure
 # TODO: app
+# TODO: observability

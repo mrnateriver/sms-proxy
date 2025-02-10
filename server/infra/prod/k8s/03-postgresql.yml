@@ -1,0 +1,122 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: postgresql-tls-certificate
+  namespace: sms-proxy
+spec:
+  secretName: postgresql-tls-secret
+  issuerRef:
+    name: issuer-leaf
+    kind: Issuer
+  dnsNames:
+    - "*.sms-proxy-postgresql"
+  ipAddresses:
+    - 127.0.0.1
+  duration: 2160h
+  renewBefore: 360h
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: bitnami-postgresql
+  namespace: sms-proxy
+spec:
+  interval: 1h
+  url: oci://registry-1.docker.io/bitnamicharts/postgresql
+  ref:
+    semver: "16.4.7"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bitnami-postgresql
+  namespace: sms-proxy
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: bitnami-postgresql
+    namespace: sms-proxy
+  interval: 1h
+  values:
+    volumePermissions:  
+      enabled: true
+    tls:
+      enabled: true
+      preferServerCiphers: true
+      certificatesSecret: postgresql-tls-secret
+      certFilename: "tls.crt"
+      certKeyFilename: "tls.key"
+    auth:
+      existingSecret: postgresql-admin-password
+      secretKeys:
+        adminPasswordKey: password
+    # TODO: audit options
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: PasswordPolicy
+metadata:
+  name: postgresql-admin-password-policy
+  namespace: sms-proxy
+spec:
+  authentication: 
+    path: kubernetes
+    role: vault-config-operator
+    serviceAccount:
+      name: vault-init-sa
+  passwordPolicy: |
+    length = 20
+    rule "charset" {
+      charset = "abcdefghijklmnopqrstuvwxyz"
+      min-chars = 1
+    }
+    rule "charset" {
+      charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      min-chars = 1
+    }
+    rule "charset" {
+      charset = "0123456789"
+      min-chars = 1
+    }
+    rule "charset" {
+      charset = "!@#$%^&*"
+      min-chars = 1
+    }
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: RandomSecret
+metadata:
+  name: postgresql-admin-password
+  namespace: sms-proxy
+spec:
+  authentication: 
+    path: kubernetes
+    role: vault-config-operator
+    serviceAccount:
+      name: vault-init-sa
+  isKVSecretsEngineV2: false # It's a one-time password anyway, so we don't need KV v2; the root DB password will be rotated by Vault later
+  path: kv/sms-proxy
+  secretKey: password
+  secretFormat:
+    passwordPolicyName: postgresql-admin-password-policy
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: VaultSecret
+metadata:
+  name: postgresql-admin-password
+  namespace: sms-proxy
+spec:
+  vaultSecretDefinitions:
+    - authentication:
+        path: kubernetes
+        role: vault-config-operator
+        serviceAccount:
+          name: vault-init-sa
+      name: postgresql
+      path: kv/sms-proxy/postgresql-admin-password
+  output:
+    name: postgresql-admin-password
+    stringData:
+      password: '{{ .postgresql.password }}'
+    type: Opaque
+
+# TODO: dynamic Vault secret with Postgres backend!

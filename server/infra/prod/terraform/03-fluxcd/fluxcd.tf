@@ -22,14 +22,8 @@ variable "namespace" {
   default     = "sms-proxy"
 }
 
-module "setup" {
-  source  = "../01-crds"
-  context = var.context
-}
-
-module "cert_manager_issuer" {
+module "flux_cd_sources" {
   source     = "../modules/k8s-apply-all"
   filename   = "00-flux-cd.yml"
   namespace  = var.namespace
-  depends_on = [module.setup]
 }

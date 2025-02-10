@@ -22,31 +22,19 @@ variable "namespace" {
   default     = "sms-proxy"
 }
 
-resource "kubernetes_namespace" "project_namespace" {
-  metadata {
-    name = var.namespace
-  }
-  lifecycle {
-    ignore_changes = [metadata]
-  }
-}
-
 module "cert_manager_issuer" {
   source     = "../modules/k8s-apply-all"
   filename   = "01-cert-manager-issuer.yml"
   namespace  = var.namespace
-  depends_on = [kubernetes_namespace.project_namespace]
 }
 module "vault" {
   source     = "../modules/k8s-apply-all"
-  filename   = "03-vault.yml"
+  filename   = "02-vault.yml"
   namespace  = var.namespace
   depends_on = [module.cert_manager_issuer]
 }
-module "vault-init" {
+module "vault_init" {
   source     = "../modules/vault-init"
   namespace  = var.namespace
   depends_on = [module.vault]
 }
-
-# TODO: app, observability, db etc

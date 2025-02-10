@@ -23,5 +23,5 @@ x. TODO: OCI registry should not be part of the cluster for the sake of cluster 
 ## Deployment
 
 TODO: separate TF files for local and remote cluster; remote one applies flux-cd.yml, local applies manifests directly
-TODO: apply infra/ TF first (optional), then crds/, then remote/ TF
+TODO: apply infra/ TF first (optional), then crds/, then vault/ then remote/ TF
 TODO: if K8S cluster is already provisioned and there's no need for GitOps, apply crds/ -> local/ TF only

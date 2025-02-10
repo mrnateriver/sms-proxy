@@ -1,23 +1,3 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: vault-init-sa
-  namespace: sms-proxy
----
-# We don't really need this binding, because we're using Vault's SA for TokenReview access, as opposed to using the client's SA (vault-init-sa in this case)
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: vault-init-sa-tokenreview-binding
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: system:auth-delegator
-subjects:
-  - kind: ServiceAccount
-    name: vault-init-sa
-    namespace: sms-proxy
----
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -144,7 +124,7 @@ spec:
               tls_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
               tls_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
             }
-            
+
             service_registration "kubernetes" {
               namespace = "sms-proxy"
             }
@@ -170,3 +150,62 @@ spec:
                 leader_client_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
               }
             }
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: vault-config-operator
+  namespace: sms-proxy
+spec:
+  interval: 1h
+  url: https://redhat-cop.github.io/vault-config-operator
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vault-config-operator
+  namespace: sms-proxy
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: vault-config-operator
+      version: v0.8.29
+      sourceRef:
+        kind: HelmRepository
+        name: vault-config-operator
+  values:
+    enableCertManager: true
+    env:
+      - name: VAULT_ADDR
+        value: https://sms-proxy-vault-0.sms-proxy-vault-internal:8200
+      - name: VAULT_CACERT
+        value: /vault-tls-secret/ca.crt
+    volumes:
+      - name: vault-tls-secret
+        secret:
+          secretName: vault-tls-secret
+    volumeMounts:
+      - name: vault-tls-secret
+        mountPath: /vault-tls-secret
+        readOnly: true
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-init-sa
+  namespace: sms-proxy
+---
+# We don't really need this binding, because we're using Vault's SA for TokenReview access, as opposed to using the client's SA (vault-init-sa in this case)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vault-init-sa-tokenreview-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: vault-init-sa
+    namespace: sms-proxy
