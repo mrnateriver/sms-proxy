@@ -47,7 +47,7 @@ spec:
       certFilename: "tls.crt"
       certKeyFilename: "tls.key"
     auth:
-      database: sms-proxy
+      database: sms_proxy
       existingSecret: postgresql-admin-password
       secretKeys:
         adminPasswordKey: password
@@ -172,6 +172,6 @@ spec:
   path: postgresql/postgresql-secret-engine
   defaultTTL: 1h0m0s # Otherwise Terraform fails due to inconsistent output
   maxTTL: 4h0m0s
-  dBName: sms-proxy
+  dBName: postgresql-secret-engine
   creationStatements:
-    - CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT SELECT, UPDATE, INSERT ON ALL TABLES IN SCHEMA sms-proxy TO "{{name}}";  
+    - CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT SELECT, UPDATE, INSERT ON ALL TABLES IN SCHEMA "public" TO "{{name}}";  
