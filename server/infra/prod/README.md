@@ -12,16 +12,18 @@ x. TODO: OCI registry should not be part of the cluster for the sake of cluster 
 
 ## Structure
 
-* [k8s](./k8s) - Kubernetes manifests for all of the resources.
+* [k8s](./k8s) - Kubernetes manifests for all resources.
 * [terraform](./terraform) - Terraform configuration for the infrastructure and initial configuration of some of the
   resources (for example, HashiCorp Vault).
-    - [terraform/local](./terraform/local) - Terraform configuration for any K8S cluster that is configured in the local `kubectl` context.
-    - [terraform/remote](./terraform/remote) - Terraform configuration for a remote K8S cluster that sets up FluxCD in that cluster, and then adds this Git repository as the source for provisioning.
-    - [terraform/infra](./terraform/infra) - Terraform configuration for provisioning a K8S cluster in a cloud provider.
+    - [terraform/00-infra](./terraform/00-infra) - K8S cluster provisioning in a cloud provider.
+    - [terraform/01-crds](./terraform/01-crds) - Basix CRDs which are required for the rest of the resources.
+    - [terraform/02-vault](./terraform/02-vault) - HashiCorp Vault configuration, including CRDs for Vault K8S operator.
+    - [terraform/03-app](./terraform/03-app) - K8S resources of the application, including direct dependencies like PostgreSQL.
+    - [terraform/03-fluxcd](./terraform/03-fluxcd) - K8S resources which set up FluxCD in that cluster, and then add this Git repository as the source for provisioning.
     - [terraform/modules](./terraform/modules) - reusable Terraform modules.
 
 ## Deployment
 
-TODO: separate TF files for local and remote cluster; remote one applies flux-cd.yml, local applies manifests directly
-TODO: apply infra/ TF first (optional), then crds/, then vault/ then remote/ TF
-TODO: if K8S cluster is already provisioned and there's no need for GitOps, apply crds/ -> local/ TF only
+Run `./init-cluster-local.sh <name of the context>` to deploy the application and all of its dependencies to a cluster with configured `kubectl` context.
+
+Run `./init-cluster-remote.sh <name of the context>` to deploy the application and all of its dependencies to a remote cluster. That cluster must also be configured as a context in local `kubectl`. The difference with local cluster is that this script will only provision FluxCD `GitRepository` and `Kustomization` sources as opposed to directly provisioning K8S resources.

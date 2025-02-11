@@ -1,0 +1,31 @@
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: PasswordPolicy
+metadata:
+  name: default-password-policy
+  namespace: sms-proxy
+spec:
+  authentication:
+    path: kubernetes
+    role: vault-config-operator
+    serviceAccount:
+      name: vault-init-sa
+  passwordPolicy: |
+    length = 20
+    rule "charset" {
+      charset = "abcdefghijklmnopqrstuvwxyz"
+      min-chars = 1
+    }
+    rule "charset" {
+      charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      min-chars = 1
+    }
+    rule "charset" {
+      charset = "0123456789"
+      min-chars = 1
+    }
+    rule "charset" {
+      charset = "!@#$%^&*"
+      min-chars = 1
+    }
+
+# TODO: app-centric Vault policies using K8S CRDs

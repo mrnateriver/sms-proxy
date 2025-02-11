@@ -53,36 +53,6 @@ spec:
         adminPasswordKey: password
 ---
 apiVersion: redhatcop.redhat.io/v1alpha1
-kind: PasswordPolicy
-metadata:
-  name: postgresql-admin-password-policy
-  namespace: sms-proxy
-spec:
-  authentication: 
-    path: kubernetes
-    role: vault-config-operator
-    serviceAccount:
-      name: vault-init-sa
-  passwordPolicy: |
-    length = 20
-    rule "charset" {
-      charset = "abcdefghijklmnopqrstuvwxyz"
-      min-chars = 1
-    }
-    rule "charset" {
-      charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      min-chars = 1
-    }
-    rule "charset" {
-      charset = "0123456789"
-      min-chars = 1
-    }
-    rule "charset" {
-      charset = "!@#$%^&*"
-      min-chars = 1
-    }
----
-apiVersion: redhatcop.redhat.io/v1alpha1
 kind: RandomSecret
 metadata:
   name: postgresql-admin-password
@@ -97,7 +67,7 @@ spec:
   path: kv/sms-proxy
   secretKey: password
   secretFormat:
-    passwordPolicyName: postgresql-admin-password-policy
+    passwordPolicyName: default-password-policy
 ---
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: VaultSecret
@@ -148,6 +118,7 @@ spec:
   allowedRoles:
     - postgresql-role-sms-proxy-app
   connectionURL: postgresql://{{username}}:{{password}}@postgresql.sms-proxy.svc.cluster.local:5432
+  passwordPolicy: default-password-policy
   rootCredentials:
     secret:
       name: postgresql-admin-password
@@ -170,8 +141,10 @@ spec:
     serviceAccount:
       name: vault-init-sa
   path: postgresql/postgresql-secret-engine
-  defaultTTL: 1h0m0s # Otherwise Terraform fails due to inconsistent output
-  maxTTL: 4h0m0s
+  # The full format is needed because otherwise Terraform fails due to inconsistent output
+  # The short TTL should be plenty because we only need to establish a connection and then we don't care about the credentials' validity
+  defaultTTL: 5m0s
+  maxTTL: 10m0s
   dBName: postgresql-secret-engine
   creationStatements:
     - CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT SELECT, UPDATE, INSERT ON ALL TABLES IN SCHEMA "public" TO "{{name}}";  

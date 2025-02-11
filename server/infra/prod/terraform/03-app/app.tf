@@ -22,11 +22,17 @@ variable "namespace" {
   default     = "sms-proxy"
 }
 
-# TODO: app-centric Vault policies using K8S CRDs
+module "vault_init_crds" {
+  source    = "../modules/k8s-apply-all"
+  filename  = "03-vault-init.yml"
+  namespace = var.namespace
+}
+
 module "postgresql" {
   source     = "../modules/k8s-apply-all"
-  filename   = "03-postgresql.yml"
+  filename   = "04-postgresql.yml"
   namespace  = var.namespace
+  depends_on = [module.vault_init_crds]
 }
 
 # TODO: app, observability, db etc

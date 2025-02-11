@@ -48,6 +48,7 @@ spec:
         kind: HelmRepository
         name: secrets-store-csi-driver
   values:
+    enableSecretRotation: true
     syncSecret:
       enabled: true
 ---
