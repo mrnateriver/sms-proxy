@@ -5,10 +5,12 @@
 This implementation contains a few simplifications which must not be used in a real production environment:
 1. TODO: Vault is not deployed in a separate cluster
 1. TODO: Vault pod anti affinity is disabled, even though they should be deployed on separate nodes
+1. TODO: if Vault is deployed to the same single node (which should not be the case for production), HA should be disabled
 1. TODO: 1 Shamir key share for Vault
 1. TODO: Vault unseal keys are passed as CLI arguments, even though they should be provided via stdin/ui
-TODO: list the other issues
-x. TODO: OCI registry should not be part of the cluster for the sake of cluster penetration security
+1. TODO: OCI registry should not be part of the cluster for the sake of cluster penetration security
+1. TODO: K8S deployment relies on Secret resources, which are stored in etcd in plaintext by default. In a real prod env, at the very least encryption at rest should be enabled for etcd (using KMS), or even better, but much harder - refrain from using Secrets at all and rely on Vault (possibly external) and volume mounts for all sensitive data
+1. TODO: with the above point said, CSI driver (has been partially implemented - look up in git history) or Vault Agent should be used to mount secrets, but vault-secret-operator used in this project for simplicity. And actually, with the current setup sensitive values are still used as Secrets anyway (PKI secrets, Postgres initial password (even though it's immediately rotated) etc), so we might as well use Secrets for everything
 
 ## Structure
 
