@@ -8,8 +8,9 @@ if [ -z "$context" ]; then
   exit 1
 fi
 
-cd ./terraform
+export KUBE_CONFIG_PATH="~/.kube/config"
 
+cd ./terraform
 rm */terraform.tfstate */terraform.tfstate.backup > /dev/null 2>&1
 
 cd 01-crds && terraform apply -auto-approve -var="context=$context" -var="namespace=$namespace" && cd ..
