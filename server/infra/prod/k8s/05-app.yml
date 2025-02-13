@@ -82,7 +82,7 @@ spec:
           imagePullPolicy: Never # FIXME: remove once actual OCI repository is available
           resources:
             limits:
-              memory: "128Mi"
+              memory: "256Mi"
               cpu: "250m"
           env:
             - name: API_KEY
