@@ -6,9 +6,9 @@ metadata:
 spec:
   authentication:
     path: kubernetes
-    role: vault-config-operator
+    role: vault-operator
     serviceAccount:
-      name: vault-init-sa
+      name: vault-operator-sa
   passwordPolicy: |
     length = 20
     rule "charset" {

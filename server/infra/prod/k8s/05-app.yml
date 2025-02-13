@@ -6,55 +6,84 @@ metadata:
 spec:
   authentication:
     path: kubernetes
-    role: vault-config-operator
+    role: vault-operator
     serviceAccount:
-      name: vault-init-sa
-  isKVSecretsEngineV2: false
+      name: vault-operator-sa
+  isKVSecretsEngineV2: true
   name: hashing-secret
-  path: kv/sms-proxy
+  path: kv2/data/sms-proxy
   secretKey: hashing-secret
   secretFormat:
     passwordPolicyName: default-password-policy
 ---
-apiVersion: secrets-store.csi.x-k8s.io/v1
-kind: SecretProviderClass
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
 metadata:
-  name: sms-proxy-vault-csi-provider
+  name: sms-proxy-vault-secret-hashing-secret
   namespace: sms-proxy
 spec:
-  provider: vault
-  secretObjects:
-    - secretName: sms-proxy-secret
-      type: Opaque
-      data:
-        - objectName: db-username
-          key: db_username
-        - objectName: db-password
-          key: db_password
-        - objectName: hashing-secret
-          key: hashing_secret
-  parameters:
-    roleName: vault-config-operator # FIXME: proper role for accessing secrets
-    vaultAddress: https://sms-proxy-vault-0.sms-proxy-vault-internal:8200
-    vaultNamespace: sms-proxy
-    # FIXME: unknown TLS certificate -- probably need to mount the TLS secret into every pod that mounts the CSI volume
-    # FIXME: service account name? -- perhaps we need a separate SA anyway, since this is no longer just provisioning
-    objects: |
-      - objectName: "db_username"
-        secretPath: "postgresql/postgresql-secret-engine/creds/postgresql-role-sms-proxy-app"
-        secretKey: "username"
-      - objectName: "db_password"
-        secretPath: "postgresql/postgresql-secret-engine/creds/postgresql-role-sms-proxy-app"
-        secretKey: "password"
-      - objectName: "hashing_secret"
-        secretPath: "kv/sms-proxy/hashing-secret"
+  type: kv-v2
+  mount: kv2
+  path: sms-proxy/hashing-secret
+  destination:
+    name: sms-proxy-secret-hashing-secret
+    create: true
+  refreshAfter: 10m
 ---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultDynamicSecret
+metadata:
+  name: sms-proxy-vault-secret-db
+  namespace: sms-proxy
+spec:
+  mount: postgresql
+  path: postgresql-secret-engine/creds/postgresql-role-sms-proxy-app
+  destination:
+    name: sms-proxy-secret-db
+    create: true
+---
+# apiVersion: secrets-store.csi.x-k8s.io/v1
+# kind: SecretProviderClass
+# metadata:
+#   name: sms-proxy-vault-csi-provider
+#   namespace: sms-proxy
+# spec:
+#   provider: vault
+#   secretObjects:
+#     - secretName: sms-proxy-secret
+#       type: Opaque
+#       data:
+#         - objectName: db_username
+#           key: db-username
+#         - objectName: db_password
+#           key: db-password
+#         - objectName: hashing_secret
+#           key: hashing-secret
+#   parameters:
+#     roleName: vault-operator # FIXME: proper role for accessing secrets
+#     vaultAddress: https://sms-proxy-vault-0.sms-proxy-vault-internal:8200
+#     vaultNamespace: sms-proxy
+#     vaultSkipTLSVerify: "true" # FIXME: use pod mounted paths to TLS certs just like Vault does itself
+#     # FIXME: unknown TLS certificate -- probably need to mount the TLS secret into every pod that mounts the CSI volume
+#     # FIXME: service account name? -- perhaps we need a separate SA anyway, since this is no longer just provisioning
+#     objects: |
+#       - objectName: "db_username"
+#         secretPath: "postgresql/postgresql-secret-engine/creds/postgresql-role-sms-proxy-app"
+#         secretKey: "username"
+#       - objectName: "db_password"
+#         secretPath: "postgresql/postgresql-secret-engine/creds/postgresql-role-sms-proxy-app"
+#         secretKey: "password"
+#       - objectName: "hashing_secret"
+#         secretPath: "kv/sms-proxy/hashing-secret"
+# ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: sms-proxy-config
+  namespace: sms-proxy
 data:
-  key: value
+  apiKey: api-key # FIXME: sync with build pipeline? should be synced with the app anyway
+  dbUri: jdbc:postgresql://postgresql.sms-proxy.svc.cluster.local:5432/sms_proxy
   # TODO: non-secret app config
 ---
 apiVersion: apps/v1
@@ -79,37 +108,36 @@ spec:
         - name: sms-proxy
           image: sms-proxy:latest # FIXME: local OCI image in the cluster
           imagePullPolicy: Never # FIXME: remove once actual OCI repository is available
-          volumeMounts:
-            - name: secrets-store-inline
-              mountPath: "/mnt/secrets"
-              readOnly: true
           resources:
             limits:
               memory: "128Mi"
               cpu: "250m"
           env:
+            - name: API_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: sms-proxy-config
+                  key: apiKey
+            - name: DB_JDBC_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: sms-proxy-config
+                  key: dbUri
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: sms-proxy-secret
-                  key: db-username
+                  name: sms-proxy-secret-db
+                  key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: sms-proxy-secret
-                  key: db-password
+                  name: sms-proxy-secret-db
+                  key: password
             - name: HASHING_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: sms-proxy-secret
+                  name: sms-proxy-secret-hashing-secret
                   key: hashing-secret
-      volumes:
-        - name: secrets-store-inline
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: sms-proxy-vault-csi-provider
   strategy:
     type: RollingUpdate
     rollingUpdate:

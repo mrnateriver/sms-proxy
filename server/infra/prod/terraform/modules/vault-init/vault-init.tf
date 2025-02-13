@@ -33,14 +33,14 @@ variable "vault_replicas" {
 
 variable "vault_init_role" {
   type        = string
-  description = "Name of the Vault auth role for provisioning Kubernetes resources using `vault-config-operator`"
-  default     = "vault-config-operator"
+  description = "Name of the Vault auth role for provisioning Kubernetes resources using `vault-operator`"
+  default     = "vault-operator"
 }
 
 variable "vault_init_service_account" {
   type        = string
   description = "Name of the Kubernetes service account that is granted privileges for provisioning initial Vault resources"
-  default     = "vault-init-sa"
+  default     = "vault-operator-sa"
 }
 
 data "kubernetes_pod" "vault_pod_leader" {
@@ -140,6 +140,7 @@ resource "null_resource" "init_vault_engines" {
         kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault login -no-print -non-interactive $(jq -r ".root_token" cluster-keys.json)
         kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault write sys/mounts/kv2 type=kv options=version=2
         kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault write sys/mounts/kv type=kv
+        kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- vault secrets enable -path=transit transit
         kubectl exec "${local.vault_pod_leader_name}" -n ${var.namespace} -- sh -c "rm ~/.vault-token"
     EOF
   }
