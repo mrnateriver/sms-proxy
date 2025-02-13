@@ -29,6 +29,9 @@ spec:
     name: sms-proxy-secret-hashing-secret
     create: true
   refreshAfter: 10m
+  rolloutRestartTargets:
+    - kind: Deployment
+      name: sms-proxy
 ---
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultDynamicSecret
@@ -41,41 +44,10 @@ spec:
   destination:
     name: sms-proxy-secret-db
     create: true
+  rolloutRestartTargets:
+    - kind: Deployment
+      name: sms-proxy
 ---
-# apiVersion: secrets-store.csi.x-k8s.io/v1
-# kind: SecretProviderClass
-# metadata:
-#   name: sms-proxy-vault-csi-provider
-#   namespace: sms-proxy
-# spec:
-#   provider: vault
-#   secretObjects:
-#     - secretName: sms-proxy-secret
-#       type: Opaque
-#       data:
-#         - objectName: db_username
-#           key: db-username
-#         - objectName: db_password
-#           key: db-password
-#         - objectName: hashing_secret
-#           key: hashing-secret
-#   parameters:
-#     roleName: vault-operator # FIXME: proper role for accessing secrets
-#     vaultAddress: https://sms-proxy-vault-0.sms-proxy-vault-internal:8200
-#     vaultNamespace: sms-proxy
-#     vaultSkipTLSVerify: "true" # FIXME: use pod mounted paths to TLS certs just like Vault does itself
-#     # FIXME: unknown TLS certificate -- probably need to mount the TLS secret into every pod that mounts the CSI volume
-#     # FIXME: service account name? -- perhaps we need a separate SA anyway, since this is no longer just provisioning
-#     objects: |
-#       - objectName: "db_username"
-#         secretPath: "postgresql/postgresql-secret-engine/creds/postgresql-role-sms-proxy-app"
-#         secretKey: "username"
-#       - objectName: "db_password"
-#         secretPath: "postgresql/postgresql-secret-engine/creds/postgresql-role-sms-proxy-app"
-#         secretKey: "password"
-#       - objectName: "hashing_secret"
-#         secretPath: "kv/sms-proxy/hashing-secret"
-# ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
