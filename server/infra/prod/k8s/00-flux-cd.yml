@@ -12,19 +12,50 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: postgresql
+  name: vault-init
   namespace: sms-proxy
 spec:
-  dependsOn:
-    - name: vault
   interval: 5m
   retryInterval: 1m
   timeout: 5m
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/03-postgresql.yml
+  path: ./server/infra/prod/k8s/03-vault-init.yml
+  prune: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: postgresql
+  namespace: sms-proxy
+spec:
+  dependsOn:
+    - name: vault-init
+  interval: 5m
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: github-mrnateriver
+  path: ./server/infra/prod/k8s/04-postgresql.yml
+  prune: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: app
+  namespace: sms-proxy
+spec:
+  dependsOn:
+    - name: postgresql
+  interval: 5m
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: github-mrnateriver
+  path: ./server/infra/prod/k8s/05-postgresql.yml
   prune: true
 
-# TODO: app
 # TODO: observability
