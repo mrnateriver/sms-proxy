@@ -61,6 +61,10 @@ sentry {
     authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: getProperty("sentry.authToken")
     includeSourceContext = true
     telemetry = false
+
+    autoInstallation {
+        sentryVersion = "7.20.0"
+    }
 }
 
 android {
