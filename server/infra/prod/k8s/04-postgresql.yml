@@ -8,12 +8,43 @@ spec:
   issuerRef:
     name: issuer-leaf
     kind: Issuer
+  commonName: "postgresql-server"
   dnsNames:
-    - "*.sms-proxy-postgresql"
+    - "postgresql.sms-proxy.svc.cluster.local"
   ipAddresses:
     - 127.0.0.1
   duration: 2160h
   renewBefore: 360h
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: RandomSecret
+metadata:
+  name: postgresql-admin-password
+  namespace: sms-proxy
+spec:
+  authentication:
+    path: kubernetes
+    role: vault-operator
+    serviceAccount:
+      name: vault-operator-sa
+  isKVSecretsEngineV2: false # It's a one-time password anyway, so we don't need KV v2; the root DB password will be rotated by Vault later
+  path: kv/sms-proxy
+  secretKey: password
+  secretFormat:
+    passwordPolicyName: default-password-policy
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: postgresql-admin-password
+  namespace: sms-proxy
+spec:
+  type: kv-v1
+  mount: kv
+  path: sms-proxy/postgresql-admin-password
+  destination:
+    name: postgresql-admin-password
+    create: true
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
@@ -38,6 +69,8 @@ spec:
     namespace: sms-proxy
   interval: 1h
   values:
+    metrics:
+      enabled: true
     volumePermissions:
       enabled: true
     tls:
@@ -46,48 +79,21 @@ spec:
       certificatesSecret: postgresql-tls-secret
       certFilename: "tls.crt"
       certKeyFilename: "tls.key"
+      certCAFilename: "ca.crt"
     auth:
       database: sms_proxy
       existingSecret: postgresql-admin-password
       secretKeys:
         adminPasswordKey: password
----
-apiVersion: redhatcop.redhat.io/v1alpha1
-kind: RandomSecret
-metadata:
-  name: postgresql-admin-password
-  namespace: sms-proxy
-spec:
-  authentication:
-    path: kubernetes
-    role: vault-operator
-    serviceAccount:
-      name: vault-operator-sa
-  isKVSecretsEngineV2: false # It's a one-time password anyway, so we don't need KV v2; the root DB password will be rotated by Vault later
-  path: kv/sms-proxy
-  secretKey: password
-  secretFormat:
-    passwordPolicyName: default-password-policy
----
-apiVersion: redhatcop.redhat.io/v1alpha1
-kind: VaultSecret
-metadata:
-  name: postgresql-admin-password
-  namespace: sms-proxy
-spec:
-  vaultSecretDefinitions:
-    - authentication:
-        path: kubernetes
-        role: vault-operator
-        serviceAccount:
-          name: vault-operator-sa
-      name: postgresql
-      path: kv/sms-proxy/postgresql-admin-password
-  output:
-    name: postgresql-admin-password
-    stringData:
-      password: "{{ .postgresql.password }}"
-    type: Opaque
+    primary:
+      pgHbaConfiguration: |
+        hostssl all all 0.0.0.0/0 scram-sha-256 clientcert=verify-ca
+        hostssl all all ::/0 scram-sha-256 clientcert=verify-ca
+        hostssl all all 127.0.0.1/32 scram-sha-256 clientcert=verify-ca
+        hostssl all all ::1/128 scram-sha-256 clientcert=verify-ca
+      # FIXME: disable after debugging!
+      extendedConfiguration: |
+        log_statement = 'all'
 ---
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: SecretEngineMount
@@ -117,7 +123,8 @@ spec:
   pluginName: postgresql-database-plugin
   allowedRoles:
     - postgresql-role-sms-proxy-app
-  connectionURL: postgresql://{{username}}:{{password}}@postgresql.sms-proxy.svc.cluster.local:5432
+    - postgresql-role-sms-proxy-migrations-job
+  connectionURL: postgresql://{{username}}:{{password}}@postgresql.sms-proxy.svc.cluster.local:5432/sms_proxy?sslmode=verify-full&sslrootcert=/vault/userconfig/vault-tls-secret-postgresql-client/ca.crt&sslcert=/vault/userconfig/vault-tls-secret-postgresql-client/tls.crt&sslkey=/vault/userconfig/vault-tls-secret-postgresql-client/tls.key
   passwordPolicy: default-password-policy
   rootCredentials:
     secret:
@@ -142,12 +149,37 @@ spec:
       name: vault-operator-sa
   path: postgresql/postgresql-secret-engine
   # The full format is needed because otherwise Terraform fails due to inconsistent output
-  # The short TTL should be plenty because we only need to establish a connection and then we don't care about the credentials' validity
-  defaultTTL: 5m0s
-  maxTTL: 10m0s
+  defaultTTL: 2m0s # FIXME: change to long TTL! It's not only used for connection - pool of connections is constantly refreshed, and also users' privileges are revoked on expiration
+  maxTTL: 2m0s # FIXME: same
   dBName: postgresql-secret-engine
   creationStatements:
     - CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
-    - GRANT SELECT, UPDATE, INSERT ON ALL TABLES IN SCHEMA "public" TO "{{name}}";
+    - GRANT USAGE ON SCHEMA "public" TO "{{name}}";
+    - GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA "public" TO "{{name}}";
   revocationStatements:
+    - REVOKE ALL ON ALL TABLES IN SCHEMA "public" FROM "{{name}}";
+    - REVOKE ALL ON SCHEMA "public" FROM "{{name}}";
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: postgresql-role-sms-proxy-migrations-job
+  namespace: sms-proxy
+spec:
+  authentication:
+    path: kubernetes
+    role: vault-operator
+    serviceAccount:
+      name: vault-operator-sa
+  path: postgresql/postgresql-secret-engine
+  # The full format is needed because otherwise Terraform fails due to inconsistent output
+  defaultTTL: 2m0s # FIXME: change to appropriate TTL for migrations
+  maxTTL: 2m0s # FIXME: same
+  dBName: postgresql-secret-engine
+  creationStatements:
+    - CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
+    - GRANT ALL PRIVILEGES ON SCHEMA "public" TO "{{name}}";
+    - GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "public" TO "{{name}}";
+  revocationStatements:
+    - REVOKE ALL ON ALL TABLES IN SCHEMA "public" FROM "{{name}}";
     - REVOKE ALL ON SCHEMA "public" FROM "{{name}}";

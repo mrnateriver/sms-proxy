@@ -75,6 +75,10 @@ spec:
       labels:
         app: sms-proxy
     spec:
+      volumes:
+        - name: postgresql-tls-secret
+          secret:
+            secretName: postgresql-tls-secret
       containers:
         # TODO: health checks
         - name: sms-proxy
@@ -84,6 +88,10 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "250m"
+          volumeMounts:
+            - name: postgresql-tls-secret
+              readOnly: true
+              mountPath: "/var/run/secrets/postgresql-tls-secret"
           env:
             - name: API_KEY
               valueFrom:
