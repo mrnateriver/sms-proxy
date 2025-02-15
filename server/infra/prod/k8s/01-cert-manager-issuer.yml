@@ -32,7 +32,12 @@ metadata:
 spec:
   isCA: true
   secretName: ca-key-pair-root
-  commonName: "mrnateriver.io"
+  subject:
+    countries:
+      - "NO"
+    organizations:
+      - "mrnateriver.io"
+  commonName: "mrnateriver.io: Root CA"
   duration: 43800h
   renewBefore: 240h
   privateKey:
@@ -51,7 +56,12 @@ metadata:
 spec:
   isCA: true
   secretName: ca-key-pair-intermediate
-  commonName: "mrnateriver.io"
+  subject:
+    countries:
+      - "NO"
+    organizations:
+      - "mrnateriver.io"
+  commonName: "mrnateriver.io: Intermediate CA"
   duration: 8760h
   renewBefore: 240h
   privateKey:
