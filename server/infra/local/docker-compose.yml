@@ -16,7 +16,7 @@ services:
     restart: no
     build:
       context: ../../..
-      dockerfile: ./server/infra/Dockerfile
+      dockerfile: ./server/infra/Dockerfile.app
     depends_on:
       flyway:
         condition: service_completed_successfully
@@ -42,13 +42,14 @@ services:
       - "traefik.http.services.server.loadBalancer.server.port=3000"
       - "traefik.http.routers.server.tls=true"
 
-  # TODO: this requires that migrations have already been built on host; a more reliable way would be to build them during image build
   flyway:
-    image: redgate/flyway
     restart: no
-    command: -url=jdbc:postgresql://postgres:5432/ -schemas=sms-proxy -user=sms-proxy -password=sms-proxy -connectRetries=60 migrate
+    build:
+      context: ../../..
+      dockerfile: ./server/infra/Dockerfile.migrations
     volumes:
       - ./../../build/resources/main/migrations:/flyway/sql
+      - ./flyway.conf:/flyway/conf/flyway.conf
     depends_on:
       postgres:
         condition: service_healthy

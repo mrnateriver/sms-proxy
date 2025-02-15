@@ -1,0 +1,30 @@
+FROM gradle:8.9-alpine AS cache
+
+COPY --chown=gradle:gradle ../../gradle.properties build.gradle.kts settings.gradle.kts /home/gradle/app/
+COPY --chown=gradle:gradle ../../gradle/libs.versions.toml /home/gradle/app/gradle/libs.versions.toml
+COPY --chown=gradle:gradle ../../proxyApiClient/build.gradle.kts /home/gradle/app/proxyApiClient/build.gradle.kts
+COPY --chown=gradle:gradle ../../proxyApiServer/build.gradle.kts /home/gradle/app/proxyApiServer/build.gradle.kts
+COPY --chown=gradle:gradle ../../proxyApiTypeSpec/build.gradle.kts /home/gradle/app/proxyApiTypeSpec/build.gradle.kts
+COPY --chown=gradle:gradle ../../receiverApp/build.gradle.kts /home/gradle/app/receiverApp/build.gradle.kts
+COPY --chown=gradle:gradle ../../relayApp/build.gradle.kts /home/gradle/app/relayApp/build.gradle.kts
+COPY --chown=gradle:gradle ../build.gradle.kts /home/gradle/app/server/build.gradle.kts
+COPY --chown=gradle:gradle ../../shared/build.gradle.kts /home/gradle/app/shared/build.gradle.kts
+COPY --chown=gradle:gradle ../../buildSrc /home/gradle/app/buildSrc
+
+WORKDIR /home/gradle/app
+
+RUN gradle :server:dependencies --no-daemon
+
+FROM gradle:8.9-alpine AS build
+
+COPY --from=cache /home/gradle/.gradle /home/gradle/.gradle
+COPY --chown=gradle:gradle .. /home/gradle/app/
+WORKDIR /home/gradle/app
+
+RUN gradle :server:generateMainDatabaseMigrations --no-daemon
+
+FROM redgate/flyway:11.3.2-alpine AS runtime
+
+COPY --from=build /home/gradle/app/server/build/resources/main/migrations/*.sql /flyway/sql/
+
+CMD ["migrate"]
