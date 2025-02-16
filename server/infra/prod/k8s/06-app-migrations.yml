@@ -1,0 +1,91 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultDynamicSecret
+metadata:
+  name: sms-proxy-migrations-vault-secret-db
+  namespace: sms-proxy
+spec:
+  mount: postgresql
+  path: postgresql-secret-engine/creds/postgresql-role-sms-proxy-migrations-job
+  destination:
+    name: sms-proxy-migrations-secret-db
+    create: true
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sms-proxy-migrations-certificate-postgresql-client
+  namespace: sms-proxy
+spec:
+  secretName: sms-proxy-migrations-secret-postgresql-client
+  issuerRef:
+    name: issuer-leaf
+    kind: Issuer
+  commonName: "sms-proxy"
+  duration: 2160h
+  renewBefore: 360h
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 4096
+    rotationPolicy: Always
+  additionalOutputFormats:
+    - type: DER
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sms-proxy-migrations-config
+  namespace: sms-proxy
+data:
+  url: jdbc:postgresql://postgresql.sms-proxy.svc.cluster.local:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/ca.crt&sslcert=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/tls.crt&sslkey=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/key.der
+  schema: public
+  connectRetries: "5"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sms-proxy-migrations
+  namespace: sms-proxy
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: sms-proxy-migrations-secret-postgresql-client
+          secret:
+            secretName: sms-proxy-migrations-secret-postgresql-client
+      containers:
+        - name: flyway
+          image: sms-proxy-migrations:latest # FIXME: local OCI image in the cluster
+          imagePullPolicy: Never # FIXME: remove once actual OCI repository is available
+          volumeMounts:
+            - name: sms-proxy-migrations-secret-postgresql-client
+              readOnly: true
+              mountPath: "/var/run/secrets/sms-proxy-migrations-secret-postgresql-client"
+          env:
+            - name: FLYWAY_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: sms-proxy-migrations-config
+                  key: url
+            - name: FLYWAY_SCHEMAS
+              valueFrom:
+                configMapKeyRef:
+                  name: sms-proxy-migrations-config
+                  key: schema
+            - name: FLYWAY_CONNECT_RETRIES
+              valueFrom:
+                configMapKeyRef:
+                  name: sms-proxy-migrations-config
+                  key: connectRetries
+            - name: FLYWAY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sms-proxy-migrations-secret-db
+                  key: username
+            - name: FLYWAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sms-proxy-migrations-secret-db
+                  key: password

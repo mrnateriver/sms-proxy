@@ -149,8 +149,8 @@ spec:
       name: vault-operator-sa
   path: postgresql/postgresql-secret-engine
   # The full format is needed because otherwise Terraform fails due to inconsistent output
-  defaultTTL: 2m0s # FIXME: change to long TTL! It's not only used for connection - pool of connections is constantly refreshed, and also users' privileges are revoked on expiration
-  maxTTL: 2m0s # FIXME: same
+  defaultTTL: 12h0m0s
+  maxTTL: 12h0m0s
   dBName: postgresql-secret-engine
   creationStatements:
     - CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
@@ -173,8 +173,8 @@ spec:
       name: vault-operator-sa
   path: postgresql/postgresql-secret-engine
   # The full format is needed because otherwise Terraform fails due to inconsistent output
-  defaultTTL: 2m0s # FIXME: change to appropriate TTL for migrations
-  maxTTL: 2m0s # FIXME: same
+  defaultTTL: 5m0s
+  maxTTL: 5m0s
   dBName: postgresql-secret-engine
   creationStatements:
     - CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';

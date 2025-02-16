@@ -15,9 +15,9 @@ metadata:
   name: vault-init
   namespace: sms-proxy
 spec:
-  interval: 5m
+  interval: 60m0s
   retryInterval: 1m
-  timeout: 5m
+  timeout: 5m0s
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
@@ -32,9 +32,9 @@ metadata:
 spec:
   dependsOn:
     - name: vault-init
-  interval: 5m
+  interval: 60m0s
   retryInterval: 1m
-  timeout: 5m
+  timeout: 5m0s
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
@@ -49,13 +49,31 @@ metadata:
 spec:
   dependsOn:
     - name: postgresql
-  interval: 5m
+  interval: 60m0s
   retryInterval: 1m
-  timeout: 5m
+  timeout: 5m0s
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/05-postgresql.yml
+  path: ./server/infra/prod/k8s/05-app.yml
   prune: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: app-migrations
+  namespace: sms-proxy
+spec:
+  dependsOn:
+    - name: app
+  interval: 60m0s
+  timeout: 5m0s
+  sourceRef:
+    kind: GitRepository
+    name: github-mrnateriver
+  path: ./server/infra/prod/k8s/06-app-migrations.yml
+  prune: true
+  wait: true
+  force: true
 
 # TODO: observability

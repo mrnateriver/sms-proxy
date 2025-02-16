@@ -47,9 +47,7 @@ services:
     build:
       context: ../../..
       dockerfile: ./server/infra/Dockerfile.migrations
-    volumes:
-      - ./../../build/resources/main/migrations:/flyway/sql
-      - ./flyway.conf:/flyway/conf/flyway.conf
+    command: -url=jdbc:postgresql://postgres:5432/ -schemas=sms-proxy -user=sms-proxy -password=sms-proxy -connectRetries=60 migrate
     depends_on:
       postgres:
         condition: service_healthy
