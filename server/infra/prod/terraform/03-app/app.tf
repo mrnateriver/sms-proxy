@@ -35,4 +35,18 @@ module "postgresql" {
   depends_on = [module.vault_init_crds]
 }
 
-# TODO: app, observability, db etc
+module "app" {
+  source     = "../modules/k8s-apply-all"
+  filename   = "05-app.yml"
+  namespace  = var.namespace
+  depends_on = [module.postgresql]
+}
+
+module "app_migrations" {
+  source     = "../modules/k8s-apply-all"
+  filename   = "06-app-migrations.yml"
+  namespace  = var.namespace
+  depends_on = [module.app]
+}
+
+# TODO: observability, db etc

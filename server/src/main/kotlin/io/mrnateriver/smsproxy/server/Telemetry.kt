@@ -1,5 +1,6 @@
 package io.mrnateriver.smsproxy.server
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.application.install
@@ -7,6 +8,8 @@ import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.uri
 import io.ktor.server.response.header
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 import io.ktor.util.AttributeKey
 import io.opentelemetry.api.common.Attributes
 import io.opentelemetry.api.metrics.Meter
@@ -60,6 +63,12 @@ fun Application.installTelemetry(config: TelemetryConfiguration): TelemetryServi
 
     install(ResponseTraceIdPlugin)
     install(SentryTracingPlugin)
+
+    routing {
+        get("/healthz") {
+            call.response.status(HttpStatusCode.NoContent)
+        }
+    }
 
     return TelemetryServices(
         tracer = openTelemetry.getTracer(packageName),

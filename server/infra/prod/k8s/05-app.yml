@@ -132,7 +132,6 @@ spec:
           secret:
             secretName: sms-proxy-secret-postgresql-client
       containers:
-        # TODO: health checks
         - name: sms-proxy
           image: sms-proxy:latest # FIXME: local OCI image in the cluster
           imagePullPolicy: Never # FIXME: remove once actual OCI repository is available
@@ -143,6 +142,17 @@ spec:
           ports:
             - name: http
               containerPort: 3000
+          livenessProbe: &livenessProbe
+            httpGet:
+              path: /healthz
+              port: http
+            failureThreshold: 2
+            periodSeconds: 5
+          readinessProbe: *livenessProbe
+          startupProbe:
+            <<: *livenessProbe
+            periodSeconds: 5
+            initialDelaySeconds: 10
           volumeMounts:
             - name: sms-proxy-secret-postgresql-client
               readOnly: true
