@@ -48,6 +48,27 @@ spec:
     - kind: Deployment
       name: sms-proxy
 ---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sms-proxy-certificate-postgresql-client
+  namespace: sms-proxy
+spec:
+  secretName: sms-proxy-secret-postgresql-client
+  issuerRef:
+    name: issuer-leaf
+    kind: Issuer
+  commonName: "sms-proxy"
+  duration: 2160h
+  renewBefore: 360h
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 4096
+    rotationPolicy: Always
+  additionalOutputFormats:
+    - type: DER
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -55,7 +76,7 @@ metadata:
   namespace: sms-proxy
 data:
   apiKey: api-key # FIXME: sync with build pipeline? should be synced with the app anyway
-  dbUri: jdbc:postgresql://postgresql.sms-proxy.svc.cluster.local:5432/sms_proxy
+  dbUri: jdbc:postgresql://postgresql.sms-proxy.svc.cluster.local:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/sms-proxy-secret-postgresql-client/ca.crt&sslcert=/var/run/secrets/sms-proxy-secret-postgresql-client/tls.crt&sslkey=/var/run/secrets/sms-proxy-secret-postgresql-client/key.der
   # TODO: non-secret app config
 ---
 apiVersion: apps/v1
@@ -76,9 +97,9 @@ spec:
         app: sms-proxy
     spec:
       volumes:
-        - name: postgresql-tls-secret
+        - name: sms-proxy-secret-postgresql-client
           secret:
-            secretName: postgresql-tls-secret
+            secretName: sms-proxy-secret-postgresql-client
       containers:
         # TODO: health checks
         - name: sms-proxy
@@ -89,9 +110,9 @@ spec:
               memory: "256Mi"
               cpu: "250m"
           volumeMounts:
-            - name: postgresql-tls-secret
+            - name: sms-proxy-secret-postgresql-client
               readOnly: true
-              mountPath: "/var/run/secrets/postgresql-tls-secret"
+              mountPath: "/var/run/secrets/sms-proxy-secret-postgresql-client"
           env:
             - name: API_KEY
               valueFrom:
