@@ -33,6 +33,34 @@ spec:
     - kind: Deployment
       name: sms-proxy
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sms-proxy-secret-common
+  namespace: sms-proxy
+type: Opaque
+data:
+  # This secret is intended to be overwritten by VaultStaticSecret below
+  api-key: "YXBpLWtleQo=" # api-key
+  sentry-dsn: ""
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: sms-proxy-vault-secret-common
+  namespace: sms-proxy
+spec:
+  type: kv-v2
+  mount: kv2
+  path: sms-proxy/sentry-dsn
+  destination:
+    name: sms-proxy-secret-common
+    create: false
+  refreshAfter: 10m
+  rolloutRestartTargets:
+    - kind: Deployment
+      name: sms-proxy
+---
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultDynamicSecret
 metadata:
@@ -75,9 +103,12 @@ metadata:
   name: sms-proxy-config
   namespace: sms-proxy
 data:
-  apiKey: api-key # FIXME: sync with build pipeline? should be synced with the app anyway
   dbUri: jdbc:postgresql://postgresql.sms-proxy.svc.cluster.local:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/sms-proxy-secret-postgresql-client/ca.crt&sslcert=/var/run/secrets/sms-proxy-secret-postgresql-client/tls.crt&sslkey=/var/run/secrets/sms-proxy-secret-postgresql-client/key.der
-  # TODO: non-secret app config
+  metrics-http-port: "4000"
+  server-port: "3000"
+  log-level: "info"
+  otlp-tracing-grpc-url: ""
+  otlp-service-name: "sms-proxy"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -109,16 +140,51 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "250m"
+          ports:
+            - name: http
+              containerPort: 3000
           volumeMounts:
             - name: sms-proxy-secret-postgresql-client
               readOnly: true
               mountPath: "/var/run/secrets/sms-proxy-secret-postgresql-client"
           env:
-            - name: API_KEY
+            - name: OTLP_TRACING_GRPC_URL
               valueFrom:
                 configMapKeyRef:
                   name: sms-proxy-config
-                  key: apiKey
+                  key: otlp-tracing-grpc-url
+            - name: OTLP_SERVICE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: sms-proxy-config
+                  key: otlp-service-name
+            - name: KTOR_LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: sms-proxy-config
+                  key: log-level
+            - name: SERVER_HOST
+              value: "0.0.0.0"
+            - name: SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: sms-proxy-config
+                  key: server-port
+            - name: METRICS_HTTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: sms-proxy-config
+                  key: metrics-http-port
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sms-proxy-secret-common
+                  key: api-key
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: sms-proxy-secret-common
+                  key: sentry-dsn
             - name: DB_JDBC_URI
               valueFrom:
                 configMapKeyRef:
@@ -143,3 +209,18 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sms-proxy
+  namespace: sms-proxy
+spec:
+  type: ClusterIP
+  selector:
+    app: sms-proxy
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
