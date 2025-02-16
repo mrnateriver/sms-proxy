@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
     alias(libs.plugins.detekt)
-    alias(libs.plugins.sentry)
+    alias(libs.plugins.sentry.android)
     alias(libs.plugins.sentry.kotlin)
 }
 

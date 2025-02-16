@@ -61,7 +61,7 @@ sentry {
     telemetry = false
 
     autoInstallation {
-        sentryVersion = "7.20.0"
+        enabled = false
     }
 }
 
@@ -101,7 +101,10 @@ dependencies {
     implementation(libs.opentelemetry.instrumentation.micrometer)
     implementation(libs.opentelemetry.extension.kotlin)
     implementation(libs.opentelemetry.semconv.incubating)
+    implementation(libs.sentry.logback)
     implementation(libs.sentry.kotlin)
+    implementation(libs.sentry.jdbc)
+    implementation(libs.sentry.jvm)
 
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)

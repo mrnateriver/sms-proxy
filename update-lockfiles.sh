@@ -1,11 +1,11 @@
 #!/bin/sh
 
-./gradlew dependencies --write-locks
-./gradlew :shared:dependencies --write-locks
-./gradlew :server:dependencies --write-locks
-./gradlew :proxyApiClient:dependencies --write-locks
-./gradlew :proxyApiServer:dependencies --write-locks
-./gradlew :proxyApiTypeSpec:dependencies --write-locks
-./gradlew :relayApp:dependencies --write-locks
-./gradlew :receiverApp:dependencies --write-locks
-./gradlew :buildSrc:dependencies --write-locks
+./gradlew dependencies --write-locks --no-daemon
+./gradlew :shared:dependencies --write-locks --no-daemon
+./gradlew :server:dependencies --write-locks --no-daemon
+./gradlew :proxyApiClient:dependencies --write-locks --no-daemon
+./gradlew :proxyApiServer:dependencies --write-locks --no-daemon
+./gradlew :proxyApiTypeSpec:dependencies --write-locks --no-daemon
+./gradlew :relayApp:dependencies --write-locks --no-daemon
+./gradlew :receiverApp:dependencies --write-locks --no-daemon
+./gradlew :buildSrc:dependencies --write-locks --no-daemon

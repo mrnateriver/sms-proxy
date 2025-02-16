@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.detekt)
-    alias(libs.plugins.sentry)
+    alias(libs.plugins.sentry.android)
     alias(libs.plugins.sentry.kotlin)
 }
 
