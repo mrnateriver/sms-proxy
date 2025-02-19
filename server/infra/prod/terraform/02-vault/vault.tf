@@ -22,17 +22,19 @@ variable "namespace" {
   default     = "sms-proxy"
 }
 
-module "cert_manager_issuer" {
+module "cert_manager_issuers" {
   source     = "../modules/k8s-apply-all"
-  filename   = "01-cert-manager-issuer.yml"
+  filename   = "01-cert-manager-issuers.yml"
   namespace  = var.namespace
 }
+
 module "vault" {
   source     = "../modules/k8s-apply-all"
   filename   = "02-vault.yml"
   namespace  = var.namespace
-  depends_on = [module.cert_manager_issuer]
+  depends_on = [module.cert_manager_issuers]
 }
+
 module "vault_init" {
   source     = "../modules/vault-init"
   namespace  = var.namespace

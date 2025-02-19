@@ -1,0 +1,12 @@
+# TODO: random secret for registry password
+
+# TODO: TLS
+
+# TODO: PVC or S3?
+
+# TODO: registry deployment
+# TODO: init container that generates htpasswd file
+
+# TODO: service
+
+# TODO: ingress

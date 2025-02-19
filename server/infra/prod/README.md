@@ -10,7 +10,7 @@ This implementation contains a few simplifications which must not be used in a r
 1. TODO: Vault unseal keys are passed as CLI arguments, even though they should be provided via stdin/ui
 1. TODO: OCI registry should not be part of the cluster for the sake of cluster penetration security
 1. TODO: K8S deployment relies on Secret resources, which are stored in etcd in plaintext by default. In a real prod env, at the very least encryption at rest should be enabled for etcd (using KMS), or even better, but much harder - refrain from using Secrets at all and rely on Vault (possibly external) and volume mounts for all sensitive data
-1. TODO: with the above point said, CSI driver (has been partially implemented - look up in git history) or Vault Agent should be used to mount secrets, but vault-secret-operator used in this project for simplicity. And actually, with the current setup sensitive values are still used as Secrets anyway (PKI secrets, Postgres initial password (even though it's immediately rotated) etc), so we might as well use Secrets for everything
+1. TODO: with the above point said, CSI driver (has been partially implemented - look up in git history) or Vault Agent should be used to mount secrets, but vault-secret-operator used in this project for simplicity. And actually, with the current setup sensitive values are still used as Secrets anyway (PKI secrets, Postgres initial password (even though it's immediately rotated) etc), so we might as well use Secrets for everything.
 
 ## Structure
 
@@ -23,6 +23,9 @@ This implementation contains a few simplifications which must not be used in a r
     - [terraform/03-app](./terraform/03-app) - K8S resources of the application, including direct dependencies like PostgreSQL.
     - [terraform/03-fluxcd](./terraform/03-fluxcd) - K8S resources which set up FluxCD in that cluster, and then add this Git repository as the source for provisioning.
     - [terraform/modules](./terraform/modules) - reusable Terraform modules.
+      * [terraform/minio](./terraform/modules/minio) - Minio deployment, which is used as an S3-compatible storage for the application. Only used in local deployment to not depend on external services.
+      * [terraform/modules/k8s-apply-all](./terraform/modules/k8s-apply-all) - applies specified K8S manifest to the cluster, splitting it into multiple resources if needed.
+      * [terraform/modules/vault-init](./terraform/modules/vault-init) - initializes HashiCorp Vault, unseals it, and then mounts required secret engines and authentication backend.
 
 ## Deployment
 

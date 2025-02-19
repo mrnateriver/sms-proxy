@@ -22,31 +22,45 @@ variable "namespace" {
   default     = "sms-proxy"
 }
 
+# This module has to be here because it depends on CRDs which are installed in 02-vault
 module "vault_init_crds" {
   source    = "../modules/k8s-apply-all"
   filename  = "03-vault-init.yml"
   namespace = var.namespace
 }
 
-module "postgresql" {
-  source     = "../modules/k8s-apply-all"
-  filename   = "04-postgresql.yml"
+module "minio" {
+  source     = "../modules/minio"
   namespace  = var.namespace
   depends_on = [module.vault_init_crds]
 }
 
+module "registry" {
+  source     = "../modules/k8s-apply-all"
+  filename   = "04-registry.yml"
+  namespace  = var.namespace
+  depends_on = [module.minio]
+}
+
+module "postgresql" {
+  source     = "../modules/k8s-apply-all"
+  filename   = "05-postgresql.yml"
+  namespace  = var.namespace
+  depends_on = [module.registry]
+}
+
 module "app" {
   source     = "../modules/k8s-apply-all"
-  filename   = "05-app.yml"
+  filename   = "06-app.yml"
   namespace  = var.namespace
   depends_on = [module.postgresql]
 }
 
 module "app_migrations" {
   source     = "../modules/k8s-apply-all"
-  filename   = "06-app-migrations.yml"
+  filename   = "07-app-migrations.yml"
   namespace  = var.namespace
   depends_on = [module.app]
 }
 
-# TODO: observability, db etc
+# TODO: observability

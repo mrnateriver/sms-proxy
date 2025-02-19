@@ -153,6 +153,17 @@ spec:
             <<: *livenessProbe
             periodSeconds: 5
             initialDelaySeconds: 10
+          securityContext: # TODO: re-evaluate
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 2000
+            seccompProfile:
+              type: RuntimeDefault
           volumeMounts:
             - name: sms-proxy-secret-postgresql-client
               readOnly: true
@@ -234,3 +245,5 @@ spec:
       port: 3000
       targetPort: 3000
       protocol: TCP
+
+# TODO: ingress
