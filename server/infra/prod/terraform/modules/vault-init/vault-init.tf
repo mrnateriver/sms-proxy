@@ -96,6 +96,10 @@ data "local_file" "cluster_keys_json" {
 resource "null_resource" "unseal_vault_leader" {
   depends_on = [null_resource.init_vault]
 
+  triggers = {
+    force_redeploy = uuid()
+  }
+
   provisioner "local-exec" {
     interpreter = ["/bin/sh", "-c"]
     command     = <<EOF
@@ -110,6 +114,10 @@ resource "null_resource" "unseal_vault_leader" {
 
 resource "null_resource" "unseal_vault" {
   depends_on = [null_resource.unseal_vault_leader]
+
+  triggers = {
+    force_redeploy = uuid()
+  }
 
   for_each = local.vault_pods_standby_metadata
 
