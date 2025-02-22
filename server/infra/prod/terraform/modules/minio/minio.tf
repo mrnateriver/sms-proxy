@@ -11,19 +11,6 @@ terraform {
   }
 }
 
-# FIXME: TMP! remove provider and context var
-provider "kubernetes" {
-  config_context = var.context
-}
-
-# FIXME: remove
-variable "context" {
-  type        = string
-  description = "Name of the K8S context in your ~/.kube/config file that will be used for provisioning"
-  default     = "minikube"
-}
-
-
 variable "namespace" {
   type        = string
   description = "K8S namespace where the resources will be created"
@@ -170,19 +157,12 @@ resource "helm_release" "minio_tenant" {
               servers: 1
               volumesPerServer: 1
               size: 5Gi
-        # TODO: ingress with traefik?
-        ingress:
-            api:
-                enabled: false
-                ingressClassName: ""
-                labels: { }
-                annotations: { }
-                tls: [ ]
-                host: minio.local
-                path: /
-                pathType: Prefix
-            console:
-                enabled: false
+    # Ingresses are disabled because the whole storage is internal
+    ingress:
+        api:
+            enabled: false
+        console:
+            enabled: false
     EOF
   ]
 }

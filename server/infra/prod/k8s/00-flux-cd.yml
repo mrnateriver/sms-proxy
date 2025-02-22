@@ -23,11 +23,12 @@ spec:
     name: github-mrnateriver
   path: ./server/infra/prod/k8s/03-vault-init.yml
   prune: true
+  wait: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: postgresql
+  name: registry
   namespace: sms-proxy
 spec:
   dependsOn:
@@ -38,25 +39,27 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/04-postgresql.yml
+  path: ./server/infra/prod/k8s/04-registry.yml
   prune: true
+  wait: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: app
+  name: postgresql
   namespace: sms-proxy
 spec:
   dependsOn:
-    - name: postgresql
+    - name: registry
   interval: 60m0s
   retryInterval: 1m
   timeout: 5m0s
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/05-app.yml
+  path: ./server/infra/prod/k8s/05-postgresql.yml
   prune: true
+  wait: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -65,7 +68,7 @@ metadata:
   namespace: sms-proxy
 spec:
   dependsOn:
-    - name: app
+    - name: postgresql
   interval: 60m0s
   timeout: 5m0s
   sourceRef:
@@ -75,5 +78,39 @@ spec:
   prune: true
   wait: true
   force: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: app
+  namespace: sms-proxy
+spec:
+  dependsOn:
+    - name: app-migrations
+  interval: 60m0s
+  retryInterval: 1m
+  timeout: 5m0s
+  sourceRef:
+    kind: GitRepository
+    name: github-mrnateriver
+  path: ./server/infra/prod/k8s/07-app.yml
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: traefik
+  namespace: sms-proxy
+spec:
+  dependsOn:
+    - name: app
+  interval: 60m0s
+  timeout: 5m0s
+  sourceRef:
+    kind: GitRepository
+    name: github-mrnateriver
+  path: ./server/infra/prod/k8s/08-traefik.yml
+  prune: true
 
 # TODO: observability

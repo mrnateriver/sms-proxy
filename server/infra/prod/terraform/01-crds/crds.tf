@@ -60,4 +60,14 @@ resource "helm_release" "kube_prometheus_stack" {
     name  = "prometheusOperator.admissionWebhooks.certManager.enabled"
     value = "true"
   }
+
+  # The following options are necessary to make prometheus-operator scrape all ServiceMonitors within the namespace, as opposed to only scanning the Helm-managed resources
+  set {
+    name  = "prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues"
+    value = "false"
+  }
+  set {
+    name  = "prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues"
+    value = "false"
+  }
 }

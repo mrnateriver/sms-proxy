@@ -142,6 +142,8 @@ spec:
           ports:
             - name: http
               containerPort: 3000
+            - name: metrics
+              containerPort: 4000
           livenessProbe: &livenessProbe
             httpGet:
               path: /healthz
@@ -236,6 +238,8 @@ kind: Service
 metadata:
   name: sms-proxy
   namespace: sms-proxy
+  labels:
+    app.kubernetes.io/name: sms-proxy
 spec:
   type: ClusterIP
   selector:
@@ -245,5 +249,46 @@ spec:
       port: 3000
       targetPort: 3000
       protocol: TCP
-
-# TODO: ingress
+    - name: metrics
+      port: 4000
+      targetPort: 4000
+      protocol: TCP
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sms-proxy-monitor
+  namespace: sms-proxy
+spec:
+  endpoints:
+    - port: metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sms-proxy
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sms-proxy-ingress
+  namespace: sms-proxy
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          - path: /metrics
+            pathType: Exact
+            backend:
+              service:
+                name: sms-proxy
+                port:
+                  name: metrics
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sms-proxy
+                port:
+                  name: http

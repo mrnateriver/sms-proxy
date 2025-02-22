@@ -1,0 +1,242 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: traefik-ingress-controller
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - secrets
+      - nodes
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+      - networking.k8s.io
+    resources:
+      - ingresses
+      - ingressclasses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+      - networking.k8s.io
+    resources:
+      - ingresses/status
+    verbs:
+      - update
+  - apiGroups:
+      - traefik.io
+    resources:
+      - middlewares
+      - middlewaretcps
+      - ingressroutes
+      - traefikservices
+      - ingressroutetcps
+      - ingressrouteudps
+      - tlsoptions
+      - tlsstores
+      - serverstransports
+      - serverstransporttcps
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-sa
+  namespace: sms-proxy
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: traefik-sa-clusterrole-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-ingress-controller
+subjects:
+  - kind: ServiceAccount
+    name: traefik-sa
+    namespace: sms-proxy
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-dashboard-tls
+  namespace: sms-proxy
+spec:
+  secretName: traefik-dashboard-tls
+  issuerRef:
+    name: issuer-leaf
+    kind: Issuer
+  duration: 2160h
+  renewBefore: 360h
+  dnsNames:
+    - "traefik-web-service.sms-proxy.svc.cluster.local"
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: traefik
+  namespace: sms-proxy
+spec:
+  interval: 1h
+  url: https://traefik.github.io/charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: traefik
+  namespace: sms-proxy
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: traefik
+      version: "34.4.0"
+      sourceRef:
+        kind: HelmRepository
+        name: traefik
+  values:
+    # TODO: mount volume with clients' TLS certs
+    # TODO: mount volume with server TLS cert
+    # TODO: reference client certs in `tlsOptions`
+    # TODO: reference server cert in `tlsOptions`
+    globalArguments:
+      - "--providers.kubernetesingress"
+    logs:
+      general:
+        level: "DEBUG"
+    providers:
+      kubernetesCRD:
+        enabled: true # Only for the sake of /dashboard
+      kubernetesIngress:
+        enabled: true
+        ingressClass: traefik
+      kubernetesGateway:
+        enabled: false
+    ingressRoute:
+      dashboard:
+        enabled: true
+        tls:
+          # TODO: see comment below about issue #4756
+          secretName: traefik-dashboard-tls # This does nothing, but required for HelmRelease to add TLS params to dashboard router
+    ports:
+      web:
+        redirections:
+          entryPoint:
+            to: websecure
+            scheme: https
+            permanent: true
+    service:
+      enabled: false # Managed manually below
+    rbac:
+      enabled: false # Managed by the ClusterRole and ClusterRoleBinding above
+    serviceAccount:
+      name: traefik-sa
+    metrics:
+      addInternals: true
+      prometheus:
+        service:
+          enabled: true
+        disableAPICheck: false
+        serviceMonitor:
+          enabled: true
+          metricRelabelings:
+            - sourceLabels: [__name__]
+              separator: ;
+              regex: ^fluentd_output_status_buffer_(oldest|newest)_.+
+              replacement: $1
+              action: drop
+          relabelings:
+            - sourceLabels: [__meta_kubernetes_pod_node_name]
+              separator: ;
+              regex: ^(.*)$
+              targetLabel: nodename
+              replacement: $1
+              action: replace
+          jobLabel: traefik
+          interval: 30s
+          honorLabels: true
+        prometheusRule:
+          enabled: true
+          rules:
+            - alert: TraefikDown
+              expr: up{job="traefik"} == 0
+              for: 5m
+              labels:
+                context: traefik
+                severity: warning
+              annotations:
+                summary: "Traefik Down"
+                description: "{{ $labels.pod }} on {{ $labels.nodename }} is down"
+    tracing:
+      addInternals: true
+      otlp:
+        enabled: true
+        # TODO: send to Grafana Alloy
+        # grpc:
+        #   enabled: false
+        #   endpoint: ""
+        #   tls:
+        #     ca: ""
+        #     cert: ""
+        #     key: ""
+        #     insecureSkipVerify: false
+    extraObjects:
+      - kind: ServersTransport
+        apiVersion: traefik.io/v1alpha1
+        metadata:
+          name: traefik-trusted-root-ca
+          namespace: sms-proxy
+        spec:
+          rootCAsSecrets:
+            - ca-key-pair-root
+
+    # TODO: Use separate TLS store for dashboard once #4756 is implemented
+    # https://github.com/traefik/traefik/issues/4756
+    tlsStore:
+      default:
+        defaultCertificate:
+          secretName: traefik-dashboard-tls # FIXME: change to external server cert
+    tlsOptions:
+      default:
+        minVersion: VersionTLS12
+    # extraObjects:
+    #   - kind: TLSStore
+    #     apiVersion: traefik.io/v1alpha1
+    #     metadata:
+    #       name: traefik-dashboard-tls-store
+    #       namespace: sms-proxy
+    #     spec:
+    #       defaultCertificate:
+    #         secretName: traefik-dashboard-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-web-service
+  namespace: sms-proxy
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 4443
+      targetPort: websecure
+      name: https
+  selector:
+    app.kubernetes.io/name: traefik

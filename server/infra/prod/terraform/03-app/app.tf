@@ -49,16 +49,23 @@ module "postgresql" {
   depends_on = [module.registry]
 }
 
-module "app" {
+module "app_migrations" {
   source     = "../modules/k8s-apply-all"
-  filename   = "06-app.yml"
+  filename   = "06-app-migrations.yml"
   namespace  = var.namespace
   depends_on = [module.postgresql]
 }
 
-module "app_migrations" {
+module "app" {
   source     = "../modules/k8s-apply-all"
-  filename   = "07-app-migrations.yml"
+  filename   = "07-app.yml"
+  namespace  = var.namespace
+  depends_on = [module.app_migrations]
+}
+
+module "traefik" {
+  source     = "../modules/k8s-apply-all"
+  filename   = "08-traefik.yml"
   namespace  = var.namespace
   depends_on = [module.app]
 }

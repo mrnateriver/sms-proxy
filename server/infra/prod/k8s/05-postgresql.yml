@@ -86,14 +86,12 @@ spec:
       secretKeys:
         adminPasswordKey: password
     primary:
+      # This configuration effectively enables mTLS
       pgHbaConfiguration: |
         hostssl all all 0.0.0.0/0 scram-sha-256 clientcert=verify-ca
         hostssl all all ::/0 scram-sha-256 clientcert=verify-ca
         hostssl all all 127.0.0.1/32 scram-sha-256 clientcert=verify-ca
         hostssl all all ::1/128 scram-sha-256 clientcert=verify-ca
-      # FIXME: disable after debugging!
-      extendedConfiguration: |
-        log_statement = 'all'
 ---
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: SecretEngineMount
