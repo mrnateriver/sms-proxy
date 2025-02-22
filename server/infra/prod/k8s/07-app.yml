@@ -52,7 +52,7 @@ metadata:
 spec:
   type: kv-v2
   mount: kv2
-  path: sms-proxy/sentry-dsn
+  path: sms-proxy/secret-common
   destination:
     name: sms-proxy-secret-common
     create: false
