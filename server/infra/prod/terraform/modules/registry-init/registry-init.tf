@@ -1,0 +1,88 @@
+
+terraform {
+  required_providers {
+  }
+}
+
+variable "namespace" {
+  type        = string
+  description = "K8S namespace"
+  default     = "sms-proxy"
+}
+
+resource "null_resource" "registry_kubernetes_docker_auth" {
+  triggers = {
+    registry_namespace = var.namespace
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<EOF
+        if ! kubectl get secret -n ${var.namespace} oci-registry-docker-secret"; then
+            kubectl -n ${var.namespace} get secret oci-registry-password -o jsonpath='{.data.password}' | base64 --decode | xargs -I {} \
+                kubectl -n ${var.namespace} create secret docker-registry oci-registry-docker-secret \
+                    --docker-server=oci-registry.sms-proxy.svc.cluster.local:5000 \
+                    --docker-username=sms-proxy \
+                    --docker-password={}
+        fi
+    EOF
+  }
+}
+
+resource "null_resource" "registry_check_hosts" {
+  depends_on = [null_resource.registry_kubernetes_docker_auth]
+
+  triggers = {
+    registry_namespace = var.namespace
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<EOF
+        if ! grep -q "oci-registry.${var.namespace}.svc.cluster.local" /etc/hosts || ! grep -q "s3.${var.namespace}.svc.cluster.local" /etc/hosts; then
+            echo "Add the following entries to /etc/hosts:"
+            echo "127.0.0.1 oci-registry.${var.namespace}.svc.cluster.local"
+            echo "127.0.0.1 s3.${var.namespace}.svc.cluster.local"
+            exit 1
+        fi
+    EOF
+  }
+}
+
+resource "null_resource" "registry_kubernetes_images_push" {
+  depends_on = [null_resource.registry_kubernetes_docker_auth]
+
+  triggers = {
+    registry_namespace = var.namespace
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<EOF
+        REGISTRY_PWD=$(kubectl get secret -n ${var.namespace} oci-registry-password -o jsonpath='{.data.password}' | base64 -d)
+        docker login -u=sms-proxy -p=$REGISTRY_PWD oci-registry.sms-proxy.svc.cluster.local:5000
+
+        APP_IMAGE=$(docker run --rm \
+            -v "${abspath("${path.module}/../../../k8s")}:/app" \
+            -w="/app" \
+            mikefarah/yq:4.45.1 \
+            'select(.kind == "Deployment") | .spec.template.spec.containers[0].image' 07-app.yml
+        )
+        MIGRATIONS_IMAGE=$(docker run --rm \
+            -v "${abspath("${path.module}/../../../k8s")}:/app" \
+            -w="/app" \
+            mikefarah/yq:4.45.1 \
+            'select(.kind == "Job") | .spec.template.spec.containers[0].image' 06-app-migrations.yml
+        )
+
+        if [[ $(docker images -q sms-proxy:latest) ]]; then
+            docker tag sms-proxy:latest $APP_IMAGE
+            docker push $APP_IMAGE
+        fi
+        if [[ $(docker images -q sms-proxy-migrations:latest) ]]; then
+            docker tag sms-proxy-migrations:latest $MIGRATIONS_IMAGE
+            docker push $MIGRATIONS_IMAGE
+        fi
+    EOF
+  }
+}
