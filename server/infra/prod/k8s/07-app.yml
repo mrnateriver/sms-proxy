@@ -88,7 +88,7 @@ spec:
     kind: Issuer
   commonName: "sms-proxy"
   duration: 2160h
-  renewBefore: 360h
+  renewBefore: 240h
   privateKey:
     algorithm: RSA
     encoding: PKCS8
@@ -265,6 +265,63 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: sms-proxy
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sms-proxy-certificate-server-tls
+  namespace: sms-proxy
+spec:
+  secretName: sms-proxy-certificate-server-tls
+  issuerRef:
+    name: issuer-leaf
+    kind: Issuer
+  commonName: "sms-proxy"
+  duration: 43800h # Since trust chain is embedded in distributable Android apps, we need a longer duration
+  renewBefore: 240h
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 4096
+    rotationPolicy: Always
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sms-proxy-certificate-relay-app-tls
+  namespace: sms-proxy
+spec:
+  secretName: sms-proxy-certificate-relay-app-tls
+  issuerRef:
+    name: issuer-leaf
+    kind: Issuer
+  commonName: "relay-app"
+  duration: 43800h # Since trust chain is embedded in distributable Android apps, we need a longer duration
+  renewBefore: 240h
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 4096
+    rotationPolicy: Always
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sms-proxy-certificate-receiver-app-tls
+  namespace: sms-proxy
+spec:
+  secretName: sms-proxy-certificate-receiver-app-tls
+  issuerRef:
+    name: issuer-leaf
+    kind: Issuer
+  commonName: "receiver-app"
+  duration: 43800h # Since trust chain is embedded in distributable Android apps, we need a longer duration
+  renewBefore: 240h
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 4096
+    rotationPolicy: Always
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

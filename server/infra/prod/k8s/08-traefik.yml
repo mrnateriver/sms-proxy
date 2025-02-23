@@ -74,21 +74,26 @@ subjects:
     name: traefik-sa
     namespace: sms-proxy
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: traefik-dashboard-tls
-  namespace: sms-proxy
-spec:
-  secretName: traefik-dashboard-tls
-  issuerRef:
-    name: issuer-leaf
-    kind: Issuer
-  duration: 2160h
-  renewBefore: 360h
-  dnsNames:
-    - "traefik-web-service.sms-proxy.svc.cluster.local"
----
+# TODO: enable once #4756 is fixed (see comments below in HelmRelease)
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: traefik-dashboard-tls
+#   namespace: sms-proxy
+# spec:
+#   secretName: traefik-dashboard-tls
+#   issuerRef:
+#     name: issuer-leaf
+#     kind: Issuer
+#   duration: 2160h
+#   renewBefore: 360h
+#   commonName: "traefik-internal"
+#   dnsNames:
+#     - "traefik-web-service.sms-proxy.svc.cluster.local"
+#     - "localhost"
+#   ipAddresses:
+#     - 127.0.0.1
+# ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
@@ -113,10 +118,6 @@ spec:
         kind: HelmRepository
         name: traefik
   values:
-    # TODO: mount volume with clients' TLS certs
-    # TODO: mount volume with server TLS cert
-    # TODO: reference client certs in `tlsOptions`
-    # TODO: reference server cert in `tlsOptions`
     globalArguments:
       - "--providers.kubernetesingress"
     logs:
@@ -134,8 +135,7 @@ spec:
       dashboard:
         enabled: true
         tls:
-          # TODO: see comment below about issue #4756
-          secretName: traefik-dashboard-tls # This does nothing, but required for HelmRelease to add TLS params to dashboard router
+          secretName: sms-proxy-certificate-server-tls # This doesn't work
     ports:
       web:
         redirections:
@@ -207,25 +207,37 @@ spec:
         spec:
           rootCAsSecrets:
             - ca-key-pair-root
-
-    # TODO: Use separate TLS store for dashboard once #4756 is implemented
-    # https://github.com/traefik/traefik/issues/4756
+      # TODO: looks like there's a bug in Traefik which prevents it from using a dedicated TLSOption for specific routers
+      # Dashboard shows the correct options, but they don't seem to have effect
+      # Could be related to https://github.com/traefik/traefik/issues/4756
+      # TODO: the same issue precludes from using a separate TLSStore for dashboard
+      # - kind: TLSOption
+      #   apiVersion: traefik.io/v1alpha1
+      #   metadata:
+      #     name: traefik-tls-option-dashboard
+      #     namespace: sms-proxy
+      #   spec:
+      #     clientAuthType: NoClientCert
+      # - kind: TLSStore
+      #   apiVersion: traefik.io/v1alpha1
+      #   metadata:
+      #     name: traefik-dashboard-tls-store
+      #     namespace: sms-proxy
+      #   spec:
+      #     defaultCertificate:
+      #       secretName: traefik-dashboard-tls
     tlsStore:
       default:
         defaultCertificate:
-          secretName: traefik-dashboard-tls # FIXME: change to external server cert
+          secretName: sms-proxy-certificate-server-tls
     tlsOptions:
       default:
         minVersion: VersionTLS12
-    # extraObjects:
-    #   - kind: TLSStore
-    #     apiVersion: traefik.io/v1alpha1
-    #     metadata:
-    #       name: traefik-dashboard-tls-store
-    #       namespace: sms-proxy
-    #     spec:
-    #       defaultCertificate:
-    #         secretName: traefik-dashboard-tls
+        clientAuth:
+          secretNames:
+            - sms-proxy-certificate-relay-app-tls
+            - sms-proxy-certificate-receiver-app-tls
+          clientAuthType: RequireAndVerifyClientCert
 ---
 apiVersion: v1
 kind: Service
