@@ -11,8 +11,6 @@ spec:
   commonName: "postgresql-server"
   dnsNames:
     - "postgresql.sms-proxy.svc.cluster.local"
-  ipAddresses:
-    - 127.0.0.1
   duration: 2160h
   renewBefore: 360h
 ---

@@ -55,10 +55,11 @@ spec:
         - name: sms-proxy-migrations-secret-postgresql-client
           secret:
             secretName: sms-proxy-migrations-secret-postgresql-client
+      imagePullSecrets:
+        - name: oci-registry-docker-secret
       containers:
         - name: flyway
-          image: sms-proxy-migrations:latest # FIXME: local OCI image in the cluster
-          imagePullPolicy: Never # FIXME: remove once actual OCI repository is available
+          image: "oci-registry.sms-proxy.svc.cluster.local:5000/sms-proxy/sms-proxy-migrations:latest"
           volumeMounts:
             - name: sms-proxy-migrations-secret-postgresql-client
               readOnly: true

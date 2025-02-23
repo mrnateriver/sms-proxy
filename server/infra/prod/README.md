@@ -31,4 +31,7 @@ This implementation contains a few simplifications which must not be used in a r
 
 Run `./init-cluster-local.sh <name of the context>` to deploy the application and all of its dependencies to a cluster with configured `kubectl` context.
 
+TODO: when deploying to local cluster, S3 storage hostname and OCI repo hostname must be added to /etc/hosts because OCI registry redirects client to the underlying S3 storage, which it references by internal cluster hostname
+TODO: when deploying K8S resources to local cluster, on Mac OS & Windows, Docker has to be in host networking mode, because OCI registry redirects client to the underlying S3 storage, which would not otherwise be accessible from Docker's VM.
+
 Run `./init-cluster-remote.sh <name of the context>` to deploy the application and all of its dependencies to a remote cluster. That cluster must also be configured as a context in local `kubectl`. The difference with local cluster is that this script will only provision FluxCD `GitRepository` and `Kustomization` sources as opposed to directly provisioning K8S resources.

@@ -131,14 +131,15 @@ spec:
         - name: sms-proxy-secret-postgresql-client
           secret:
             secretName: sms-proxy-secret-postgresql-client
+      imagePullSecrets:
+        - name: oci-registry-docker-secret
       containers:
         - name: sms-proxy
-          image: sms-proxy:latest # FIXME: local OCI image in the cluster
-          imagePullPolicy: Never # FIXME: remove once actual OCI repository is available
+          image: "oci-registry.sms-proxy.svc.cluster.local:5000/sms-proxy/sms-proxy:latest"
           resources:
             limits:
               memory: "256Mi"
-              cpu: "250m"
+              cpu: 2
           ports:
             - name: http
               containerPort: 3000

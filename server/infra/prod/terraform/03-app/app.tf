@@ -42,18 +42,24 @@ module "registry" {
   depends_on = [module.minio]
 }
 
+module "registry_init" {
+  source     = "../modules/registry-init"
+  namespace  = var.namespace
+  depends_on = [module.registry]
+}
+
 module "postgresql" {
   source     = "../modules/k8s-apply-all"
   filename   = "05-postgresql.yml"
   namespace  = var.namespace
-  depends_on = [module.registry]
+  depends_on = [module.vault_init_crds] # Let the registry initialize while we provision Postgres
 }
 
 module "app_migrations" {
   source     = "../modules/k8s-apply-all"
   filename   = "06-app-migrations.yml"
   namespace  = var.namespace
-  depends_on = [module.postgresql]
+  depends_on = [module.postgresql, module.registry_init]
 }
 
 module "app" {

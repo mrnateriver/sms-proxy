@@ -50,8 +50,10 @@ spec:
     - "minio.${var.namespace}.svc"
     - 'minio.${var.namespace}.svc.cluster.local'
     - '*.minio.${var.namespace}.svc.cluster.local'
-    - '*.sms-proxy-hl.${var.namespace}.svc.cluster.local'
-    - '*.sms-proxy.minio.${var.namespace}.svc.cluster.local'
+    - "s3.${var.namespace}"
+    - "s3.${var.namespace}.svc"
+    - 's3.${var.namespace}.svc.cluster.local'
+    - '*.s3.${var.namespace}.svc.cluster.local'
   secretName: operator-ca-tls-minio-tenant # This name deliberately starts with `operator-ca-tls-` to combine tenant TLS secret and its CA for operator to trust
   issuerRef:
     name: issuer-leaf
@@ -118,6 +120,31 @@ resource "kubernetes_secret" "oci_repository_s3_credentials" {
     "accessKey" = local.minio_root_user
     "secretKey" = local.minio_root_password
   }
+}
+
+resource "kubernetes_service" "minio_tenant_lb" {
+  depends_on = [helm_release.minio]
+
+  metadata {
+    name      = "s3"
+    namespace = var.namespace
+  }
+
+  spec {
+    type = "LoadBalancer"
+
+    selector = {
+      "v1.min.io/tenant" = "sms-proxy"
+    }
+
+    port {
+      port        = 5443
+      target_port = 9000
+      protocol    = "TCP"
+    }
+  }
+
+  wait_for_load_balancer = false
 }
 
 resource "helm_release" "minio_tenant" {

@@ -1,12 +1,209 @@
-# TODO: random secret for registry password
-
-# TODO: TLS
-
-# TODO: PVC or S3?
-
-# TODO: registry deployment
-# TODO: init container that generates htpasswd file
-
-# TODO: service
-
-# TODO: ingress
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: oci-registry-tls-certificate
+  namespace: sms-proxy
+spec:
+  secretName: oci-registry-tls-certificate
+  issuerRef:
+    name: issuer-leaf
+    kind: Issuer
+  commonName: "oci-registry-server"
+  dnsNames:
+    - "oci-registry.sms-proxy.svc.cluster.local"
+  duration: 2160h
+  renewBefore: 360h
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: RandomSecret
+metadata:
+  name: oci-registry-password
+  namespace: sms-proxy
+spec:
+  authentication:
+    path: kubernetes
+    role: vault-operator
+    serviceAccount:
+      name: vault-operator-sa
+  isKVSecretsEngineV2: false # It's a one-time password anyway, so we don't need KV v2; the root DB password will be rotated by Vault later
+  path: kv/sms-proxy
+  secretKey: password
+  secretFormat:
+    passwordPolicyName: default-password-policy
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: oci-registry-password
+  namespace: sms-proxy
+spec:
+  type: kv-v1
+  mount: kv
+  path: sms-proxy/oci-registry-password
+  destination:
+    name: oci-registry-password
+    create: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oci-registry-config
+  namespace: sms-proxy
+data:
+  config.yml: |
+    version: 0.1
+    log:
+      level: debug
+      fields:
+        service: registry
+    http:
+      addr: :5000
+      tls:
+        certificate: /certs/tls.crt
+        key: /certs/tls.key
+    auth:
+      htpasswd:
+        realm: sms-proxy
+        path: /var/run/secrets/htpasswd-cache/htpasswd
+    storage:
+        # filesystem:
+        #   rootdirectory: /var/lib/registry
+        cache:
+          blobdescriptor: inmemory
+        s3:
+          region: local
+          regionendpoint: https://s3.sms-proxy.svc.cluster.local:5443
+          bucket: sms-proxy-oci-registry
+          rootdirectory: /
+          encrypt: false
+          secure: true
+          v4auth: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oci-registry
+  namespace: sms-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oci-registry
+  template:
+    metadata:
+      labels:
+        app: oci-registry
+    spec:
+      volumes:
+        - name: oci-registry-tls-certificate
+          secret:
+            secretName: oci-registry-tls-certificate
+        - name: root-ca-tls-certificate
+          secret:
+            secretName: ca-key-pair-root
+        - name: oci-registry-config
+          configMap:
+            name: oci-registry-config
+        - name: htpasswd-cache
+          emptyDir:
+            sizeLimit: 5Mi
+            medium: Memory
+        - name: ca-certificates
+          emptyDir:
+            sizeLimit: 100Mi
+            medium: Memory
+      initContainers:
+        - name: init-htpasswd
+          image: httpd:2
+          command:
+            ["sh", "-c", "htpasswd -Bbn sms-proxy ${REGISTRY_HTTP_PASSWORD} > /var/run/secrets/htpasswd-cache/htpasswd"]
+          volumeMounts:
+            - name: htpasswd-cache
+              mountPath: "/var/run/secrets/htpasswd-cache"
+          env:
+            - name: REGISTRY_HTTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oci-registry-password
+                  key: password
+        - name: init-cluster-root-ca
+          image: registry:2.8.3
+          command:
+            ["sh", "-c", "ls -al /var/run/secrets && ls -al /var/run/secrets/root-ca-tls-certificate/ && cp /var/run/secrets/root-ca-tls-certificate/ca.crt /usr/local/share/ca-certificates/cluster-local-root.crt && update-ca-certificates && cp /etc/ssl/certs/ca-certificates.crt /var/run/ca-certificates/ca-certificates.crt"]
+          volumeMounts:
+            - name: ca-certificates
+              mountPath: "/var/run/ca-certificates/"
+            - name: root-ca-tls-certificate
+              mountPath: "/var/run/secrets/root-ca-tls-certificate"
+              readOnly: true
+      containers:
+        - name: oci-registry
+          image: registry:2.8.3
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 5000
+              name: https
+              protocol: TCP
+          # TODO: all of the below
+          # livenessProbe: &livenessProbe
+          #   httpGet:
+          #     path: /healthz
+          #     port: http
+          #   failureThreshold: 2
+          #   periodSeconds: 5
+          # readinessProbe: *livenessProbe
+          # startupProbe:
+          #   <<: *livenessProbe
+          #   periodSeconds: 5
+          #   initialDelaySeconds: 10
+          # securityContext: # TODO: re-evaluate
+          #   allowPrivilegeEscalation: false
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          #   readOnlyRootFilesystem: true
+          #   runAsGroup: 2000
+          #   runAsNonRoot: true
+          #   runAsUser: 2000
+          #   seccompProfile:
+          #     type: RuntimeDefault
+          volumeMounts:
+            - name: oci-registry-tls-certificate
+              readOnly: true
+              mountPath: "/certs"
+            - name: oci-registry-config
+              mountPath: "/etc/docker/registry"
+            - name: htpasswd-cache
+              mountPath: "/var/run/secrets/htpasswd-cache"
+              readOnly: true
+            - name: ca-certificates
+              mountPath: "/etc/ssl/certs"
+              readOnly: true
+          env:
+            - name: REGISTRY_STORAGE_S3_ACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: oci-registry-s3-credentials
+                  key: accessKey
+            - name: REGISTRY_STORAGE_S3_SECRETKEY
+              valueFrom:
+                secretKeyRef:
+                  name: oci-registry-s3-credentials
+                  key: secretKey
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oci-registry
+  namespace: sms-proxy
+spec:
+  type: LoadBalancer # We're not using an Ingress, because it would've been managed by Traefik with separate and buggy TLS configuration
+  selector:
+    app: oci-registry
+  ports:
+    - port: 5000
+      targetPort: https
+      name: https

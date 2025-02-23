@@ -90,9 +90,6 @@ subjects:
 #   commonName: "traefik-internal"
 #   dnsNames:
 #     - "traefik-web-service.sms-proxy.svc.cluster.local"
-#     - "localhost"
-#   ipAddresses:
-#     - 127.0.0.1
 # ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
@@ -133,9 +130,11 @@ spec:
         enabled: false
     ingressRoute:
       dashboard:
+        # TODO: perhaps disable the dashboard altogether instead of waiting for #4756?
         enabled: true
         tls:
-          secretName: sms-proxy-certificate-server-tls # This doesn't work
+          # TODO: this should use a separate certificate and TLSOption, but it doesn't work due to #4756, see comments below
+          secretName: sms-proxy-certificate-server-tls # However, any certificate should be set so that TLS is enabled at all for dashboard
     ports:
       web:
         redirections:
