@@ -27,6 +27,7 @@ import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.cert.CertificateFactory
+import java.time.Duration
 import java.time.Instant
 import java.util.Date
 
@@ -71,12 +72,12 @@ open class GenerateCertificatesTask : DefaultTask() {
     @Input
     @Optional
     val certPassword: Property<String> =
-        project.objects.property<String>().convention(System.getenv("CERT_KEY_PASSWORD"))
+        project.objects.property<String>().convention(System.getenv("CERT_KEY_PASSWORD") ?: "pwd")
 
     @Input
     @Optional
     val storePassword: Property<String> = project.objects.property<String>()
-        .convention(System.getenv("CERT_KEY_STORE_PASSWORD"))
+        .convention(System.getenv("CERT_KEY_STORE_PASSWORD") ?: "pwd")
 
     @Input
     @Optional
@@ -166,7 +167,7 @@ open class GenerateCertificatesTask : DefaultTask() {
 
         val now = Instant.now()
         val validFrom = Date.from(now)
-        val validTo = Date.from(now.plusSeconds(60L * 60 * 24 * validForDays.get()))
+        val validTo = Date.from(now.plus(Duration.ofDays(validForDays.get())))
 
         val serverCN = applicationName.get()
         val validRdns = listOf(
@@ -212,22 +213,22 @@ open class GenerateCertificatesTask : DefaultTask() {
     }
 
     private fun validateInputs() {
-        if (applicationName.get().isBlank()) {
-            throw IllegalArgumentException("applicationName must not be blank")
+        require(applicationName.get().isNotBlank()) {
+            "applicationName must not be blank"
         }
 
-        if (validForDays.get() <= 0) {
-            throw IllegalArgumentException("validForDays must be greater than 0")
+        require(validForDays.get() > 0) {
+            "validForDays must be greater than 0"
         }
 
-        if (keyAlias.get().isBlank()) {
-            throw IllegalArgumentException("keyAlias must not be blank when using JKS format")
+        require(keyAlias.get().isNotBlank()) {
+            "keyAlias must not be blank when using JKS format"
         }
-        if (certPassword.get().isBlank()) {
-            throw IllegalArgumentException("certPassword must not be blank")
+        require(certPassword.get().isNotBlank()) {
+            "certPassword must not be blank"
         }
-        if (storePassword.get().isBlank()) {
-            throw IllegalArgumentException("storePassword must not be blank")
+        require(storePassword.get().isNotBlank()) {
+            "storePassword must not be blank"
         }
     }
 }
