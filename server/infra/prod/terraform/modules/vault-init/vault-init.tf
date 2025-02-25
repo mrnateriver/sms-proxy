@@ -28,7 +28,7 @@ variable "shamir_key_shares" {
 variable "vault_replicas" {
   type        = number
   description = "Number of Vault pod replicas"
-  default     = 3
+  default     = 2
 }
 
 variable "vault_init_role" {

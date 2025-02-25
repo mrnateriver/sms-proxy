@@ -98,9 +98,11 @@ spec:
           type: secret
         - name: vault-tls-secret-postgresql-client
           type: secret
+      dataStorage:
+        size: 100Mi
       ha:
         enabled: true
-        replicas: 3
+        replicas: 2
         raft:
           enabled: true
           setNodeId: true
@@ -128,12 +130,6 @@ spec:
               }
               retry_join {
                 leader_api_addr = "https://sms-proxy-vault-1.sms-proxy-vault-internal:8200"
-                leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
-                leader_client_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
-                leader_client_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
-              }
-              retry_join {
-                leader_api_addr = "https://sms-proxy-vault-2.sms-proxy-vault-internal:8200"
                 leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
                 leader_client_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
                 leader_client_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
