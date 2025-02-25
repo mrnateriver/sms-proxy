@@ -12,7 +12,7 @@ variable "namespace" {
 
 resource "null_resource" "registry_check_hosts" {
   triggers = {
-    registry_namespace = var.namespace
+    force_redeploy = uuid()
   }
 
   provisioner "local-exec" {
@@ -32,7 +32,7 @@ resource "null_resource" "registry_kubernetes_docker_auth" {
   depends_on = [null_resource.registry_check_hosts]
 
   triggers = {
-    registry_namespace = var.namespace
+    force_redeploy = uuid()
   }
 
   provisioner "local-exec" {
@@ -60,7 +60,7 @@ resource "null_resource" "registry_kubernetes_images_push" {
   depends_on = [null_resource.registry_kubernetes_docker_auth]
 
   triggers = {
-    registry_namespace = var.namespace
+    force_redeploy = uuid()
   }
 
   provisioner "local-exec" {
@@ -81,6 +81,9 @@ resource "null_resource" "registry_kubernetes_images_push" {
             mikefarah/yq:4.45.1 \
             'select(.kind == "Job") | .spec.template.spec.containers[0].image' 06-app-migrations.yml
         )
+
+        kubectl get pods -n ${var.namespace} -l app=oci-registry -o jsonpath='{.items[*].metadata.name}' |
+            xargs -n1 -I {} kubectl wait -n ${var.namespace} pods/{} --for=condition=Ready --timeout=300s
 
         if [[ $(docker images -q sms-proxy:latest) ]]; then
             docker tag sms-proxy:latest $APP_IMAGE

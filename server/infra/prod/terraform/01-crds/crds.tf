@@ -71,3 +71,13 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "false"
   }
 }
+
+resource "helm_release" "traefik_crds" {
+  depends_on       = [helm_release.kube_prometheus_stack]
+  name             = "traefik-crds"
+  repository       = "https://traefik.github.io/charts"
+  chart            = "traefik-crds"
+  namespace        = var.namespace
+  version          = "1.4.0"
+  create_namespace = true
+}

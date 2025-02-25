@@ -9,7 +9,11 @@ spec:
     name: issuer-leaf
     kind: Issuer
   dnsNames:
-    - "*.vault-internal" # `vault-internal` is the hostname of the Vault service which is used exactly for internal communications between replicas; we can rely on just this hostname because the service is deployed to the same namespace
+    - "vault-active"
+    - "*.vault-active"
+    # `vault-internal` is the hostname of the Vault service which is used exactly for internal communications between replicas; we can rely on just this hostname because the service is deployed to the same namespace
+    - "vault-internal"
+    - "*.vault-internal"
   ipAddresses:
     - 127.0.0.1
   duration: 2160h
@@ -151,7 +155,7 @@ spec:
   values:
     defaultVaultConnection:
       enabled: true
-      address: "https://vault-0.vault-internal:8200" # FIXME: do not use `*-internal` hostname for external connections
+      address: "https://vault-active:8200"
       skipTLSVerify: false
       caCertSecret: "vault-tls-secret"
       tlsServerName: ""
@@ -202,7 +206,7 @@ spec:
     enableCertManager: true
     env:
       - name: VAULT_ADDR
-        value: https://vault-0.vault-internal:8200 # FIXME: do not use `*-internal` hostname for external connections
+        value: https://vault-active:8200
       - name: VAULT_CACERT
         value: /vault-tls-secret/ca.crt
     volumes:
