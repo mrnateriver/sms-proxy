@@ -66,6 +66,9 @@ resource "null_resource" "registry_kubernetes_images_push" {
   provisioner "local-exec" {
     interpreter = ["/bin/sh", "-c"]
     command     = <<EOF
+        kubectl get pods -n ${var.namespace} -l app=oci-registry -o jsonpath='{.items[*].metadata.name}' |
+            xargs -n1 -I {} kubectl wait -n ${var.namespace} pods/{} --for=condition=Ready --timeout=300s
+
         REGISTRY_PWD=$(kubectl get secret -n ${var.namespace} oci-registry-password -o jsonpath='{.data.password}' | base64 -d)
         docker login -u=sms-proxy -p=$REGISTRY_PWD oci-registry:5000
 
@@ -81,9 +84,6 @@ resource "null_resource" "registry_kubernetes_images_push" {
             mikefarah/yq:4.45.1 \
             'select(.kind == "Job") | .spec.template.spec.containers[0].image' 06-app-migrations.yml
         )
-
-        kubectl get pods -n ${var.namespace} -l app=oci-registry -o jsonpath='{.items[*].metadata.name}' |
-            xargs -n1 -I {} kubectl wait -n ${var.namespace} pods/{} --for=condition=Ready --timeout=300s
 
         if [[ $(docker images -q sms-proxy:latest) ]]; then
             docker tag sms-proxy:latest $APP_IMAGE
