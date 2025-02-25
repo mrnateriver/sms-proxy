@@ -18,10 +18,10 @@ resource "null_resource" "registry_check_hosts" {
   provisioner "local-exec" {
     interpreter = ["/bin/sh", "-c"]
     command     = <<EOF
-        if ! grep -q "oci-registry.${var.namespace}.svc.cluster.local" /etc/hosts || ! grep -q "s3.${var.namespace}.svc.cluster.local" /etc/hosts; then
+        if ! grep -E -q "127\.0\.0\.1\s+oci-registry$" /etc/hosts || ! grep -E -q "127\.0\.0\.1\s+s3$" /etc/hosts; then
             echo "Add the following entries to /etc/hosts:"
-            echo "127.0.0.1 oci-registry.${var.namespace}.svc.cluster.local"
-            echo "127.0.0.1 s3.${var.namespace}.svc.cluster.local"
+            echo "127.0.0.1 oci-registry"
+            echo "127.0.0.1 s3"
             exit 1
         fi
     EOF
@@ -47,7 +47,7 @@ resource "null_resource" "registry_kubernetes_docker_auth" {
         if ! kubectl get secret -n ${var.namespace} oci-registry-docker-secret; then
             kubectl get secret -n ${var.namespace} oci-registry-password -o jsonpath='{.data.password}' | base64 --decode | xargs -I {} \
                 kubectl -n ${var.namespace} create secret docker-registry oci-registry-docker-secret \
-                    --docker-server=oci-registry.sms-proxy.svc.cluster.local:5000 \
+                    --docker-server=oci-registry:5000 \
                     --docker-username=sms-proxy \
                     --docker-password={}
         fi
@@ -67,7 +67,7 @@ resource "null_resource" "registry_kubernetes_images_push" {
     interpreter = ["/bin/sh", "-c"]
     command     = <<EOF
         REGISTRY_PWD=$(kubectl get secret -n ${var.namespace} oci-registry-password -o jsonpath='{.data.password}' | base64 -d)
-        docker login -u=sms-proxy -p=$REGISTRY_PWD oci-registry.sms-proxy.svc.cluster.local:5000
+        docker login -u=sms-proxy -p=$REGISTRY_PWD oci-registry:5000
 
         APP_IMAGE=$(docker run --rm \
             -v "${abspath("${path.module}/../../../k8s")}:/app" \

@@ -16,7 +16,7 @@ variable "namespace" {
 variable "vault_release_name" {
   type        = string
   description = "Name of the Vault Helm release"
-  default     = "sms-proxy-vault"
+  default     = "vault"
 }
 
 variable "shamir_key_shares" {

@@ -10,7 +10,7 @@ spec:
     kind: Issuer
   commonName: "oci-registry-server"
   dnsNames:
-    - "oci-registry.sms-proxy.svc.cluster.local"
+    - "oci-registry"
   duration: 2160h
   renewBefore: 360h
 ---
@@ -72,8 +72,8 @@ data:
           blobdescriptor: inmemory
         s3:
           region: local
-          regionendpoint: https://s3.sms-proxy.svc.cluster.local:5443
-          bucket: sms-proxy-oci-registry
+          regionendpoint: https://s3:5443
+          bucket: oci-registry
           rootdirectory: /
           encrypt: false
           secure: true

@@ -37,7 +37,7 @@ metadata:
   name: sms-proxy-migrations-config
   namespace: sms-proxy
 data:
-  url: jdbc:postgresql://postgresql.sms-proxy.svc.cluster.local:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/ca.crt&sslcert=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/tls.crt&sslkey=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/key.der
+  url: jdbc:postgresql://postgresql:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/ca.crt&sslcert=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/tls.crt&sslkey=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/key.der
   schema: public
   connectRetries: "5"
 ---
@@ -59,7 +59,7 @@ spec:
         - name: oci-registry-docker-secret
       containers:
         - name: flyway
-          image: "oci-registry.sms-proxy.svc.cluster.local:5000/sms-proxy/sms-proxy-migrations:latest"
+          image: "oci-registry:5000/sms-proxy/sms-proxy-migrations:latest"
           volumeMounts:
             - name: sms-proxy-migrations-secret-postgresql-client
               readOnly: true

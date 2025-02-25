@@ -9,7 +9,7 @@ spec:
     name: issuer-leaf
     kind: Issuer
   dnsNames:
-    - "*.sms-proxy-vault-internal"
+    - "*.vault-internal" # `vault-internal` is the hostname of the Vault service which is used exactly for internal communications between replicas; we can rely on just this hostname because the service is deployed to the same namespace
   ipAddresses:
     - 127.0.0.1
   duration: 2160h
@@ -52,7 +52,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: hashicorp
-  releaseName: sms-proxy-vault
+  releaseName: vault
   values:
     global:
       enabled: true
@@ -108,7 +108,7 @@ spec:
           setNodeId: true
           config: |
             ui = true
-            cluster_name = "sms-proxy-vault-cluster"
+            cluster_name = "vault-cluster"
             listener "tcp" {
               address = "[::]:8200"
               cluster_address = "[::]:8201"
@@ -116,20 +116,18 @@ spec:
               tls_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
             }
 
-            service_registration "kubernetes" {
-              namespace = "sms-proxy"
-            }
+            service_registration "kubernetes" {}
 
             storage "raft" {
               path = "/vault/data"
               retry_join {
-                leader_api_addr = "https://sms-proxy-vault-0.sms-proxy-vault-internal:8200"
+                leader_api_addr = "https://vault-0.vault-internal:8200"
                 leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
                 leader_client_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
                 leader_client_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
               }
               retry_join {
-                leader_api_addr = "https://sms-proxy-vault-1.sms-proxy-vault-internal:8200"
+                leader_api_addr = "https://vault-1.vault-internal:8200"
                 leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
                 leader_client_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
                 leader_client_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
@@ -153,7 +151,7 @@ spec:
   values:
     defaultVaultConnection:
       enabled: true
-      address: "https://sms-proxy-vault-0.sms-proxy-vault-internal:8200"
+      address: "https://vault-0.vault-internal:8200" # FIXME: do not use `*-internal` hostname for external connections
       skipTLSVerify: false
       caCertSecret: "vault-tls-secret"
       tlsServerName: ""
@@ -204,7 +202,7 @@ spec:
     enableCertManager: true
     env:
       - name: VAULT_ADDR
-        value: https://sms-proxy-vault-0.sms-proxy-vault-internal:8200
+        value: https://vault-0.vault-internal:8200 # FIXME: do not use `*-internal` hostname for external connections
       - name: VAULT_CACERT
         value: /vault-tls-secret/ca.crt
     volumes:

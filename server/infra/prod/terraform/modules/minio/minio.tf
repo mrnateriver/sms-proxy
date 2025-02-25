@@ -46,10 +46,12 @@ metadata:
   namespace: ${var.namespace}
 spec:
   dnsNames:
+    - "minio"
     - "minio.${var.namespace}"
     - "minio.${var.namespace}.svc"
     - 'minio.${var.namespace}.svc.cluster.local'
     - '*.minio.${var.namespace}.svc.cluster.local'
+    - "s3"
     - "s3.${var.namespace}"
     - "s3.${var.namespace}.svc"
     - 's3.${var.namespace}.svc.cluster.local'
@@ -91,7 +93,7 @@ resource "random_password" "minio_root_password" {
 }
 
 locals {
-  minio_root_user     = "sms-proxy"
+  minio_root_user     = "minio"
   minio_root_password = random_password.minio_root_password.result
 }
 
@@ -134,7 +136,7 @@ resource "kubernetes_service" "minio_tenant_lb" {
     type = "LoadBalancer"
 
     selector = {
-      "v1.min.io/tenant" = "sms-proxy"
+      "v1.min.io/tenant" = "minio"
     }
 
     port {
@@ -159,7 +161,7 @@ resource "helm_release" "minio_tenant" {
   values = [
     <<EOF
     tenant:
-        name: sms-proxy
+        name: minio
         configuration:
             name: minio-config
         configSecret:
@@ -171,16 +173,16 @@ resource "helm_release" "minio_tenant" {
             enabled: true
         prometheusOperator: false # MinIO operator looks for Prometheus in the default namespace
         buckets:
-            - name: sms-proxy-oci-registry
+            - name: oci-registry
         users: 
-            - name: sms-proxy-oci-registry
+            - name: oci-registry
         certificate:
             requestAutoCert: false
             externalCertSecret:
                 - name: operator-ca-tls-minio-tenant
                   type: cert-manager.io/v1
         pools:
-            - name: sms-proxy-minio-pool
+            - name: minio-pool
               servers: 1
               volumesPerServer: 1
               size: 5Gi

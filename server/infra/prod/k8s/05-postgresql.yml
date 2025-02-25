@@ -10,7 +10,7 @@ spec:
     kind: Issuer
   commonName: "postgresql-server"
   dnsNames:
-    - "postgresql.sms-proxy.svc.cluster.local"
+    - "postgresql"
   duration: 2160h
   renewBefore: 360h
 ---
@@ -120,7 +120,7 @@ spec:
   allowedRoles:
     - postgresql-role-sms-proxy-app
     - postgresql-role-sms-proxy-migrations-job
-  connectionURL: postgresql://{{username}}:{{password}}@postgresql.sms-proxy.svc.cluster.local:5432/sms_proxy?sslmode=verify-full&sslrootcert=/vault/userconfig/vault-tls-secret-postgresql-client/ca.crt&sslcert=/vault/userconfig/vault-tls-secret-postgresql-client/tls.crt&sslkey=/vault/userconfig/vault-tls-secret-postgresql-client/tls.key
+  connectionURL: postgresql://{{username}}:{{password}}@postgresql:5432/sms_proxy?sslmode=verify-full&sslrootcert=/vault/userconfig/vault-tls-secret-postgresql-client/ca.crt&sslcert=/vault/userconfig/vault-tls-secret-postgresql-client/tls.crt&sslkey=/vault/userconfig/vault-tls-secret-postgresql-client/tls.key
   passwordPolicy: default-password-policy
   rootCredentials:
     secret:

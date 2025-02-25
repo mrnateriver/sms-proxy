@@ -103,7 +103,7 @@ metadata:
   name: sms-proxy-config
   namespace: sms-proxy
 data:
-  dbUri: jdbc:postgresql://postgresql.sms-proxy.svc.cluster.local:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/sms-proxy-secret-postgresql-client/ca.crt&sslcert=/var/run/secrets/sms-proxy-secret-postgresql-client/tls.crt&sslkey=/var/run/secrets/sms-proxy-secret-postgresql-client/key.der
+  dbUri: jdbc:postgresql://postgresql:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/sms-proxy-secret-postgresql-client/ca.crt&sslcert=/var/run/secrets/sms-proxy-secret-postgresql-client/tls.crt&sslkey=/var/run/secrets/sms-proxy-secret-postgresql-client/key.der
   metrics-http-port: "4000"
   server-port: "3000"
   log-level: "info"
@@ -135,7 +135,7 @@ spec:
         - name: oci-registry-docker-secret
       containers:
         - name: sms-proxy
-          image: "oci-registry.sms-proxy.svc.cluster.local:5000/sms-proxy/sms-proxy:latest"
+          image: "oci-registry:5000/sms-proxy/sms-proxy:latest"
           resources:
             limits:
               memory: "256Mi"

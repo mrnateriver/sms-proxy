@@ -89,7 +89,7 @@ subjects:
 #   renewBefore: 360h
 #   commonName: "traefik-internal"
 #   dnsNames:
-#     - "traefik-web-service.sms-proxy.svc.cluster.local"
+#     - "traefik-web-service"
 # ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
