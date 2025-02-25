@@ -10,28 +10,7 @@ variable "namespace" {
   default     = "sms-proxy"
 }
 
-resource "null_resource" "registry_kubernetes_docker_auth" {
-  triggers = {
-    registry_namespace = var.namespace
-  }
-
-  provisioner "local-exec" {
-    interpreter = ["/bin/sh", "-c"]
-    command     = <<EOF
-        if ! kubectl get secret -n ${var.namespace} oci-registry-docker-secret"; then
-            kubectl -n ${var.namespace} get secret oci-registry-password -o jsonpath='{.data.password}' | base64 --decode | xargs -I {} \
-                kubectl -n ${var.namespace} create secret docker-registry oci-registry-docker-secret \
-                    --docker-server=oci-registry.sms-proxy.svc.cluster.local:5000 \
-                    --docker-username=sms-proxy \
-                    --docker-password={}
-        fi
-    EOF
-  }
-}
-
 resource "null_resource" "registry_check_hosts" {
-  depends_on = [null_resource.registry_kubernetes_docker_auth]
-
   triggers = {
     registry_namespace = var.namespace
   }
@@ -48,6 +27,34 @@ resource "null_resource" "registry_check_hosts" {
     EOF
   }
 }
+
+resource "null_resource" "registry_kubernetes_docker_auth" {
+  depends_on = [null_resource.registry_check_hosts]
+
+  triggers = {
+    registry_namespace = var.namespace
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<EOF
+        until kubectl get secret -n ${var.namespace} oci-registry-password >/dev/null 2>&1; do
+            echo "Waiting for secret 'oci-registry-password' to be created..."
+            sleep 2
+        done
+        echo "Secret 'oci-registry-password' has been created!"
+
+        if ! kubectl get secret -n ${var.namespace} oci-registry-docker-secret; then
+            kubectl get secret -n ${var.namespace} oci-registry-password -o jsonpath='{.data.password}' | base64 --decode | xargs -I {} \
+                kubectl -n ${var.namespace} create secret docker-registry oci-registry-docker-secret \
+                    --docker-server=oci-registry.sms-proxy.svc.cluster.local:5000 \
+                    --docker-username=sms-proxy \
+                    --docker-password={}
+        fi
+    EOF
+  }
+}
+
 
 resource "null_resource" "registry_kubernetes_images_push" {
   depends_on = [null_resource.registry_kubernetes_docker_auth]
