@@ -43,8 +43,10 @@ resource "kubernetes_manifest" "kubernetes_manifests" {
   )
 
   lifecycle {
-    ignore_changes = [manifest.metadata.labels]
+    ignore_changes = [manifest.metadata.labels, manifest.spec.template.metadata.labels]
   }
+
+  computed_fields = ["metadata.labels", "metadata.annotations", "spec.template.metadata.labels", "spec.template.metadata.annotations"]
 
   timeouts {
     create = "5m"

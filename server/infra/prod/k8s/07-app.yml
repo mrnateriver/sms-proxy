@@ -117,6 +117,10 @@ metadata:
   namespace: sms-proxy
   labels:
     app: sms-proxy
+    app.kubernetes.io/name: sms-proxy
+    app.kubernetes.io/instance: sms-proxy-deployment
+    app.kubernetes.io/component: sms-proxy
+    app.kubernetes.io/part-of: sms-proxy
 spec:
   replicas: 2
   selector:
@@ -126,6 +130,10 @@ spec:
     metadata:
       labels:
         app: sms-proxy
+        app.kubernetes.io/name: sms-proxy
+        app.kubernetes.io/instance: sms-proxy
+        app.kubernetes.io/component: sms-proxy
+        app.kubernetes.io/part-of: sms-proxy
     spec:
       volumes:
         - name: sms-proxy-secret-postgresql-client
@@ -241,6 +249,9 @@ metadata:
   namespace: sms-proxy
   labels:
     app.kubernetes.io/name: sms-proxy
+    app.kubernetes.io/instance: sms-proxy-service
+    app.kubernetes.io/component: sms-proxy
+    app.kubernetes.io/part-of: sms-proxy
 spec:
   type: ClusterIP
   selector:
@@ -336,7 +347,7 @@ spec:
     - kind: Rule
       match: Path(`/metrics`)
       observability:
-        accesslogs: false
+        accessLogs: false
         metrics: false
         tracing: false
       services:

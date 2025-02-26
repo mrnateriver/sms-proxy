@@ -3,10 +3,16 @@ kind: Pod
 metadata:
   name: jump-host
   namespace: sms-proxy
+  labels:
+    app.kubernetes.io/name: ubuntu
+    app.kubernetes.io/version: "24.04"
+    app.kubernetes.io/instance: ubuntu
+    app.kubernetes.io/component: jump-host
+    app.kubernetes.io/part-of: sms-proxy
 spec:
   containers:
     - name: ubuntu
-      image: ubuntu:latest
+      image: ubuntu:24.04
       command: ["/bin/bash", "-c", "while true; do sleep 3600; done"]
       resources:
         limits:

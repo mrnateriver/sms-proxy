@@ -84,6 +84,12 @@ kind: Deployment
 metadata:
   name: oci-registry
   namespace: sms-proxy
+  labels:
+    app.kubernetes.io/name: registry
+    app.kubernetes.io/version: "2.8.3"
+    app.kubernetes.io/instance: registry
+    app.kubernetes.io/component: oci-registry
+    app.kubernetes.io/part-of: sms-proxy
 spec:
   replicas: 1
   selector:
