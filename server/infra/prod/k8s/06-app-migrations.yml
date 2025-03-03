@@ -1,22 +1,22 @@
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultDynamicSecret
 metadata:
-  name: sms-proxy-migrations-vault-secret-db
+  name: db-sms-proxy-migrations
   namespace: sms-proxy
 spec:
   mount: postgresql
-  path: postgresql-secret-engine/creds/postgresql-role-sms-proxy-migrations-job
+  path: postgresql/creds/sms-proxy-migrations
   destination:
-    name: sms-proxy-migrations-secret-db
+    name: credentials-db-sms-proxy-migrations
     create: true
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: sms-proxy-migrations-certificate-postgresql-client
+  name: postgresql-client-sms-proxy-migrations
   namespace: sms-proxy
 spec:
-  secretName: sms-proxy-migrations-secret-postgresql-client
+  secretName: tls-postgresql-client-sms-proxy-migrations
   issuerRef:
     name: issuer-leaf
     kind: Issuer
@@ -34,10 +34,10 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sms-proxy-migrations-config
+  name: sms-proxy-migrations
   namespace: sms-proxy
 data:
-  url: jdbc:postgresql://postgresql:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/ca.crt&sslcert=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/tls.crt&sslkey=/var/run/secrets/sms-proxy-migrations-secret-postgresql-client/key.der
+  url: jdbc:postgresql://postgresql:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/tls-postgresql-client-sms-proxy-migrations/ca.crt&sslcert=/var/run/secrets/tls-postgresql-client-sms-proxy-migrations/tls.crt&sslkey=/var/run/secrets/tls-postgresql-client-sms-proxy-migrations/key.der
   schema: public
   connectRetries: "5"
 ---
@@ -63,41 +63,41 @@ spec:
     spec:
       restartPolicy: Never
       volumes:
-        - name: sms-proxy-migrations-secret-postgresql-client
+        - name: tls-postgresql-client-sms-proxy-migrations
           secret:
-            secretName: sms-proxy-migrations-secret-postgresql-client
+            secretName: tls-postgresql-client-sms-proxy-migrations
       imagePullSecrets:
-        - name: oci-registry-docker-secret
+        - name: credentials-docker-oci-registry
       containers:
         - name: flyway
           image: "oci-registry:5000/sms-proxy/sms-proxy-migrations:latest"
           volumeMounts:
-            - name: sms-proxy-migrations-secret-postgresql-client
+            - name: tls-postgresql-client-sms-proxy-migrations
               readOnly: true
-              mountPath: "/var/run/secrets/sms-proxy-migrations-secret-postgresql-client"
+              mountPath: "/var/run/secrets/tls-postgresql-client-sms-proxy-migrations"
           env:
             - name: FLYWAY_URL
               valueFrom:
                 configMapKeyRef:
-                  name: sms-proxy-migrations-config
+                  name: sms-proxy-migrations
                   key: url
             - name: FLYWAY_SCHEMAS
               valueFrom:
                 configMapKeyRef:
-                  name: sms-proxy-migrations-config
+                  name: sms-proxy-migrations
                   key: schema
             - name: FLYWAY_CONNECT_RETRIES
               valueFrom:
                 configMapKeyRef:
-                  name: sms-proxy-migrations-config
+                  name: sms-proxy-migrations
                   key: connectRetries
             - name: FLYWAY_USER
               valueFrom:
                 secretKeyRef:
-                  name: sms-proxy-migrations-secret-db
+                  name: credentials-db-sms-proxy-migrations
                   key: username
             - name: FLYWAY_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: sms-proxy-migrations-secret-db
+                  name: credentials-db-sms-proxy-migrations
                   key: password

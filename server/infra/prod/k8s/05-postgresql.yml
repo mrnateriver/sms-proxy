@@ -1,10 +1,10 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: postgresql-tls-certificate
+  name: postgresql
   namespace: sms-proxy
 spec:
-  secretName: postgresql-tls-secret
+  secretName: tls-postgresql
   issuerRef:
     name: issuer-leaf
     kind: Issuer
@@ -17,31 +17,31 @@ spec:
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: RandomSecret
 metadata:
-  name: postgresql-admin-password
+  name: password-postgresql-admin
   namespace: sms-proxy
 spec:
   authentication:
     path: kubernetes
     role: vault-operator
     serviceAccount:
-      name: vault-operator-sa
+      name: vault-operator
   isKVSecretsEngineV2: false # It's a one-time password anyway, so we don't need KV v2; the root DB password will be rotated by Vault later
   path: kv/sms-proxy
   secretKey: password
   secretFormat:
-    passwordPolicyName: default-password-policy
+    passwordPolicyName: default
 ---
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: postgresql-admin-password
+  name: password-postgresql-admin
   namespace: sms-proxy
 spec:
   type: kv-v1
   mount: kv
-  path: sms-proxy/postgresql-admin-password
+  path: sms-proxy/password-postgresql-admin
   destination:
-    name: postgresql-admin-password
+    name: password-postgresql-admin
     create: true
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
@@ -74,13 +74,13 @@ spec:
     tls:
       enabled: true
       preferServerCiphers: true
-      certificatesSecret: postgresql-tls-secret
+      certificatesSecret: tls-postgresql
       certFilename: "tls.crt"
       certKeyFilename: "tls.key"
       certCAFilename: "ca.crt"
     auth:
       database: sms_proxy
-      existingSecret: postgresql-admin-password
+      existingSecret: password-postgresql-admin
       secretKeys:
         adminPasswordKey: password
     primary:
@@ -94,40 +94,40 @@ spec:
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: SecretEngineMount
 metadata:
-  name: postgresql-secret-engine
+  name: postgresql
   namespace: sms-proxy
 spec:
   authentication:
     path: kubernetes
     role: vault-operator
     serviceAccount:
-      name: vault-operator-sa
+      name: vault-operator
   type: database
   path: postgresql
 ---
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: DatabaseSecretEngineConfig
 metadata:
-  name: postgresql-secret-engine
+  name: postgresql
   namespace: sms-proxy
 spec:
   authentication:
     path: kubernetes
     role: vault-operator
     serviceAccount:
-      name: vault-operator-sa
+      name: vault-operator
   pluginName: postgresql-database-plugin
   allowedRoles:
-    - postgresql-role-sms-proxy-app
-    - postgresql-role-sms-proxy-migrations-job
-  connectionURL: postgresql://{{username}}:{{password}}@postgresql:5432/sms_proxy?sslmode=verify-full&sslrootcert=/vault/userconfig/vault-tls-secret-postgresql-client/ca.crt&sslcert=/vault/userconfig/vault-tls-secret-postgresql-client/tls.crt&sslkey=/vault/userconfig/vault-tls-secret-postgresql-client/tls.key
-  passwordPolicy: default-password-policy
+    - sms-proxy
+    - sms-proxy-migrations
+  connectionURL: postgresql://{{username}}:{{password}}@postgresql:5432/sms_proxy?sslmode=verify-full&sslrootcert=/vault/userconfig/tls-vault-postgresql-client/ca.crt&sslcert=/vault/userconfig/tls-vault-postgresql-client/tls.crt&sslkey=/vault/userconfig/tls-vault-postgresql-client/tls.key
+  passwordPolicy: default
   rootCredentials:
     secret:
-      name: postgresql-admin-password
+      name: password-postgresql-admin
     passwordKey: password
   username: postgres
-  path: postgresql/postgresql-secret-engine
+  path: postgresql/postgresql
   rootPasswordRotation:
     enable: true
     rotationPeriod: 24h0m0s
@@ -135,19 +135,19 @@ spec:
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: DatabaseSecretEngineRole
 metadata:
-  name: postgresql-role-sms-proxy-app
+  name: sms-proxy
   namespace: sms-proxy
 spec:
   authentication:
     path: kubernetes
     role: vault-operator
     serviceAccount:
-      name: vault-operator-sa
-  path: postgresql/postgresql-secret-engine
+      name: vault-operator
+  path: postgresql/postgresql
   # The full format is needed because otherwise Terraform fails due to inconsistent output
   defaultTTL: 12h0m0s
   maxTTL: 12h0m0s
-  dBName: postgresql-secret-engine
+  dBName: postgresql
   creationStatements:
     - CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
     - GRANT USAGE ON SCHEMA "public" TO "{{name}}";
@@ -159,19 +159,19 @@ spec:
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: DatabaseSecretEngineRole
 metadata:
-  name: postgresql-role-sms-proxy-migrations-job
+  name: sms-proxy-migrations
   namespace: sms-proxy
 spec:
   authentication:
     path: kubernetes
     role: vault-operator
     serviceAccount:
-      name: vault-operator-sa
-  path: postgresql/postgresql-secret-engine
+      name: vault-operator
+  path: postgresql/postgresql
   # The full format is needed because otherwise Terraform fails due to inconsistent output
   defaultTTL: 5m0s
   maxTTL: 5m0s
-  dBName: postgresql-secret-engine
+  dBName: postgresql
   creationStatements:
     - CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
     - GRANT ALL PRIVILEGES ON SCHEMA "public" TO "{{name}}";

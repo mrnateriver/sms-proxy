@@ -1,10 +1,10 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: vault-tls-certificate
+  name: vault
   namespace: sms-proxy
 spec:
-  secretName: vault-tls-secret
+  secretName: tls-vault
   issuerRef:
     name: issuer-leaf
     kind: Issuer
@@ -22,10 +22,10 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: vault-tls-certificate-postgresql-client
+  name: vault-postgresql-client
   namespace: sms-proxy
 spec:
-  secretName: vault-tls-secret-postgresql-client
+  secretName: tls-vault-postgresql-client
   issuerRef:
     name: issuer-leaf
     kind: Issuer
@@ -96,11 +96,11 @@ spec:
       auditStorage:
         enabled: true
       extraEnvironmentVars:
-        VAULT_CACERT: /vault/userconfig/vault-tls-secret/ca.crt
+        VAULT_CACERT: /vault/userconfig/tls-vault/ca.crt
       extraVolumes:
-        - name: vault-tls-secret
+        - name: tls-vault
           type: secret
-        - name: vault-tls-secret-postgresql-client
+        - name: tls-vault-postgresql-client
           type: secret
       dataStorage:
         size: 100Mi
@@ -116,8 +116,8 @@ spec:
             listener "tcp" {
               address = "[::]:8200"
               cluster_address = "[::]:8201"
-              tls_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
-              tls_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
+              tls_cert_file = "/vault/userconfig/tls-vault/tls.crt"
+              tls_key_file = "/vault/userconfig/tls-vault/tls.key"
             }
 
             service_registration "kubernetes" {}
@@ -126,15 +126,15 @@ spec:
               path = "/vault/data"
               retry_join {
                 leader_api_addr = "https://vault-0.vault-internal:8200"
-                leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
-                leader_client_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
-                leader_client_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
+                leader_ca_cert_file = "/vault/userconfig/tls-vault/ca.crt"
+                leader_client_cert_file = "/vault/userconfig/tls-vault/tls.crt"
+                leader_client_key_file = "/vault/userconfig/tls-vault/tls.key"
               }
               retry_join {
                 leader_api_addr = "https://vault-1.vault-internal:8200"
-                leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
-                leader_client_cert_file = "/vault/userconfig/vault-tls-secret/tls.crt"
-                leader_client_key_file = "/vault/userconfig/vault-tls-secret/tls.key"
+                leader_ca_cert_file = "/vault/userconfig/tls-vault/ca.crt"
+                leader_client_cert_file = "/vault/userconfig/tls-vault/tls.crt"
+                leader_client_key_file = "/vault/userconfig/tls-vault/tls.key"
               }
             }
 ---
@@ -157,14 +157,14 @@ spec:
       enabled: true
       address: "https://vault-active:8200"
       skipTLSVerify: false
-      caCertSecret: "vault-tls-secret"
+      caCertSecret: "tls-vault"
       tlsServerName: ""
     defaultAuthMethod:
       enabled: true
       kubernetes:
         enabled: true
         role: "vault-operator"
-        serviceAccount: "vault-operator-sa"
+        serviceAccount: "vault-operator"
     controller:
       manager:
         clientCache:
@@ -208,32 +208,32 @@ spec:
       - name: VAULT_ADDR
         value: https://vault-active:8200
       - name: VAULT_CACERT
-        value: /vault-tls-secret/ca.crt
+        value: /tls-vault/ca.crt
     volumes:
-      - name: vault-tls-secret
+      - name: tls-vault
         secret:
-          secretName: vault-tls-secret
+          secretName: tls-vault
     volumeMounts:
-      - name: vault-tls-secret
-        mountPath: /vault-tls-secret
+      - name: tls-vault
+        mountPath: /tls-vault
         readOnly: true
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: vault-operator-sa
+  name: vault-operator
   namespace: sms-proxy
 ---
-# We don't really need this binding, because we're using Vault's SA for TokenReview access, as opposed to using the client's SA (vault-operator-sa in this case)
+# We don't really need this binding, because we're using Vault's SA for TokenReview access, as opposed to using the client's SA (vault-operator in this case)
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: vault-operator-sa-tokenreview-binding
+  name: vault-operator-tokenreview
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: system:auth-delegator
 subjects:
   - kind: ServiceAccount
-    name: vault-operator-sa
+    name: vault-operator
     namespace: sms-proxy

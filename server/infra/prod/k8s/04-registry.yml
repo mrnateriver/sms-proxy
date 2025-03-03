@@ -1,10 +1,10 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: oci-registry-tls-certificate
+  name: oci-registry
   namespace: sms-proxy
 spec:
-  secretName: oci-registry-tls-certificate
+  secretName: tls-oci-registry
   issuerRef:
     name: issuer-leaf
     kind: Issuer
@@ -17,37 +17,37 @@ spec:
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: RandomSecret
 metadata:
-  name: oci-registry-password
+  name: password-oci-registry
   namespace: sms-proxy
 spec:
   authentication:
     path: kubernetes
     role: vault-operator
     serviceAccount:
-      name: vault-operator-sa
+      name: vault-operator
   isKVSecretsEngineV2: false # It's a one-time password anyway, so we don't need KV v2; the root DB password will be rotated by Vault later
   path: kv/sms-proxy
   secretKey: password
   secretFormat:
-    passwordPolicyName: default-password-policy
+    passwordPolicyName: default
 ---
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: oci-registry-password
+  name: password-oci-registry
   namespace: sms-proxy
 spec:
   type: kv-v1
   mount: kv
-  path: sms-proxy/oci-registry-password
+  path: sms-proxy/password-oci-registry
   destination:
-    name: oci-registry-password
+    name: password-oci-registry
     create: true
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: oci-registry-config
+  name: oci-registry
   namespace: sms-proxy
 data:
   config.yml: |
@@ -66,8 +66,6 @@ data:
         realm: sms-proxy
         path: /var/run/secrets/htpasswd-cache/htpasswd
     storage:
-        # filesystem:
-        #   rootdirectory: /var/lib/registry
         cache:
           blobdescriptor: inmemory
         s3:
@@ -101,15 +99,15 @@ spec:
         app: oci-registry
     spec:
       volumes:
-        - name: oci-registry-tls-certificate
+        - name: tls-oci-registry
           secret:
-            secretName: oci-registry-tls-certificate
-        - name: root-ca-tls-certificate
+            secretName: tls-oci-registry
+        - name: root-ca
           secret:
-            secretName: ca-key-pair-root
-        - name: oci-registry-config
+            secretName: ca-root
+        - name: oci-registry
           configMap:
-            name: oci-registry-config
+            name: oci-registry
         - name: htpasswd-cache
           emptyDir:
             sizeLimit: 5Mi
@@ -130,17 +128,17 @@ spec:
             - name: REGISTRY_HTTP_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: oci-registry-password
+                  name: password-oci-registry
                   key: password
         - name: init-cluster-root-ca
           image: registry:2.8.3
           command:
-            ["sh", "-c", "ls -al /var/run/secrets && ls -al /var/run/secrets/root-ca-tls-certificate/ && cp /var/run/secrets/root-ca-tls-certificate/ca.crt /usr/local/share/ca-certificates/cluster-local-root.crt && update-ca-certificates && cp /etc/ssl/certs/ca-certificates.crt /var/run/ca-certificates/ca-certificates.crt"]
+            ["sh", "-c", "ls -al /var/run/secrets && ls -al /var/run/secrets/root-ca/ && cp /var/run/secrets/root-ca/ca.crt /usr/local/share/ca-certificates/cluster-local-root.crt && update-ca-certificates && cp /etc/ssl/certs/ca-certificates.crt /var/run/ca-certificates/ca-certificates.crt"]
           volumeMounts:
             - name: ca-certificates
               mountPath: "/var/run/ca-certificates/"
-            - name: root-ca-tls-certificate
-              mountPath: "/var/run/secrets/root-ca-tls-certificate"
+            - name: root-ca
+              mountPath: "/var/run/secrets/root-ca"
               readOnly: true
       containers:
         - name: oci-registry
@@ -177,10 +175,10 @@ spec:
           #   seccompProfile:
           #     type: RuntimeDefault
           volumeMounts:
-            - name: oci-registry-tls-certificate
+            - name: tls-oci-registry
               readOnly: true
               mountPath: "/certs"
-            - name: oci-registry-config
+            - name: oci-registry
               mountPath: "/etc/docker/registry"
             - name: htpasswd-cache
               mountPath: "/var/run/secrets/htpasswd-cache"
@@ -192,12 +190,12 @@ spec:
             - name: REGISTRY_STORAGE_S3_ACCESSKEY
               valueFrom:
                 secretKeyRef:
-                  name: oci-registry-s3-credentials
+                  name: credentials-s3-oci-registry
                   key: accessKey
             - name: REGISTRY_STORAGE_S3_SECRETKEY
               valueFrom:
                 secretKeyRef:
-                  name: oci-registry-s3-credentials
+                  name: credentials-s3-oci-registry
                   key: secretKey
 ---
 apiVersion: v1

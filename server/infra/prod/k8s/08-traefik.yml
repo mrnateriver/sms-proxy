@@ -1,7 +1,7 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: traefik-ingress-controller
+  name: traefik
 rules:
   - apiGroups:
       - ""
@@ -58,20 +58,20 @@ rules:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: traefik-sa
+  name: traefik
   namespace: sms-proxy
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: traefik-sa-clusterrole-binding
+  name: traefik
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: traefik-ingress-controller
+  name: traefik
 subjects:
   - kind: ServiceAccount
-    name: traefik-sa
+    name: traefik
     namespace: sms-proxy
 ---
 # TODO: enable once #4756 is fixed (see comments below in HelmRelease)
@@ -134,7 +134,7 @@ spec:
         enabled: true
         tls:
           # TODO: this should use a separate certificate and TLSOption, but it doesn't work due to #4756, see comments below
-          secretName: sms-proxy-certificate-server-tls # However, any certificate should be set so that TLS is enabled at all for dashboard
+          secretName: tls-server-sms-proxy # However, any certificate should be set so that TLS is enabled at all for dashboard
     ports:
       web:
         redirections:
@@ -147,7 +147,7 @@ spec:
     rbac:
       enabled: false # Managed by the ClusterRole and ClusterRoleBinding above
     serviceAccount:
-      name: traefik-sa
+      name: traefik
     metrics:
       addInternals: true
       prometheus:
@@ -205,7 +205,7 @@ spec:
           namespace: sms-proxy
         spec:
           rootCAsSecrets:
-            - ca-key-pair-root
+            - ca-root
       # TODO: looks like there's a bug in Traefik which prevents it from using a dedicated TLSOption for specific routers
       # Dashboard shows the correct options, but they don't seem to have effect
       # Could be related to https://github.com/traefik/traefik/issues/4756
@@ -228,20 +228,20 @@ spec:
     tlsStore:
       default:
         defaultCertificate:
-          secretName: sms-proxy-certificate-server-tls
+          secretName: tls-server-sms-proxy
     tlsOptions:
       default:
         minVersion: VersionTLS12
         clientAuth:
           secretNames:
-            - sms-proxy-certificate-relay-app-tls
-            - sms-proxy-certificate-receiver-app-tls
+            - tls-relay-sms-proxy
+            - tls-receiver-sms-proxy
           clientAuthType: RequireAndVerifyClientCert
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: traefik-web-service
+  name: traefik
   namespace: sms-proxy
 spec:
   type: LoadBalancer

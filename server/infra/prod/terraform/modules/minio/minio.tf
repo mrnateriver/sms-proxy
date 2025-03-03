@@ -99,7 +99,7 @@ locals {
 
 resource "kubernetes_secret" "minio_tenant_config" {
   metadata {
-    name      = "minio-config"
+    name      = "secrets-minio"
     namespace = var.namespace
   }
 
@@ -114,7 +114,7 @@ resource "kubernetes_secret" "minio_tenant_config" {
 # This secret should be synced with credentials of external S3 storage which are provided for the OCI repository
 resource "kubernetes_secret" "oci_repository_s3_credentials" {
   metadata {
-    name      = "oci-registry-s3-credentials"
+    name      = "credentials-s3-oci-registry"
     namespace = var.namespace
   }
 
@@ -163,9 +163,9 @@ resource "helm_release" "minio_tenant" {
     tenant:
         name: minio
         configuration:
-            name: minio-config
+            name: secrets-minio
         configSecret:
-            name: minio-config
+            name: secrets-minio
             existingSecret: true
             accessKey: ""
             secretKey: ""

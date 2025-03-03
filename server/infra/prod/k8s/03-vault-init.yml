@@ -1,14 +1,14 @@
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: PasswordPolicy
 metadata:
-  name: default-password-policy
+  name: default
   namespace: sms-proxy
 spec:
   authentication:
     path: kubernetes
     role: vault-operator
     serviceAccount:
-      name: vault-operator-sa
+      name: vault-operator
   passwordPolicy: |
     length = 20
     rule "charset" {

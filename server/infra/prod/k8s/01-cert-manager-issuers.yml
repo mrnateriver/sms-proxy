@@ -13,7 +13,7 @@ metadata:
   namespace: sms-proxy
 spec:
   ca:
-    secretName: ca-key-pair-root
+    secretName: ca-root
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
@@ -22,7 +22,7 @@ metadata:
   namespace: sms-proxy
 spec:
   ca:
-    secretName: ca-key-pair-intermediate
+    secretName: ca-intermediate
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -31,7 +31,7 @@ metadata:
   namespace: sms-proxy
 spec:
   isCA: true
-  secretName: ca-key-pair-root
+  secretName: ca-root
   subject:
     countries:
       - "NO"
@@ -55,7 +55,7 @@ metadata:
   namespace: sms-proxy
 spec:
   isCA: true
-  secretName: ca-key-pair-intermediate
+  secretName: ca-intermediate
   subject:
     countries:
       - "NO"

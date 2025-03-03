@@ -38,15 +38,15 @@ resource "null_resource" "registry_kubernetes_docker_auth" {
   provisioner "local-exec" {
     interpreter = ["/bin/sh", "-c"]
     command     = <<EOF
-        until kubectl get secret -n ${var.namespace} oci-registry-password >/dev/null 2>&1; do
-            echo "Waiting for secret 'oci-registry-password' to be created..."
+        until kubectl get secret -n ${var.namespace} password-oci-registry >/dev/null 2>&1; do
+            echo "Waiting for secret 'password-oci-registry' to be created..."
             sleep 2
         done
-        echo "Secret 'oci-registry-password' has been created!"
+        echo "Secret 'password-oci-registry' has been created!"
 
-        if ! kubectl get secret -n ${var.namespace} oci-registry-docker-secret; then
-            kubectl get secret -n ${var.namespace} oci-registry-password -o jsonpath='{.data.password}' | base64 --decode | xargs -I {} \
-                kubectl -n ${var.namespace} create secret docker-registry oci-registry-docker-secret \
+        if ! kubectl get secret -n ${var.namespace} credentials-docker-oci-registry; then
+            kubectl get secret -n ${var.namespace} password-oci-registry -o jsonpath='{.data.password}' | base64 --decode | xargs -I {} \
+                kubectl -n ${var.namespace} create secret docker-registry credentials-docker-oci-registry \
                     --docker-server=oci-registry:5000 \
                     --docker-username=sms-proxy \
                     --docker-password={}
@@ -69,7 +69,7 @@ resource "null_resource" "registry_kubernetes_images_push" {
         kubectl get pods -n ${var.namespace} -l app=oci-registry -o jsonpath='{.items[*].metadata.name}' |
             xargs -n1 -I {} kubectl wait -n ${var.namespace} pods/{} --for=condition=Ready --timeout=300s
 
-        REGISTRY_PWD=$(kubectl get secret -n ${var.namespace} oci-registry-password -o jsonpath='{.data.password}' | base64 -d)
+        REGISTRY_PWD=$(kubectl get secret -n ${var.namespace} password-oci-registry -o jsonpath='{.data.password}' | base64 -d)
         docker login -u=sms-proxy -p=$REGISTRY_PWD oci-registry:5000
 
         APP_IMAGE=$(docker run --rm \

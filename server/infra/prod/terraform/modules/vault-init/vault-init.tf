@@ -40,7 +40,7 @@ variable "vault_init_role" {
 variable "vault_init_service_account" {
   type        = string
   description = "Name of the Kubernetes service account that is granted privileges for provisioning initial Vault resources"
-  default     = "vault-operator-sa"
+  default     = "vault-operator"
 }
 
 data "kubernetes_pod" "vault_pod_leader" {

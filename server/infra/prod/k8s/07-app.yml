@@ -1,32 +1,32 @@
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: RandomSecret
 metadata:
-  name: sms-proxy-hashing-secret
+  name: salt-sms-proxy
   namespace: sms-proxy
 spec:
   authentication:
     path: kubernetes
     role: vault-operator
     serviceAccount:
-      name: vault-operator-sa
+      name: vault-operator
   isKVSecretsEngineV2: true
-  name: hashing-secret
+  name: salt
   path: kv2/data/sms-proxy
-  secretKey: hashing-secret
+  secretKey: salt
   secretFormat:
-    passwordPolicyName: default-password-policy
+    passwordPolicyName: default
 ---
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: sms-proxy-vault-secret-hashing-secret
+  name: salt-sms-proxy
   namespace: sms-proxy
 spec:
   type: kv-v2
   mount: kv2
-  path: sms-proxy/hashing-secret
+  path: sms-proxy/salt
   destination:
-    name: sms-proxy-secret-hashing-secret
+    name: salt-sms-proxy
     create: true
   refreshAfter: 10m
   rolloutRestartTargets:
@@ -36,7 +36,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: sms-proxy-secret-common
+  name: secrets-sms-proxy
   namespace: sms-proxy
 type: Opaque
 data:
@@ -47,14 +47,14 @@ data:
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: sms-proxy-vault-secret-common
+  name: secrets-sms-proxy
   namespace: sms-proxy
 spec:
   type: kv-v2
   mount: kv2
-  path: sms-proxy/secret-common
+  path: sms-proxy/secrets-sms-proxy
   destination:
-    name: sms-proxy-secret-common
+    name: secrets-sms-proxy
     create: false
   refreshAfter: 10m
   rolloutRestartTargets:
@@ -64,13 +64,13 @@ spec:
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultDynamicSecret
 metadata:
-  name: sms-proxy-vault-secret-db
+  name: db-sms-proxy
   namespace: sms-proxy
 spec:
   mount: postgresql
-  path: postgresql-secret-engine/creds/postgresql-role-sms-proxy-app
+  path: postgresql/creds/sms-proxy
   destination:
-    name: sms-proxy-secret-db
+    name: credentials-db-sms-proxy
     create: true
   rolloutRestartTargets:
     - kind: Deployment
@@ -79,10 +79,10 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: sms-proxy-certificate-postgresql-client
+  name: postgresql-client-sms-proxy
   namespace: sms-proxy
 spec:
-  secretName: sms-proxy-secret-postgresql-client
+  secretName: tls-postgresql-client-sms-proxy
   issuerRef:
     name: issuer-leaf
     kind: Issuer
@@ -100,10 +100,10 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sms-proxy-config
+  name: sms-proxy
   namespace: sms-proxy
 data:
-  dbUri: jdbc:postgresql://postgresql:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/sms-proxy-secret-postgresql-client/ca.crt&sslcert=/var/run/secrets/sms-proxy-secret-postgresql-client/tls.crt&sslkey=/var/run/secrets/sms-proxy-secret-postgresql-client/key.der
+  dbUri: jdbc:postgresql://postgresql:5432/sms_proxy?sslmode=verify-full&sslrootcert=/var/run/secrets/tls-postgresql-client-sms-proxy/ca.crt&sslcert=/var/run/secrets/tls-postgresql-client-sms-proxy/tls.crt&sslkey=/var/run/secrets/tls-postgresql-client-sms-proxy/key.der
   metrics-http-port: "4000"
   server-port: "3000"
   log-level: "info"
@@ -136,11 +136,11 @@ spec:
         app.kubernetes.io/part-of: sms-proxy
     spec:
       volumes:
-        - name: sms-proxy-secret-postgresql-client
+        - name: tls-postgresql-client-sms-proxy
           secret:
-            secretName: sms-proxy-secret-postgresql-client
+            secretName: tls-postgresql-client-sms-proxy
       imagePullSecrets:
-        - name: oci-registry-docker-secret
+        - name: credentials-docker-oci-registry
       containers:
         - name: sms-proxy
           image: "oci-registry:5000/sms-proxy/sms-proxy:latest"
@@ -176,67 +176,67 @@ spec:
             seccompProfile:
               type: RuntimeDefault
           volumeMounts:
-            - name: sms-proxy-secret-postgresql-client
+            - name: tls-postgresql-client-sms-proxy
               readOnly: true
-              mountPath: "/var/run/secrets/sms-proxy-secret-postgresql-client"
+              mountPath: "/var/run/secrets/tls-postgresql-client-sms-proxy"
           env:
             - name: OTLP_TRACING_GRPC_URL
               valueFrom:
                 configMapKeyRef:
-                  name: sms-proxy-config
+                  name: sms-proxy
                   key: otlp-tracing-grpc-url
             - name: OTLP_SERVICE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: sms-proxy-config
+                  name: sms-proxy
                   key: otlp-service-name
             - name: KTOR_LOG_LEVEL
               valueFrom:
                 configMapKeyRef:
-                  name: sms-proxy-config
+                  name: sms-proxy
                   key: log-level
             - name: SERVER_HOST
               value: "0.0.0.0"
             - name: SERVER_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: sms-proxy-config
+                  name: sms-proxy
                   key: server-port
             - name: METRICS_HTTP_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: sms-proxy-config
+                  name: sms-proxy
                   key: metrics-http-port
             - name: API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: sms-proxy-secret-common
+                  name: secrets-sms-proxy
                   key: api-key
             - name: SENTRY_DSN
               valueFrom:
                 secretKeyRef:
-                  name: sms-proxy-secret-common
+                  name: secrets-sms-proxy
                   key: sentry-dsn
             - name: DB_JDBC_URI
               valueFrom:
                 configMapKeyRef:
-                  name: sms-proxy-config
+                  name: sms-proxy
                   key: dbUri
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: sms-proxy-secret-db
+                  name: credentials-db-sms-proxy
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: sms-proxy-secret-db
+                  name: credentials-db-sms-proxy
                   key: password
             - name: HASHING_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: sms-proxy-secret-hashing-secret
-                  key: hashing-secret
+                  name: salt-sms-proxy
+                  key: salt
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -269,7 +269,7 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: sms-proxy-monitor
+  name: sms-proxy
   namespace: sms-proxy
 spec:
   endpoints:
@@ -281,10 +281,10 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: sms-proxy-certificate-server-tls
+  name: sms-proxy-server
   namespace: sms-proxy
 spec:
-  secretName: sms-proxy-certificate-server-tls
+  secretName: tls-server-sms-proxy
   issuerRef:
     name: issuer-leaf
     kind: Issuer
@@ -300,10 +300,10 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: sms-proxy-certificate-relay-app-tls
+  name: sms-proxy-relay
   namespace: sms-proxy
 spec:
-  secretName: sms-proxy-certificate-relay-app-tls
+  secretName: tls-relay-sms-proxy
   issuerRef:
     name: issuer-leaf
     kind: Issuer
@@ -319,10 +319,10 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: sms-proxy-certificate-receiver-app-tls
+  name: sms-proxy-receiver
   namespace: sms-proxy
 spec:
-  secretName: sms-proxy-certificate-receiver-app-tls
+  secretName: tls-receiver-sms-proxy
   issuerRef:
     name: issuer-leaf
     kind: Issuer
@@ -338,7 +338,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: sms-proxy-ingress
+  name: sms-proxy
   namespace: sms-proxy
 spec:
   entryPoints:
