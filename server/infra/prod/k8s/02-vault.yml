@@ -70,6 +70,8 @@ spec:
       servicePort: 8200
       serviceType: ClusterIP
     server:
+      annotations:
+        wave.pusher.com/update-on-config-change: "true"
       affinity: "" # FIXME: In HA mode pods have anti-affinity for each other; it is removed here to allow deployment on a single node as part of experiments
       image:
         repository: hashicorp/vault
@@ -203,6 +205,8 @@ spec:
         kind: HelmRepository
         name: vault-config-operator
   values:
+    podAnnotations:
+      wave.pusher.com/update-on-config-change: "true"
     enableCertManager: true
     env:
       - name: VAULT_ADDR

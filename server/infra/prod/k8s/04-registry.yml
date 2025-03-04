@@ -88,6 +88,8 @@ metadata:
     app.kubernetes.io/instance: registry
     app.kubernetes.io/component: oci-registry
     app.kubernetes.io/part-of: sms-proxy
+  annotations:
+    wave.pusher.com/update-on-config-change: "true"
 spec:
   replicas: 1
   selector:
@@ -133,7 +135,11 @@ spec:
         - name: init-cluster-root-ca
           image: registry:2.8.3
           command:
-            ["sh", "-c", "ls -al /var/run/secrets && ls -al /var/run/secrets/root-ca/ && cp /var/run/secrets/root-ca/ca.crt /usr/local/share/ca-certificates/cluster-local-root.crt && update-ca-certificates && cp /etc/ssl/certs/ca-certificates.crt /var/run/ca-certificates/ca-certificates.crt"]
+            [
+              "sh",
+              "-c",
+              "ls -al /var/run/secrets && ls -al /var/run/secrets/root-ca/ && cp /var/run/secrets/root-ca/ca.crt /usr/local/share/ca-certificates/cluster-local-root.crt && update-ca-certificates && cp /etc/ssl/certs/ca-certificates.crt /var/run/ca-certificates/ca-certificates.crt",
+            ]
           volumeMounts:
             - name: ca-certificates
               mountPath: "/var/run/ca-certificates/"

@@ -121,6 +121,8 @@ metadata:
     app.kubernetes.io/instance: sms-proxy-deployment
     app.kubernetes.io/component: sms-proxy
     app.kubernetes.io/part-of: sms-proxy
+  annotations:
+    wave.pusher.com/update-on-config-change: "true"
 spec:
   replicas: 2
   selector:

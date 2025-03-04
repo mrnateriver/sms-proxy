@@ -112,5 +112,21 @@ spec:
     name: github-mrnateriver
   path: ./server/infra/prod/k8s/08-traefik.yml
   prune: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: wave
+  namespace: sms-proxy
+spec:
+  dependsOn:
+    - name: traefik
+  interval: 60m0s
+  timeout: 5m0s
+  sourceRef:
+    kind: GitRepository
+    name: github-mrnateriver
+  path: ./server/infra/prod/k8s/09-wave.yml
+  prune: true
 
 # TODO: observability

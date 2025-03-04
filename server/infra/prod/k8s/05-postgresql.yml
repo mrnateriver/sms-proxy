@@ -84,6 +84,8 @@ spec:
       secretKeys:
         adminPasswordKey: password
     primary:
+      annotations:
+        wave.pusher.com/update-on-config-change: "true"
       # This configuration effectively enables mTLS
       pgHbaConfiguration: |
         hostssl all all 0.0.0.0/0 scram-sha-256 clientcert=verify-ca

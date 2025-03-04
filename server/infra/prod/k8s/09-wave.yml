@@ -1,0 +1,36 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: wave
+  namespace: sms-proxy
+spec:
+  interval: 1h
+  url: https://wave-k8s.github.io/wave/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: wave
+  namespace: sms-proxy
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: wave
+      version: "4.4.1"
+      sourceRef:
+        kind: HelmRepository
+        name: wave
+  values:
+    replicas: 1
+    webhooks:
+      enabled: true
+    pdb:
+      enabled: true
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 200m

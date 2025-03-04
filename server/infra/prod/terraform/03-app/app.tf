@@ -76,4 +76,11 @@ module "traefik" {
   depends_on = [module.app]
 }
 
+module "wave" {
+  source     = "../modules/k8s-apply-all"
+  filename   = "09-wave.yml"
+  namespace  = var.namespace
+  depends_on = [module.traefik]
+}
+
 # TODO: observability

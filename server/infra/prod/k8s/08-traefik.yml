@@ -115,6 +115,8 @@ spec:
         kind: HelmRepository
         name: traefik
   values:
+    deployment:
+      wave.pusher.com/update-on-config-change: "true"
     globalArguments:
       - "--providers.kubernetesingress"
     logs:
