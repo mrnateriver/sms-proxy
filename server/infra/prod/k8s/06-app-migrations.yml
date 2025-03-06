@@ -70,7 +70,7 @@ spec:
         - name: credentials-docker-oci-registry
       containers:
         - name: flyway
-          image: "oci-registry:5000/sms-proxy/sms-proxy-migrations:latest"
+          image: "oci-registry:5555/sms-proxy/sms-proxy-migrations:latest"
           volumeMounts:
             - name: tls-postgresql-client-sms-proxy-migrations
               readOnly: true

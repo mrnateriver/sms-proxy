@@ -47,7 +47,7 @@ resource "null_resource" "registry_kubernetes_docker_auth" {
         if ! kubectl get secret -n ${var.namespace} credentials-docker-oci-registry; then
             kubectl get secret -n ${var.namespace} password-oci-registry -o jsonpath='{.data.password}' | base64 --decode | xargs -I {} \
                 kubectl -n ${var.namespace} create secret docker-registry credentials-docker-oci-registry \
-                    --docker-server=oci-registry:5000 \
+                    --docker-server=oci-registry:5555 \
                     --docker-username=sms-proxy \
                     --docker-password={}
         fi
@@ -70,7 +70,7 @@ resource "null_resource" "registry_kubernetes_images_push" {
             xargs -n1 -I {} kubectl wait -n ${var.namespace} pods/{} --for=condition=Ready --timeout=300s
 
         REGISTRY_PWD=$(kubectl get secret -n ${var.namespace} password-oci-registry -o jsonpath='{.data.password}' | base64 -d)
-        docker login -u=sms-proxy -p=$REGISTRY_PWD oci-registry:5000
+        docker login -u=sms-proxy -p=$REGISTRY_PWD oci-registry:5555
 
         APP_IMAGE=$(docker run --rm \
             -v "${abspath("${path.module}/../../../k8s")}:/app" \

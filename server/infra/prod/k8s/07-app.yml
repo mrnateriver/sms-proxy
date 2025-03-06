@@ -145,7 +145,7 @@ spec:
         - name: credentials-docker-oci-registry
       containers:
         - name: sms-proxy
-          image: "oci-registry:5000/sms-proxy/sms-proxy:latest"
+          image: "oci-registry:5555/sms-proxy/sms-proxy:latest"
           resources:
             limits:
               memory: "256Mi"
