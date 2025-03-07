@@ -65,6 +65,7 @@ resource "null_resource" "registry_kubernetes_images_push" {
 
   provisioner "local-exec" {
     interpreter = ["/bin/sh", "-c"]
+    working_dir = abspath("${path.module}/../../../../../../")
     command     = <<EOF
         kubectl get pods -n ${var.namespace} -l app=oci-registry -o jsonpath='{.items[*].metadata.name}' |
             xargs -n1 -I {} kubectl wait -n ${var.namespace} pods/{} --for=condition=Ready --timeout=300s
@@ -84,6 +85,13 @@ resource "null_resource" "registry_kubernetes_images_push" {
             mikefarah/yq:4.45.1 \
             'select(.kind == "Job") | .spec.template.spec.containers[0].image' 06-app-migrations.yml
         )
+
+        if [ -z "$(docker images -q sms-proxy:latest)" ]; then
+            docker build -f server/infra/Dockerfile.app -t sms-proxy:latest .
+        fi
+        if [ -z "$(docker images -q sms-proxy-migrations:latest)" ]; then
+            docker build -f server/infra/Dockerfile.migrations -t sms-proxy-migrations:latest .
+        fi
 
         if [[ $(docker images -q sms-proxy:latest) ]]; then
             docker tag sms-proxy:latest $APP_IMAGE
