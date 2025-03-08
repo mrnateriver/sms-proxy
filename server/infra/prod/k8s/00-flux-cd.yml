@@ -21,7 +21,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/03-vault-init.yml
+  path: ./server/infra/prod/k8s/04-vault-init.yml
   prune: true
   wait: true
 ---
@@ -39,7 +39,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/04-registry.yml
+  path: ./server/infra/prod/k8s/05-registry.yml
   prune: true
   wait: true
 ---
@@ -57,7 +57,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/05-postgresql.yml
+  path: ./server/infra/prod/k8s/06-postgresql.yml
   prune: true
   wait: true
 ---
@@ -74,7 +74,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/06-app-migrations.yml
+  path: ./server/infra/prod/k8s/07-app-migrations.yml
   prune: true
   wait: true
   force: true
@@ -93,7 +93,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/07-app.yml
+  path: ./server/infra/prod/k8s/08-app.yml
   prune: true
   wait: true
 ---
@@ -110,7 +110,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/08-traefik.yml
+  path: ./server/infra/prod/k8s/09-traefik.yml
   prune: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -126,7 +126,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: github-mrnateriver
-  path: ./server/infra/prod/k8s/09-wave.yml
+  path: ./server/infra/prod/k8s/10-wave.yml
   prune: true
 
 # TODO: observability

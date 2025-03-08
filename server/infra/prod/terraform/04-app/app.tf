@@ -25,7 +25,7 @@ variable "namespace" {
 # This module has to be here because it depends on CRDs which are installed in 02-vault
 module "vault_init_crds" {
   source    = "../modules/k8s-apply-all"
-  filename  = "03-vault-init.yml"
+  filename  = "04-vault-init.yml"
   namespace = var.namespace
 }
 
@@ -37,7 +37,7 @@ module "minio" {
 
 module "registry" {
   source     = "../modules/k8s-apply-all"
-  filename   = "04-registry.yml"
+  filename   = "05-registry.yml"
   namespace  = var.namespace
   depends_on = [module.minio]
 }
@@ -50,35 +50,35 @@ module "registry_init" {
 
 module "postgresql" {
   source     = "../modules/k8s-apply-all"
-  filename   = "05-postgresql.yml"
+  filename   = "06-postgresql.yml"
   namespace  = var.namespace
   depends_on = [module.vault_init_crds] # Let the registry initialize while we provision Postgres
 }
 
 module "app_migrations" {
   source     = "../modules/k8s-apply-all"
-  filename   = "06-app-migrations.yml"
+  filename   = "07-app-migrations.yml"
   namespace  = var.namespace
   depends_on = [module.postgresql, module.registry_init]
 }
 
 module "app" {
   source     = "../modules/k8s-apply-all"
-  filename   = "07-app.yml"
+  filename   = "08-app.yml"
   namespace  = var.namespace
   depends_on = [module.app_migrations]
 }
 
 module "traefik" {
   source     = "../modules/k8s-apply-all"
-  filename   = "08-traefik.yml"
+  filename   = "09-traefik.yml"
   namespace  = var.namespace
   depends_on = [module.app]
 }
 
 module "wave" {
   source     = "../modules/k8s-apply-all"
-  filename   = "09-wave.yml"
+  filename   = "10-wave.yml"
   namespace  = var.namespace
   depends_on = [module.traefik]
 }

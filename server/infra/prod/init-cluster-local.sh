@@ -13,8 +13,13 @@ export KUBE_CONFIG_PATH="~/.kube/config"
 cd ./terraform
 rm */terraform.tfstate */terraform.tfstate.backup > /dev/null 2>&1
 
-cd 01-crds && terraform init && terraform apply -auto-approve -var="context=$context" -var="namespace=$namespace" && cd ..
-cd 02-vault && terraform init && terraform apply -auto-approve -var="context=$context" -var="namespace=$namespace" && cd ..
+provision() {
+    terraform init && terraform apply -auto-approve -var="context=$context" -var="namespace=$namespace"
+}
 
-cd 03-app && terraform init && terraform apply -auto-approve  -var="context=$context" -var="namespace=$namespace" && cd ..
+cd 01-crds && provision && cd ..
+cd 02-consul && provision && cd ..
+cd 03-vault && provision && cd ..
+cd 04-app && provision && cd ..
+
 cd ..

@@ -11,8 +11,14 @@ fi
 export KUBE_CONFIG_PATH="~/.kube/config"
 
 cd ./terraform
-cd 01-crds && terraform apply -var="context=$context" -var="namespace=$namespace" && cd ..
-cd 02-vault && terraform apply -var="context=$context" -var="namespace=$namespace" && cd ..
 
-cd 03-fluxcd && terraform apply  -var="context=$context" -var="namespace=$namespace" && cd ..
+provision() {
+    terraform init && terraform apply -auto-approve -var="context=$context" -var="namespace=$namespace"
+}
+
+cd 01-crds && provision && cd ..
+cd 02-consul && provision && cd ..
+cd 03-vault && provision && cd ..
+cd 04-fluxcd && provision && cd ..
+
 cd ..

@@ -77,13 +77,13 @@ resource "null_resource" "registry_kubernetes_images_push" {
             -v "${abspath("${path.module}/../../../k8s")}:/app" \
             -w="/app" \
             mikefarah/yq:4.45.1 \
-            'select(.kind == "Deployment") | .spec.template.spec.containers[0].image' 07-app.yml
+            'select(.kind == "Deployment") | .spec.template.spec.containers[0].image' 08-app.yml
         )
         MIGRATIONS_IMAGE=$(docker run --rm \
             -v "${abspath("${path.module}/../../../k8s")}:/app" \
             -w="/app" \
             mikefarah/yq:4.45.1 \
-            'select(.kind == "Job") | .spec.template.spec.containers[0].image' 06-app-migrations.yml
+            'select(.kind == "Job") | .spec.template.spec.containers[0].image' 07-app-migrations.yml
         )
 
         if [ -z "$(docker images -q sms-proxy:latest)" ]; then
