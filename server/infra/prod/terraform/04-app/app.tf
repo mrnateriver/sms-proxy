@@ -22,7 +22,7 @@ variable "namespace" {
   default     = "sms-proxy"
 }
 
-# This module has to be here because it depends on CRDs which are installed in 02-vault
+# This module has to be here because it depends on CRDs which are installed in 03-vault
 module "vault_init_crds" {
   source    = "../modules/k8s-apply-all"
   filename  = "04-vault-init.yml"

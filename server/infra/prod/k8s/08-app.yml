@@ -136,6 +136,14 @@ spec:
         app.kubernetes.io/instance: sms-proxy
         app.kubernetes.io/component: sms-proxy
         app.kubernetes.io/part-of: sms-proxy
+      annotations:
+        consul.hashicorp.com/connect-inject: "true"
+        consul.hashicorp.com/service-tags: "\
+          traefik.enable=true,\
+          traefik.http.routers.sms-proxy-metrics.entrypoints=websecure,\
+          traefik.http.routers.sms-proxy-metrics.rule=PathPrefix(`/metrics`),\
+          traefik.http.routers.sms-proxy.entrypoints=websecure,\
+          traefik.http.routers.sms-proxy.rule=PathPrefix(`/`)"
     spec:
       volumes:
         - name: tls-postgresql-client-sms-proxy
@@ -336,29 +344,3 @@ spec:
     encoding: PKCS8
     size: 4096
     rotationPolicy: Always
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: sms-proxy
-  namespace: sms-proxy
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: Path(`/metrics`)
-      observability:
-        accessLogs: false
-        metrics: false
-        tracing: false
-      services:
-        - name: sms-proxy
-          port: metrics
-          nativeLB: true
-    - kind: Rule
-      match: PathPrefix(`/`)
-      services:
-        - name: sms-proxy
-          port: http
-          nativeLB: true

@@ -84,9 +84,12 @@ spec:
       secretKeys:
         adminPasswordKey: password
     primary:
-      annotations:
+      podAnnotations:
         wave.pusher.com/update-on-config-change: "true"
-      # This configuration effectively enables mTLS
+        # We're already using mTLS for Postgres connections, so no point in having Service Mesh overhead (and also, it complicates Vault deployment since we're using dynamic creds for DB)
+        # consul.hashicorp.com/connect-inject: "true" 
+        # consul.hashicorp.com/kubernetes-service: "postgresql"
+      # This configuration enables mTLS
       pgHbaConfiguration: |
         hostssl all all 0.0.0.0/0 scram-sha-256 clientcert=verify-ca
         hostssl all all ::/0 scram-sha-256 clientcert=verify-ca

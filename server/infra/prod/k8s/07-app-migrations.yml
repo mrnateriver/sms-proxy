@@ -47,6 +47,7 @@ metadata:
   name: sms-proxy-migrations
   namespace: sms-proxy
   labels:
+    app: sms-proxy-migrations
     app.kubernetes.io/name: sms-proxy-migrations
     app.kubernetes.io/instance: sms-proxy-migrations-job
     app.kubernetes.io/component: sms-proxy-migrations
@@ -56,6 +57,7 @@ spec:
   template:
     metadata:
       labels:
+        app: sms-proxy-migrations
         app.kubernetes.io/name: sms-proxy-migrations
         app.kubernetes.io/instance: sms-proxy-migrations
         app.kubernetes.io/component: sms-proxy-migrations

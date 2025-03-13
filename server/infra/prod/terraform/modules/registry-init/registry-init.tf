@@ -44,13 +44,12 @@ resource "null_resource" "registry_kubernetes_docker_auth" {
         done
         echo "Secret 'password-oci-registry' has been created!"
 
-        if ! kubectl get secret -n ${var.namespace} credentials-docker-oci-registry; then
-            kubectl get secret -n ${var.namespace} password-oci-registry -o jsonpath='{.data.password}' | base64 --decode | xargs -I {} \
-                kubectl -n ${var.namespace} create secret docker-registry credentials-docker-oci-registry \
-                    --docker-server=oci-registry:5555 \
-                    --docker-username=sms-proxy \
-                    --docker-password={}
-        fi
+        kubectl -n ${var.namespace} delete secret credentials-docker-oci-registry
+        kubectl get secret -n ${var.namespace} password-oci-registry -o jsonpath='{.data.password}' | base64 --decode | xargs -I {} \
+            kubectl -n ${var.namespace} create secret docker-registry credentials-docker-oci-registry \
+                --docker-server=oci-registry:5555 \
+                --docker-username=sms-proxy \
+                --docker-password={}
     EOF
   }
 }

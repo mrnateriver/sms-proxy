@@ -1,0 +1,84 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: hashicorp
+  namespace: sms-proxy
+spec:
+  interval: 1h
+  url: https://helm.releases.hashicorp.com
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: consul
+  namespace: sms-proxy
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: consul
+      version: 1.6.2
+      sourceRef:
+        kind: HelmRepository
+        name: hashicorp
+  releaseName: consul
+  values:
+    global:
+      name: "consul"
+      image: hashicorp/consul:1.20.4
+      imageK8S: hashicorp/consul-k8s-control-plane:1.6.2
+      imageConsulDataplane: hashicorp/consul-dataplane:1.6.2
+      # TODO: use Vault backend after enabling PKI backend
+      # secretsBackend:
+      #   vault:
+      #     enabled: true
+      #     # TODO: a lot of settings
+      gossipEncryption:
+        autoGenerate: true
+      tls:
+        enabled: true
+        enableAutoEncrypt: true
+        verify: true
+      acls:
+        manageSystemACLs: false # TODO: change to true for prod
+      metrics:
+        enabled: true
+        enableAgentMetrics: true
+    server:
+      # Scale this according to your needs:
+      replicas: 1
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+      # TODO: either cert-manager certs with SANs, or Vault roles with PKI permissions
+      # serverCert:
+      #   # The name of the Vault secret that holds the PEM encoded server certificate.
+      #   # @type: string
+      #   secretName: null
+      connect: true
+    ui:
+      enabled: true
+    controller:
+      enabled: true
+    # FIXME: replace with ServiceMonitor CRD
+    # prometheus:
+    #   enabled: true
+    # grafana:
+    #   enabled: true
+    connectInject:
+      # This method will inject the sidecar container into Pods:
+      enabled: true
+      # But not by default, only do this for Pods that have the explicit annotation:
+      #        consul.hashicorp.com/connect-inject: "true"
+      default: false
+    syncCatalog:
+      # This method will automatically synchronize Kubernetes services to Consul:
+      # (No sidecar is injected by this method):
+      enabled: true
+      # But not by default, only for Services that have the explicit annotation:
+      #        consul.hashicorp.com/service-sync: "true"
+      default: false
+      # Synchronize from Kubernetes to Consul:
+      toConsul: true
+      # But not from Consul to K8s:
+      toK8S: false

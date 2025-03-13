@@ -117,8 +117,21 @@ spec:
   values:
     deployment:
       wave.pusher.com/update-on-config-change: "true"
+    persistence:
+      enabled: true
+    volumes:
+      - name: consul-ca-cert
+        mountPath: "/certs/consul-ca/"
+        type: secret
     globalArguments:
       - "--providers.kubernetesingress"
+      - "--providers.consulcatalog.connectAware=true"
+      - "--providers.consulcatalog.exposedByDefault=false"
+      - "--providers.consulcatalog.connectByDefault=true" 
+      - "--providers.consulcatalog.servicename=traefik"
+      - "--providers.consulcatalog.endpoint.address=consul-server:8501"
+      - "--providers.consulcatalog.endpoint.scheme=https"
+      - "--providers.consulcatalog.endpoint.tls.ca=/certs/consul-ca/tls.crt"
     logs:
       general:
         level: "DEBUG"
@@ -245,6 +258,9 @@ kind: Service
 metadata:
   name: traefik
   namespace: sms-proxy
+  annotations: 
+    consul.hashicorp.com/service-sync: "true"
+    consul.hashicorp.com/service-name: "traefik"
 spec:
   type: LoadBalancer
   ports:

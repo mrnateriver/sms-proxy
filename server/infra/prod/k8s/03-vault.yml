@@ -33,15 +33,6 @@ spec:
   duration: 2160h
   renewBefore: 360h
 ---
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
-  name: hashicorp
-  namespace: sms-proxy
-spec:
-  interval: 1h
-  url: https://helm.releases.hashicorp.com
----
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
